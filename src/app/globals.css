@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    @apply bg-paper text-ink font-sans text-body antialiased;
+    font-feature-settings: "lnum";
+  }
+  :focus-visible { outline: 2px solid #02093a; outline-offset: 2px; }
+  .on-dark :focus-visible { outline-color: #ffffff; }
+  ::selection { background: #f6d5b8; }
+}
+
+@layer components {
+  .card { @apply bg-white border border-hairline rounded-card p-6; }
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-button px-4 py-2.5 text-body-sm font-medium transition-colors duration-200 disabled:cursor-not-allowed; }
+  .btn-primary { @apply btn bg-action text-white hover:bg-[#0067c4] disabled:bg-ink-20 disabled:text-stone; }
+  .btn-ghost { @apply btn bg-sky-tint text-action hover:bg-[#d4e9fc] disabled:bg-transparent disabled:text-stone; }
+  .btn-outline { @apply btn border border-ink-90 text-ink-90 hover:bg-paper disabled:border-ink-20 disabled:text-stone; }
+  .btn-text { @apply btn px-2 text-ink-95 hover:bg-paper disabled:text-stone; }
+  .btn-dark { @apply btn bg-midnight text-white hover:bg-[#0b1352]; }
+  .pill { @apply inline-flex items-center gap-1 rounded-pill px-3 py-1 text-caption; }
+  .field-label { @apply block text-body-sm font-medium text-ink-95 mb-1.5; }
+  .field-input { @apply w-full rounded-button border border-ink-20 bg-white px-3 py-2.5 text-body text-ink placeholder:text-ink-40 focus:border-midnight focus:outline-none focus-visible:outline-2 focus-visible:outline-midnight; }
+  .lead { @apply font-serif text-lead text-graphite; }
+  .link { @apply text-action underline-offset-2 hover:underline; }
+  .table-head { @apply text-left text-caption text-slate font-medium px-3 py-2 border-b border-hairline; }
+  .table-cell { @apply px-3 py-2.5 text-body-sm border-b border-hairline align-top; }
+}
+
+@media print {
+  .no-print { display: none !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0ms !important; animation-duration: 0ms !important; }
+}

@@ -1,0 +1,12 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "iparkar-lms",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
+  "observability": { "enabled": true },
+  "routes": [{ "pattern": "app.iparkar.com", "custom_domain": true }]
+  // Secrets (set with `wrangler secret put`): SUPABASE_SERVICE_ROLE_KEY, PADDLE_WEBHOOK_SECRET
+  // Public build-time vars: NEXT_PUBLIC_* in .env.production or the Workers Builds settings
+}
