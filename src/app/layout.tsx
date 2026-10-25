@@ -3,7 +3,7 @@ import "./globals.css";
 
 
 export const metadata: Metadata = {
-  title: { default: "iParkar HSE Academy", template: "%s · iParkar" },
+  title: { default: "iParkar Learning", template: "%s · iParkar Learning" },
   description: "Practice examinations and study analytics for ASP, CSP and CIH candidates.",
   icons: { icon: "/favicon.svg", apple: "/apple-touch-icon.png" },
   robots: { index: false, follow: false },
