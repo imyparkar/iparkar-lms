@@ -5,6 +5,7 @@ import { signIn, type FormState } from "@/lib/auth/actions";
 import { PasswordInput } from "@/components/ui/PasswordInput";
 import { SubmitButton } from "@/components/ui/SubmitButton";
 import { Alert } from "@/components/ui/Alert";
+import { Turnstile } from "@/components/ui/Turnstile";
 
 export function LoginForm({ next, notice }: { next?: string; notice?: string }) {
   const [state, action] = useActionState<FormState, FormData>(signIn, {});
@@ -25,6 +26,7 @@ export function LoginForm({ next, notice }: { next?: string; notice?: string }) 
         </div>
         <PasswordInput id="password" name="password" autoComplete="current-password" />
       </div>
+      <Turnstile resetKey={state} />
       <SubmitButton pendingText="Signing in…">Sign in</SubmitButton>
     </form>
   );

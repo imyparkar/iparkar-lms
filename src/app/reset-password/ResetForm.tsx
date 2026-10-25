@@ -3,6 +3,7 @@ import { useActionState } from "react";
 import { requestPasswordReset, type FormState } from "@/lib/auth/actions";
 import { SubmitButton } from "@/components/ui/SubmitButton";
 import { Alert } from "@/components/ui/Alert";
+import { Turnstile } from "@/components/ui/Turnstile";
 
 export function ResetForm() {
   const [state, action] = useActionState<FormState, FormData>(requestPasswordReset, {});
@@ -14,6 +15,7 @@ export function ResetForm() {
         <label className="field-label" htmlFor="email">Email</label>
         <input id="email" name="email" type="email" className="field-input" autoComplete="email" required autoFocus />
       </div>
+      <Turnstile resetKey={state} />
       <SubmitButton pendingText="Sending…">Send reset link</SubmitButton>
     </form>
   );

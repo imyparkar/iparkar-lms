@@ -9,6 +9,17 @@ import { SITE_URL } from "@/lib/env";
 export type FormState = { error?: string; message?: string; fields?: Record<string, string> };
 
 const GENERIC_LOGIN_ERROR = "That username/email and password combination didn’t work.";
+const CAPTCHA_ERROR = "Please complete the security check and try again.";
+
+/** Turnstile token added to the form by <Turnstile/>; Supabase verifies it when CAPTCHA protection is on. */
+function captchaToken(form: FormData): string | undefined {
+  const t = form.get("cf-turnstile-response");
+  return typeof t === "string" && t.length > 0 ? t : undefined;
+}
+
+function isCaptchaError(error: { message?: string; code?: string } | null | undefined) {
+  return Boolean(error && (error.code === "captcha_failed" || error.message?.toLowerCase().includes("captcha")));
+}
 
 function safeNext(next: FormDataEntryValue | null): string {
   const n = typeof next === "string" ? next : "";
@@ -56,7 +67,8 @@ export async function signIn(_prev: FormState, form: FormData): Promise<FormStat
   }
 
   const supabase = await getServerClient();
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password, options: { captchaToken: captchaToken(form) } });
+  if (isCaptchaError(error)) return { error: CAPTCHA_ERROR, fields: { identifier } };
   if (error || !data.user) {
     if (error?.message?.toLowerCase().includes("email not confirmed"))
       return { error: "Confirm your email first — check your inbox for the link.", fields: { identifier } };
@@ -97,10 +109,12 @@ export async function signUp(_prev: FormState, form: FormData): Promise<FormStat
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
+      captchaToken: captchaToken(form),
       data: { username: parsed.data.username, full_name: parsed.data.full_name },
       emailRedirectTo: `${SITE_URL}/auth/confirm?next=/dashboard`,
     },
   });
+  if (isCaptchaError(error)) return { error: CAPTCHA_ERROR, fields };
   if (error) return { error: error.message.includes("Password") ? error.message : "We couldn’t create the account. Try again.", fields };
   return { message: "Check your email to confirm your account, then sign in." };
 }
@@ -111,9 +125,11 @@ export async function requestPasswordReset(_prev: FormState, form: FormData): Pr
   const ip = await clientIp();
   if (await allow(`reset:ip:${ip}`, 5, 3600)) {
     const supabase = await getServerClient();
-    await supabase.auth.resetPasswordForEmail(email.data, {
+    const { error } = await supabase.auth.resetPasswordForEmail(email.data, {
       redirectTo: `${SITE_URL}/auth/callback?next=/auth/update-password`,
+      captchaToken: captchaToken(form),
     });
+    if (isCaptchaError(error)) return { error: CAPTCHA_ERROR };
   }
   // same answer whether or not the account exists
   return { message: "If an account uses that email, a reset link is on its way." };

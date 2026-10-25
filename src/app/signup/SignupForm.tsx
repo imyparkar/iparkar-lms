@@ -4,6 +4,7 @@ import { signUp, type FormState } from "@/lib/auth/actions";
 import { PasswordInput } from "@/components/ui/PasswordInput";
 import { SubmitButton } from "@/components/ui/SubmitButton";
 import { Alert } from "@/components/ui/Alert";
+import { Turnstile } from "@/components/ui/Turnstile";
 import { MARKETING_URL } from "@/lib/env";
 
 export function SignupForm() {
@@ -36,6 +37,7 @@ export function SignupForm() {
         <span>I agree to the <a className="link" href={`${MARKETING_URL}/terms.html`} target="_blank" rel="noreferrer">terms</a> and{" "}
           <a className="link" href={`${MARKETING_URL}/privacy.html`} target="_blank" rel="noreferrer">privacy notice</a>.</span>
       </label>
+      <Turnstile resetKey={state} />
       <SubmitButton pendingText="Creating account…">Create account</SubmitButton>
     </form>
   );
