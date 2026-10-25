@@ -14,7 +14,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   const sp = await searchParams;
   return (
     <AuthShell title="Sign in" lead="Pick up your practice where you left off."
-      footer={<>New to iParkar? <Link href="/signup" className="link">Create an account</Link></>}>
+      footer={<>New to iParkar Learning? <Link href="/signup" className="link">Create an account</Link></>}>
       <LoginForm next={sp.next} notice={NOTICES[sp.error ?? sp.notice ?? ""]} />
     </AuthShell>
   );
