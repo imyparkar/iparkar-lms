@@ -17,10 +17,13 @@ export function AuthShell({ title, lead, children, footer }: { title: string; le
           Practice questions are original study material, not actual examination items.
         </p>
       </section>
-      <aside className="hidden lg:flex flex-col justify-between gap-10 bg-midnight p-12 text-white on-dark overflow-hidden">
+      <aside className="hidden lg:flex flex-col justify-between gap-10 [@media(max-height:820px)]:gap-6 bg-midnight p-12 [@media(max-height:820px)]:py-8 text-white on-dark overflow-hidden">
         <span className="pill bg-marigold text-ink self-start">Premium practice</span>
-        <div className="hidden [@media(min-height:820px)]:block">
-          <AuthArtwork />
+        {/* Artwork scales down on shorter screens instead of disappearing */}
+        <div className="relative h-[340px] [@media(max-height:820px)]:h-[230px] [@media(max-height:680px)]:h-[180px]">
+          <div className="origin-top [@media(max-height:820px)]:scale-[0.68] [@media(max-height:680px)]:scale-[0.53]">
+            <AuthArtwork />
+          </div>
         </div>
         <div>
           <p className="font-serif text-[32px] leading-[1.25]">Timed, blueprint-weighted mock exams with a breakdown of every domain.</p>
