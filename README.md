@@ -43,3 +43,7 @@ npm run cf:preview              # build + run on the Cloudflare Workers runtime 
 - Score = correct ÷ total × 100; unanswered questions count as incorrect.
 - Thresholds (80 / 60) are study indicators, configurable by admins, not passing standards.
 - Practice items are original study material, not live exam questions.
+
+## Paddle checkout integration
+
+See [Paddle setup](docs/PADDLE_SETUP.md). One-time ASP/CSP/CIH purchases now have a signed-in checkout page and server-created Paddle transactions. Apply migration 20261028000100 before enabling the new handler. Payments remain disabled by default; Paddle account setup, secrets, price mapping and sandbox end-to-end acceptance tests are outstanding. The old public checkout URL templates are superseded.

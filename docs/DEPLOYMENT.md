@@ -38,15 +38,8 @@ Or connect the GitHub repo in **Workers & Pages → Workers Builds** with build 
 Recommended Cloudflare extras: a WAF rate-limit rule on `POST /login` and `/signup` (defence in depth on top of the app limiter), and Bot Fight Mode.
 
 ## 4. Payments (Paddle)
-1. **Confirm eligibility first**: Paddle's seller requirements for your country of registration (Kuwait / India), supported payout currencies and fees. If Paddle isn't available to you, Lemon Squeezy or another merchant of record can be swapped in — only `src/app/api/webhooks/paddle/route.ts` changes; entitlements are provider-independent.
-2. Create one product/price per course (e.g. ASP, 90 days). Insert the mapping:
-   ```sql
-   insert into public.course_products (course_id, provider, provider_price_id, access_days, kind)
-   values ((select id from courses where code = 'ASP'), 'paddle', 'pri_xxx', 90, 'one_time');
-   ```
-3. Checkout must send `custom_data.user_id`. Set `NEXT_PUBLIC_CHECKOUT_URL_ASP` to your checkout page URL using the `{user_id}` / `{email}` placeholders, e.g. a small Paddle.js page that calls `Paddle.Checkout.open({ items:[{priceId:'pri_xxx'}], customData:{ user_id } })`.
-4. Webhook destination: `https://app.iparkar.com/api/webhooks/paddle`, events `transaction.completed`, `adjustment.created`, `adjustment.updated`, `subscription.canceled`. Copy its secret to `PADDLE_WEBHOOK_SECRET`.
-5. Test in Paddle sandbox: buy → entitlement row appears → course unlocks; refund → access revoked. Unmatched payments are logged as `payment.unmatched` in the audit log.
+
+Follow [PADDLE_SETUP.md](PADDLE_SETUP.md) for the server-created checkout, private transaction mappings, migration, sandbox variables, three course prices, notification destination and required acceptance tests. This replaces the older public checkout URL placeholders. Payment completion and access grants are atomic in the database; signed redirects/browser events never grant access. Keep online checkout disabled until sandbox setup is complete.
 
 ## 5. Marketing site
 Merge the `iparkar-site` change (Practice tab → `https://app.iparkar.com/courses/ASP`, "Sign in to your dashboard" link). It deploys on push as before.
