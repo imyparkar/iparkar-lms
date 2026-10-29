@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import type { MyCourse } from "@/lib/types";
-import { checkoutUrl } from "@/lib/env";
+import { paddleConfig, priceForCourse } from "@/lib/payments/config";
 import { fmtDate } from "@/lib/format";
 import { allocate } from "@/lib/exam/allocation";
 import { Pill } from "@/components/ui/Pill";
@@ -22,7 +22,7 @@ const POLICY: Record<string, string> = {
 
 export default async function CoursePage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
-  const { supabase, user } = await requireUser();
+  const { supabase } = await requireUser();
   const { data } = await supabase.rpc("get_my_courses");
   const course = ((data ?? []) as MyCourse[]).find((c) => c.code === code.toUpperCase());
   if (!course) notFound();
@@ -31,7 +31,7 @@ export default async function CoursePage({ params }: { params: Promise<{ code: s
   const mixed = course.exams?.find((e) => e.mode === "mixed");
   const domainExam = course.exams?.find((e) => e.mode === "domain");
   const alloc = mixed && bp?.domains ? allocate(bp.domains.map((d) => ({ number: d.number, weight: Number(d.weight) })), mixed.question_count) : [];
-  const buy = checkoutUrl(course.code)?.replace("{user_id}", encodeURIComponent(user.id)).replace("{email}", encodeURIComponent(user.email ?? ""));
+  const buy = paddleConfig().enabled && priceForCourse(course.code) && course.exams_enabled ? `/checkout/${course.code}` : null;
 
   return (
     <div className="space-y-8">
@@ -58,7 +58,7 @@ export default async function CoursePage({ params }: { params: Promise<{ code: s
               <a href={`mailto:imran@iparkar.com?subject=${encodeURIComponent(course.code + " premium access")}`} className="btn-dark">Ask about {course.code} access</a>
             )}
           </div>
-          <p className="mt-4 text-caption">Access is granted automatically once the payment provider confirms your payment.</p>
+          <p className="mt-4 text-caption">{buy ? "Access is granted automatically once the payment provider confirms your payment." : "Online checkout is not yet available for this package. Contact us for availability."}</p>
         </section>
       ) : !course.exams_enabled ? (
         <Alert tone="info" title={`${course.code} practice exams are being prepared`}>

@@ -6,7 +6,20 @@
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
   "observability": { "enabled": true },
-  "routes": [{ "pattern": "app.iparkar.com", "custom_domain": true }]
+  "routes": [{ "pattern": "app.iparkar.com", "custom_domain": true }],
+  "previews": {
+    "vars": {
+      "NEXT_PUBLIC_SUPABASE_URL": "https://gyfkyaclmrvfbgyqkukn.supabase.co",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5Zmt5YWNsbXJ2ZmJneXFrdWtuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMyMTEwMTAsImV4cCI6MjEwODc4NzAxMH0.Kp4lNA-J9BZnzXbySM95eMDYUYZZCYAjSAmUHtBjY_8",
+      "NEXT_PUBLIC_SITE_URL": "https://payments-paddle-exam-packages-iparkar-lms.z2smxcynhy.workers.dev",
+      "PADDLE_CHECKOUT_ENABLED": "false",
+      "PADDLE_CLIENT_TOKEN": "test_f1658f7af7c5fdda82e9207f03d",
+      "PADDLE_ENVIRONMENT": "sandbox",
+      "PADDLE_PRICE_ID_ASP": "pri_01m61wt2qqwq6cgxw2jf4qmwv0",
+      "PADDLE_PRICE_ID_CIH": "pri_01m61wwxkeedn3a70x99xc208h",
+      "PADDLE_PRICE_ID_CSP": "pri_01m61wvpxdmgygfpt5cvzqt5kt"
+    }
+  }
   // Secrets (set with `wrangler secret put`): SUPABASE_SERVICE_ROLE_KEY, PADDLE_WEBHOOK_SECRET
   // Public build-time vars: NEXT_PUBLIC_* in .env.production or the Workers Builds settings
 }
