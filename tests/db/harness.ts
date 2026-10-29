@@ -96,11 +96,13 @@ export async function domainId(db: DB, course: string, code: string): Promise<st
  * Synthetic, clearly-labelled fixture items (test-only, never shipped).
  * Key is always B so tests can answer deterministically.
  */
-export function syntheticItems(course: string, domain: string, count: number, taskCodes: string[] = []) {
+export function syntheticItems(course: string, domain: string, count: number, taskCodes: string[] = [],
+                               topics: string[] = []) {
   return Array.from({ length: count }, (_, i) => ({
     external_ref: `T-${course}-${domain}-${String(i + 1).padStart(4, "0")}`,
     domain_code: domain,
     task_code: taskCodes.length ? taskCodes[i % taskCodes.length] : undefined,
+    topic: topics.length ? topics[i % topics.length] : undefined,
     cognitive_level: "Recall",
     stem: `[TEST FIXTURE] ${course} ${domain} synthetic item ${i + 1}?`,
     options: [
@@ -128,9 +130,11 @@ export async function importAndPublish(db: DB, adminId: string, course: string, 
 }
 
 export async function seedCourse(db: DB, adminId: string, course: string, perDomain: Record<string, number>,
-                                 tasks: Record<string, string[]> = {}) {
+                                 tasks: Record<string, string[]> = {},
+                                 topics: Record<string, string[]> = {}) {
   for (const [domain, n] of Object.entries(perDomain)) {
-    await importAndPublish(db, adminId, course, syntheticItems(course, domain, n, tasks[domain] ?? []));
+    await importAndPublish(db, adminId, course,
+      syntheticItems(course, domain, n, tasks[domain] ?? [], topics[domain] ?? []));
   }
 }
 

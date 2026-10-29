@@ -1,15 +1,18 @@
 import Link from "next/link";
-import type { CourseAnalytics } from "@/lib/types";
+import type { CourseAnalytics, SubjectPerformance } from "@/lib/types";
 import { recommend, trendDirection, levelFor } from "@/lib/analytics/recommendations";
 import { fmtDate, fmtPct, modeLabel } from "@/lib/format";
 import { formatDuration } from "@/lib/exam/clock";
 import { StatTiles } from "./StatTiles";
 import { TrendChart } from "./TrendChart";
 import { DomainBars } from "./DomainBars";
+import { SubjectBars } from "./SubjectBars";
 import { LevelPill } from "./LevelPill";
 import { Pill } from "@/components/ui/Pill";
 
-export function CourseAnalyticsPanel({ a, courseCode, courseName }: { a: CourseAnalytics; courseCode: string; courseName: string }) {
+export function CourseAnalyticsPanel({ a, subjects = [], courseCode, courseName }: {
+  a: CourseAnalytics; subjects?: SubjectPerformance[]; courseCode: string; courseName: string;
+}) {
   const ind = a.indicators;
   const attempted = a.domains.filter((d) => d.total > 0);
   const recs = recommend(a.domains.map((d) => ({ ...d, weight: Number(d.weight) })), ind);
@@ -34,7 +37,7 @@ export function CourseAnalyticsPanel({ a, courseCode, courseName }: { a: CourseA
         <section className="card">
           <h3 className="text-heading-sm">No {courseCode} results yet</h3>
           <p className="mt-2 text-graphite">
-            Finish a practice exam and your domain breakdown, trend and study priorities will appear here. A 20-question domain exam is a quick way to get a baseline.
+            Finish a practice exam and your domain breakdown, trend and study priorities will appear here. A 20-question subject-area set is a quick way to get a baseline.
           </p>
           <Link href={`/courses/${courseCode}`} className="btn-primary mt-4">Start a {courseCode} practice exam</Link>
         </section>
@@ -88,6 +91,18 @@ export function CourseAnalyticsPanel({ a, courseCode, courseName }: { a: CourseA
             </p>
             <div className="mt-5"><DomainBars rows={a.domains.map((d) => ({ ...d, weight: Number(d.weight) }))} ind={ind} /></div>
           </section>
+
+          {subjects.length > 0 && (
+            <section className="card" aria-labelledby="subjects-h">
+              <h3 id="subjects-h" className="text-heading-sm">Subject-area performance</h3>
+              <p className="mt-1 text-caption text-graphite">
+                Accuracy by BGC subject area, weakest first, across every {courseCode} exam you have finished.
+                Subject areas cut across the blueprint domains, so this is where to aim revision; the domain
+                breakdown above is how the examination itself is weighted.
+              </p>
+              <div className="mt-5"><SubjectBars rows={subjects} ind={ind} /></div>
+            </section>
+          )}
 
           <section className="card" aria-labelledby="recs-h">
             <h3 id="recs-h" className="text-heading-sm">Suggested revision priorities</h3>
