@@ -6,4 +6,6 @@ node_modules
 .env.local
 *.tsbuildinfo
 next-env.d.ts
-/imports/*.md
+# Premium item banks never enter this repo (it is public).
+/imports/*
+!/imports/README.txt
