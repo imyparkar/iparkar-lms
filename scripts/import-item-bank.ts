@@ -12,12 +12,30 @@
  * ADMIN_EMAIL and ADMIN_PASSWORD need to be supplied on the command line, and
  * anything already set in the environment wins over the file.
  */
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
-import { loadEnvConfig } from "@next/env";
 import { chunk, parseItemBank } from "../src/lib/import/itemBank";
 
-loadEnvConfig(process.cwd(), true, { info: () => {}, error: console.error });
+/** Load .env.local the way `next dev` does. Anything already in the real
+ *  environment wins, so CI and one-off overrides keep working. */
+function loadEnvLocal(file = ".env.local") {
+  if (!existsSync(file)) return;
+  for (const raw of readFileSync(file, "utf8").split(/\r?\n/)) {
+    const line = raw.trim();
+    if (!line || line.startsWith("#")) continue;
+    const eq = line.indexOf("=");
+    if (eq < 1) continue;
+    const key = line.slice(0, eq).trim().replace(/^export\s+/, "");
+    if (process.env[key] !== undefined) continue;
+    let value = line.slice(eq + 1).trim();
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1);
+    }
+    process.env[key] = value;
+  }
+}
+
+loadEnvLocal();
 
 const args = Object.fromEntries(
   process.argv.slice(2).reduce<[string, string][]>((acc, a, i, all) => {
