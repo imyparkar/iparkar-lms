@@ -14,11 +14,19 @@
    update public.profiles set role = 'admin' where username = 'your-username';
    ```
 
-## 2. Import the ASP bank
-1. Download `ASP11_item_bank.md` from the Claude project into `imports/` (git-ignored — never commit premium items to the public repo).
-2. Dry run: `npm run import:bank -- --file imports/ASP11_item_bank.md --course ASP --dry-run`
-3. Import as drafts: `ADMIN_EMAIL=… ADMIN_PASSWORD=… npm run import:bank -- --file imports/ASP11_item_bank.md --course ASP --status draft`
+## 2. Import an item bank
+1. Put the bank file in `imports/` (the whole folder is git-ignored — never commit premium items to the public repo).
+2. Dry run, which parses the file and needs no credentials:
+   `npm run import:bank -- --file imports/ASP11_item_bank.md --course ASP --dry-run`
+3. Import:
+   `ADMIN_EMAIL=… ADMIN_PASSWORD=… npm run import:bank -- --file imports/ASP11_item_bank.md --course ASP --status draft`
    (or use **Admin → Import** in the browser).
+   The Supabase URL and anon key come from `.env.local`, the same file `next dev` reads, so the
+   script and the app always target the same project; only the admin credentials are passed in.
+   The script prints which project it is importing into before it signs in — check that line.
+   **Re-importing an existing bank:** rows are matched on `external_ref` and updated in place, but
+   `--status` is applied to every row, so use `--status published` for a bank that is already live.
+   `--status draft` would withdraw it from circulation.
 4. Review, then publish in **Admin → Questions** (bulk publish checks key + explanation).
 5. **Admin → Overview** shows readiness per domain. When every ASP domain is "Ready", tick **Exams enabled**.
 6. Before public release: verify the ASP weightings against the official BCSP blueprint, then mark the blueprint *Verified* in **Admin → Blueprints**.
