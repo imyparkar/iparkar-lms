@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import type { MyCourse } from "@/lib/types";
+import { ACCESS_PLANS } from "@/lib/payments/plans";
 import { paddleConfig, priceForCourse } from "@/lib/payments/config";
 import { fmtDate } from "@/lib/format";
 import { allocate } from "@/lib/exam/allocation";
@@ -33,7 +34,9 @@ export default async function CoursePage({ params }: { params: Promise<{ code: s
   const subjectExam = course.exams?.find((e) => e.mode === "subject");
   const subjects = course.subject_areas ?? [];
   const alloc = mixed && bp?.domains ? allocate(bp.domains.map((d) => ({ number: d.number, weight: Number(d.weight) })), mixed.question_count) : [];
-  const buy = paddleConfig().enabled && priceForCourse(course.code) && course.exams_enabled ? `/checkout/${course.code}` : null;
+  const config = paddleConfig();
+  const plans = config.enabled && course.exams_enabled ? ACCESS_PLANS.filter(plan => priceForCourse(course.code, plan.days)) : [];
+  const buy = plans.length > 0;
 
   return (
     <div className="space-y-8">
@@ -53,13 +56,13 @@ export default async function CoursePage({ params }: { params: Promise<{ code: s
         <section className="rounded-card bg-marigold p-8">
           <h2 className="text-heading-sm">Unlock the {course.code} question bank</h2>
           <p className="mt-2 max-w-2xl">Full bank access includes the timed mixed exam, subject-area practice sets, the on-screen calculator, explanations and course analytics.</p>
-          <div className="mt-5 flex flex-wrap gap-3">
-            {buy ? (
-              <a href={buy} className="btn-dark">Get {course.code} access</a>
-            ) : (
-              <a href={`mailto:imran@iparkar.com?subject=${encodeURIComponent(course.code + " premium access")}`} className="btn-dark">Ask about {course.code} access</a>
-            )}
-          </div>
+          {config.environment === "sandbox" && <p className="mt-4 text-body-sm font-semibold">Sandbox - test payments only</p>}
+          {buy ? <div className="mt-6 grid gap-4 md:grid-cols-3">{plans.map(plan => <article key={plan.days} className={`rounded-card p-5 ${plan.days===365 ? "bg-midnight text-white" : "bg-white"}`}>
+            <span className="text-caption font-semibold">{plan.badge}</span><h3 className="mt-3 text-lg font-semibold">{plan.name}</h3>
+            <p className="mt-4 text-3xl font-semibold">US${Number(plan.amount)/100}</p><p className="mt-2 text-body-sm">{plan.days} days of access</p>
+            <Link href={`/checkout/${course.code}?days=${plan.days}`} className={`mt-5 inline-flex ${plan.days===365 ? "btn-primary" : "btn-dark"}`}>Choose {plan.days} days</Link>
+          </article>)}</div> : <a href={`mailto:support@iparkar.com?subject=${encodeURIComponent(course.code + " premium access")}`} className="btn-dark mt-5">Ask about {course.code} access</a>}
+          <p className="mt-4 text-caption">One-time payment. No automatic renewal. All durations include the same features for this exam. Applicable taxes are shown at checkout.</p>
           <p className="mt-4 text-caption">{buy ? "Access is granted automatically once the payment provider confirms your payment." : "Online checkout is not yet available for this package. Contact us for availability."}</p>
         </section>
       ) : !course.exams_enabled ? (

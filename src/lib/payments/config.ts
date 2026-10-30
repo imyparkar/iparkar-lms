@@ -11,6 +11,7 @@ export function paddleConfig() {
   }
   return { environment, token, apiKey, enabled, base: environment === "sandbox" ? "https://sandbox-api.paddle.com" : "https://api.paddle.com" };
 }
-export function priceForCourse(code: string) {
-  return ({ASP: process.env.PADDLE_PRICE_ID_ASP, CSP: process.env.PADDLE_PRICE_ID_CSP, CIH: process.env.PADDLE_PRICE_ID_CIH} as Record<string,string|undefined>)[code];
+export function priceForCourse(code: string, days = 90) {
+  if (!["ASP", "CSP", "CIH"].includes(code) || ![90, 180, 365].includes(days)) return undefined;
+  return process.env[`PADDLE_PRICE_ID_${code}${days === 90 ? "" : `_${days}`}`];
 }

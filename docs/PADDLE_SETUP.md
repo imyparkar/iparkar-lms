@@ -85,3 +85,24 @@ Official implementation references:
 - https://developer.paddle.com/webhooks/about/signature-verification/
 - https://developer.paddle.com/webhooks/transactions/transaction-completed/
 - https://developer.paddle.com/webhooks/adjustments/adjustment-updated/
+
+## Extended durations (sandbox)
+
+The staging checkout supports 90 / 180 / 365 days at USD 99 / 149 / 199,
+all one-time. Course pages show only durations with a configured price.
+Use `/checkout/ASP?days=180` (or CSP/CIH and 365). The API accepts
+`{course: "ASP", days: 180}`; omitted days retain the existing 90-day offer.
+The server resolves the price ID, rejects mismatched access-days mappings,
+and checks the returned transaction's amount, currency, quantity and billing model.
+The signed-in user and course are bound to the private checkout session.
+
+The six new staging mappings are recorded in
+`scripts/seed-extended-sandbox-prices.sql`. This is a staging data seed, not a
+schema migration. The existing atomic webhook processor grants the session's
+stored duration; no database function change is required. Existing active access
+blocks a second checkout, so these are new purchases, not pay-the-difference upgrades.
+
+Configure `PADDLE_PRICE_ID_ASP_180`, `PADDLE_PRICE_ID_ASP_365` and the equivalent
+CSP/CIH variables. The preview configuration contains only sandbox price IDs and
+points to `iparkar-lms-staging`; never use these IDs in production. The marketing
+site continues to use Request access for extended plans until live checkout is ready.

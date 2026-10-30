@@ -1,10 +1,19 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { requireUser } from "@/lib/auth/session";
+import { paddleConfig } from "@/lib/payments/config";
+import { accessPlan } from "@/lib/payments/plans";
 import { Checkout } from "./Checkout";
-export default async function CheckoutPage({params}:{params:Promise<{code:string}>}) {
+export default async function CheckoutPage({params,searchParams}:{params:Promise<{code:string}>;searchParams:Promise<{days?:string}>}) {
   const code=(await params).code.toUpperCase();
-  if(!["ASP","CSP","CIH"].includes(code)) notFound();
+  const plan=accessPlan(Number((await searchParams).days ?? 90));
+  if(!["ASP","CSP","CIH"].includes(code)||!plan) notFound();
   await requireUser();
-  return <div className="mx-auto max-w-2xl space-y-6"><Link className="link" href={`/courses/${code}`}>Back to {code}</Link><h1 className="text-3xl font-semibold">Get {code} exam access</h1><p>Complete the secure Paddle checkout to purchase your exam package. Access is activated after payment is verified. The checkout shows the final price, currency and taxes before you pay.</p><Checkout code={code}/></div>;
+  const sandbox=paddleConfig().environment === "sandbox";
+  return <div className="mx-auto max-w-2xl space-y-6"><Link className="link" href={`/courses/${code}`}>Back to {code}</Link>
+    {sandbox && <p className="rounded-card bg-marigold p-4 font-semibold">Sandbox checkout - test payments only</p>}
+    <h1 className="text-3xl font-semibold">{code} {plan.name}</h1>
+    <p className="text-xl font-semibold">US${Number(plan.amount)/100} / {plan.days} days of access</p>
+    <p>One-time payment. No automatic renewal. The final price and applicable taxes are shown before payment. Access starts after payment is verified.</p>
+    <Checkout code={code} days={plan.days}/></div>;
 }

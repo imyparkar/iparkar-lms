@@ -15,6 +15,12 @@
       "PADDLE_CHECKOUT_ENABLED": "true",
       "PADDLE_CLIENT_TOKEN": "test_f1658f7af7c5fdda82e9207f03d",
       "PADDLE_ENVIRONMENT": "sandbox",
+      "PADDLE_PRICE_ID_ASP_180": "pri_01m66x0akj5et6920nbv3hb2az",
+      "PADDLE_PRICE_ID_ASP_365": "pri_01m66x0av28bg4wqc6trbr8av1",
+      "PADDLE_PRICE_ID_CSP_180": "pri_01m66x0ba4tzb95q7t2g67jmwy",
+      "PADDLE_PRICE_ID_CSP_365": "pri_01m66x0bj4p4n7shasnvwtrnsj",
+      "PADDLE_PRICE_ID_CIH_180": "pri_01m66x0c04wf2vmb5ch9d2rdkz",
+      "PADDLE_PRICE_ID_CIH_365": "pri_01m66x0c7bvhjdvfx4dzp0vf6q",
       "PADDLE_PRICE_ID_ASP": "pri_01m61wt2qqwq6cgxw2jf4qmwv0",
       "PADDLE_PRICE_ID_CIH": "pri_01m61wwxkeedn3a70x99xc208h",
       "PADDLE_PRICE_ID_CSP": "pri_01m61wvpxdmgygfpt5cvzqt5kt"
