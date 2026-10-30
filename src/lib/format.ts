@@ -7,7 +7,8 @@ export const fmtDate = (iso: string | null | undefined) => (iso ? dateFmt.format
 export const fmtDateTime = (iso: string | null | undefined) => (iso ? dateTimeFmt.format(new Date(iso)) : "—");
 export const fmtPct = (n: number | null | undefined, digits = 0) =>
   n == null ? "—" : `${Number(n).toFixed(digits).replace(/\.0+$/, "")}%`;
-export const modeLabel = (m: string) => (m === "mixed" ? "Full mixed exam" : "Domain exam");
+export const modeLabel = (m: string) =>
+  m === "mixed" ? "Full mixed exam" : m === "subject" ? "Subject-area practice" : "Domain exam";
 export const letter = (i: number) => String.fromCharCode(65 + i);
 
 /** Human messages for RPC error codes. */
@@ -21,6 +22,7 @@ export const RPC_ERRORS: Record<string, string> = {
   BLUEPRINT_WEIGHTS_INVALID: "This course’s blueprint is being updated. Try again later.",
   MODE_NOT_AVAILABLE: "This exam mode isn’t available for the course.",
   INVALID_DOMAIN: "Choose a domain from this course.",
+  INVALID_SUBJECT: "Choose a subject area from this course.",
   ACTIVE_ATTEMPT: "You already have an exam in progress for this course.",
   INSUFFICIENT_QUESTIONS: "There aren’t enough published questions to build this exam yet.",
   NOT_FOUND: "Exam not found.",

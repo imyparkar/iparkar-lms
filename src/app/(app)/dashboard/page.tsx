@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/auth/session";
-import type { CourseAnalytics, MyCourse } from "@/lib/types";
+import type { CourseAnalytics, MyCourse, SubjectPerformance } from "@/lib/types";
 import { fmtDate, fmtPct, modeLabel } from "@/lib/format";
 import { Pill } from "@/components/ui/Pill";
 import { Alert } from "@/components/ui/Alert";
@@ -38,9 +38,14 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   const active = courses.find((c) => c.active_attempt_id);
 
   let analytics: CourseAnalytics | null = null;
+  let subjects: SubjectPerformance[] = [];
   if (selected?.has_access) {
-    const { data } = await supabase.rpc("get_course_analytics", { p_course: selected.id, p_blueprint: null });
+    const [{ data }, { data: subjectData }] = await Promise.all([
+      supabase.rpc("get_course_analytics", { p_course: selected.id, p_blueprint: null }),
+      supabase.rpc("get_course_subject_analytics", { p_course: selected.id }),
+    ]);
     if (data?.ok) analytics = data as CourseAnalytics;
+    if (Array.isArray(subjectData)) subjects = subjectData as SubjectPerformance[];
   }
 
   return (
@@ -133,7 +138,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
               </nav>
             )}
           </div>
-          <CourseAnalyticsPanel a={analytics} courseCode={selected.code} courseName={selected.name} />
+          <CourseAnalyticsPanel a={analytics} subjects={subjects} courseCode={selected.code} courseName={selected.name} />
         </section>
       )}
     </div>

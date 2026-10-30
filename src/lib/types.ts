@@ -1,5 +1,6 @@
 /** Shapes returned by the database RPCs (see supabase/migrations). */
-export type ExamMode = "mixed" | "domain";
+export type ExamMode = "mixed" | "domain" | "subject";
+export type SubjectArea = { subject_area: string; published: number };
 export type FeedbackPolicy = "immediate" | "after_submit" | "delayed" | "restricted";
 
 export type BlueprintDomain = { id: string; code: string; number: number; name: string; weight: number };
@@ -24,6 +25,15 @@ export type MyCourse = {
     domains: BlueprintDomain[] | null;
   } | null;
   exams: { mode: ExamMode; title: string; question_count: number; duration_minutes: number; feedback_policy: FeedbackPolicy }[] | null;
+  subject_areas: SubjectArea[] | null;
+};
+
+export type SubjectPerformance = {
+  subject_area: string;
+  total: number;
+  correct: number;
+  pct: number;
+  attempts?: number;
 };
 
 export type AttemptQuestion = {
