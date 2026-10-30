@@ -57,9 +57,10 @@ export default async function CoursePage({ params }: { params: Promise<{ code: s
             {buy ? (
               <a href={buy} className="btn-dark">Get {course.code} access</a>
             ) : (
-              <a href={`mailto:imran@iparkar.com?subject=${encodeURIComponent(course.code + " premium access")}`} className="btn-dark">Ask about {course.code} access</a>
+              <a href={`mailto:support@iparkar.com?subject=${encodeURIComponent(course.code + " premium access")}`} className="btn-dark">Ask about {course.code} access</a>
             )}
           </div>
+          <p className="mt-4 text-body-sm">One-time payment. No automatic renewal. <a className="link" href="https://iparkar.com/practice-exams/">View course pricing, access periods and included features</a>.</p>
           <p className="mt-4 text-caption">Access is granted automatically once the payment provider confirms your payment.</p>
         </section>
       ) : !course.exams_enabled ? (

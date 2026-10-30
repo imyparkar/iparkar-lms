@@ -46,7 +46,7 @@ export default async function AccountPage() {
           </table>
         )}
       </section>
-      <p className="text-body-sm text-graphite">To delete your account and data, email <a className="link" href="mailto:imran@iparkar.com">imran@iparkar.com</a>.</p>
+      <p className="text-body-sm text-graphite">To delete your account and data, email <a className="link" href="mailto:support@iparkar.com">support@iparkar.com</a>.</p>
     </div>
   );
 }

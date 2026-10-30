@@ -78,7 +78,7 @@ export async function signIn(_prev: FormState, form: FormData): Promise<FormStat
   const { data: profile } = await supabase.from("profiles").select("status").eq("id", data.user.id).single();
   if (profile?.status !== "active") {
     await supabase.auth.signOut();
-    return { error: "This account is suspended. Contact imran@iparkar.com." };
+    return { error: "This account is suspended. Contact support@iparkar.com." };
   }
   redirect(safeNext(form.get("next")));
 }

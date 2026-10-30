@@ -67,7 +67,7 @@ Merge the `iparkar-site` change (Practice tab → `https://app.iparkar.com/cours
 
 ## 7. Privacy and retention (fill in before launch)
 - Data held: name, username, email, exam answers/scores, entitlement and payment metadata (no card data — Paddle holds it).
-- Deletion requests to imran@iparkar.com: delete the auth user (cascades to profile, attempts, entitlements); payments keep `user_id = null` for accounting.
+- Deletion requests to support@iparkar.com: delete the auth user (cascades to profile, attempts, entitlements); payments keep `user_id = null` for accounting.
 - Suggested retention: attempts kept while the account is active + 2 years; audit logs 2 years; rate-limit rows 1 day (automatic).
 - Update `privacy.html`, `terms.html`, `refunds.html` on the marketing site to describe the LMS and Paddle as merchant of record; have them legally reviewed.
 
