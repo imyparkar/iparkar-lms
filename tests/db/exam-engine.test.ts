@@ -8,14 +8,23 @@ const ASP = { D1: 10, D2: 25, D3: 8, D4: 12, D5: 10, D6: 12, D7: 7, D8: 11, D9: 
 const CSP = { D1: 25, D2: 25, D3: 15, D4: 9, D5: 6, D6: 10, D7: 10 };
 const CIH = { I: 50, II: 35, III: 15 };
 const CIH_TASKS = { I: ["I-T1", "I-T2", "I-T3", "I-T4"], II: ["II-T1", "II-T2", "II-T3"], III: ["III-T1", "III-T2"] };
+// BGC subject areas cut across the blueprint domains. The fixture keeps each
+// one inside a single domain so a subject draw can be checked against a domain.
+const CIH_TOPICS = {
+  I: ["Air Sampling and Instrumentation", "Toxicology"],
+  II: ["Engineering Controls/Ventilation"],
+  III: ["IH Program Management"],
+};
 
 let db: DB;
 let admin: string, alice: string, bob: string, carol: string;
 const ids: Record<string, string> = {};
 const bps: Record<string, string> = {};
 
-const start = (uid: string, course: string, mode: "mixed" | "domain", domain: string | null = null, bp?: string) =>
-  rpc(db, uid, "start_attempt", [ids[course], bp ?? bps[course], mode, domain], ["uuid", "uuid", "exam_mode", "uuid"]);
+const start = (uid: string, course: string, mode: "mixed" | "domain" | "subject",
+               domain: string | null = null, bp?: string, subject: string | null = null) =>
+  rpc(db, uid, "start_attempt", [ids[course], bp ?? bps[course], mode, domain, subject],
+      ["uuid", "uuid", "exam_mode", "uuid", "text"]);
 
 async function attemptRows(attempt: string) {
   return (
@@ -48,7 +57,7 @@ beforeAll(async () => {
     Object.fromEntries(Object.entries(w).map(([d, n]) => [d, Math.max(24, Math.ceil(n * 1.5))]));
   await seedCourse(db, admin, "ASP", bank(ASP));
   await seedCourse(db, admin, "CSP", bank(CSP));
-  await seedCourse(db, admin, "CIH", bank(CIH), CIH_TASKS);
+  await seedCourse(db, admin, "CIH", bank(CIH), CIH_TASKS, CIH_TOPICS);
 }, 120_000);
 
 describe("blueprint allocation (largest remainder)", () => {
@@ -187,18 +196,41 @@ describe("mandatory course-isolation tests", () => {
     expect((await rpc(db, bob, "get_attempt", [aspAttempt], ["uuid"])).error).toBe("NOT_FOUND");
   });
 
-  it("5. CIH domain exams draw only from the selected domain, balanced across its tasks", async () => {
-    const domainII = await domainId(db, "CIH", "II");
-    const r = await start(carol, "CIH", "domain", domainII);
+  it("5. CIH subject-area practice draws only from the selected subject area", async () => {
+    // domain practice is retired for CIH; subject-area practice replaces it
+    expect((await start(carol, "CIH", "domain", await domainId(db, "CIH", "II"))).error)
+      .toBe("MODE_NOT_AVAILABLE");
+
+    const r = await start(carol, "CIH", "subject", null, undefined, "Engineering Controls/Ventilation");
     expect(r.ok).toBe(true);
     const rows = await attemptRows(r.attempt_id);
     expect(rows).toHaveLength(20);
+    expect(new Set(rows.map((x) => x.q_course))).toEqual(new Set(["CIH"]));
+    // every drawn question carries the subject that was asked for
+    const topics = (await db.query<{ topic: string }>(
+      `select distinct q.topic from attempt_questions aq
+         join questions q on q.id = aq.question_id where aq.attempt_id = $1`, [r.attempt_id])).rows;
+    expect(topics.map((t) => t.topic)).toEqual(["Engineering Controls/Ventilation"]);
+    // the fixture keeps that subject inside domain II, so the draw stays there
     expect(new Set(rows.map((x) => x.domain_code))).toEqual(new Set(["II"]));
-    const byTask: Record<string, number> = {};
-    rows.forEach((x) => (byTask[x.task_code!] = (byTask[x.task_code!] ?? 0) + 1));
-    expect(Object.keys(byTask).sort()).toEqual(["II-T1", "II-T2", "II-T3"]);
-    Object.values(byTask).forEach((n) => expect(n).toBeGreaterThanOrEqual(6));
     await rpc(db, carol, "submit_attempt", [r.attempt_id], ["uuid"]);
+  });
+
+  it("5b. a subject area with fewer questions than the exam length serves what it has", async () => {
+    await importAndPublish(db, admin, "CIH",
+      syntheticItems("CIH", "III", 6, ["III-T1"], ["Analytical Chemistry"]));
+    const r = await start(carol, "CIH", "subject", null, undefined, "Analytical Chemistry");
+    expect(r.ok).toBe(true);
+    expect(await attemptRows(r.attempt_id)).toHaveLength(6);
+    await rpc(db, carol, "submit_attempt", [r.attempt_id], ["uuid"]);
+  });
+
+  it("5c. an unknown or empty subject area is refused", async () => {
+    expect((await start(carol, "CIH", "subject", null, undefined, "Nonexistent Area")).error)
+      .toBe("INSUFFICIENT_QUESTIONS");
+    expect((await start(carol, "CIH", "subject")).error).toBe("INVALID_SUBJECT");
+    // a subject area cannot be smuggled into a mixed exam
+    expect((await start(carol, "CIH", "mixed", null, undefined, "Toxicology")).error).toBe("INVALID_DOMAIN");
   });
 
   it("rejects a domain exam for a domain outside the course", async () => {
@@ -210,10 +242,10 @@ describe("mandatory course-isolation tests", () => {
     const asp = await rpc(db, carol, "get_course_analytics", [ids.ASP, null], ["uuid", "uuid"]);
     const cih = await rpc(db, carol, "get_course_analytics", [ids.CIH, null], ["uuid", "uuid"]);
     expect(asp.summary.completed).toBe(0);
-    expect(cih.summary.completed).toBe(2);
+    expect(cih.summary.completed).toBe(3);
     expect(asp.domains.map((d: any) => d.code)).toEqual(["D1", "D2", "D3", "D4", "D5", "D6", "D7", "D8", "D9"]);
     expect(cih.domains.map((d: any) => d.code)).toEqual(["I", "II", "III"]);
-    expect(cih.domains.find((d: any) => d.code === "II").total).toBe(35 + 20);
+    expect(cih.domains.find((d: any) => d.code === "II").total).toBe(35 + 20);  // mixed + subject draw, both in II
     expect(cih.tasks.every((t: any) => t.code.match(/^(I|II|III)-T\d$/))).toBe(true);
   });
 });
