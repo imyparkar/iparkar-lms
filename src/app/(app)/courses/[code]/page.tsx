@@ -7,7 +7,7 @@ import { fmtDate } from "@/lib/format";
 import { allocate } from "@/lib/exam/allocation";
 import { Pill } from "@/components/ui/Pill";
 import { Alert } from "@/components/ui/Alert";
-import { StartDomain, StartMixed } from "./StartExam";
+import { StartDomain, StartMixed, StartSubject } from "./StartExam";
 
 export async function generateMetadata({ params }: { params: Promise<{ code: string }> }) {
   return { title: (await params).code.toUpperCase() };
@@ -30,6 +30,8 @@ export default async function CoursePage({ params }: { params: Promise<{ code: s
   const bp = course.blueprint;
   const mixed = course.exams?.find((e) => e.mode === "mixed");
   const domainExam = course.exams?.find((e) => e.mode === "domain");
+  const subjectExam = course.exams?.find((e) => e.mode === "subject");
+  const subjects = course.subject_areas ?? [];
   const alloc = mixed && bp?.domains ? allocate(bp.domains.map((d) => ({ number: d.number, weight: Number(d.weight) })), mixed.question_count) : [];
   const buy = paddleConfig().enabled && priceForCourse(course.code) && course.exams_enabled ? `/checkout/${course.code}` : null;
 
@@ -50,7 +52,7 @@ export default async function CoursePage({ params }: { params: Promise<{ code: s
       {!course.has_access ? (
         <section className="rounded-card bg-marigold p-8">
           <h2 className="text-heading-sm">Unlock the {course.code} question bank</h2>
-          <p className="mt-2 max-w-2xl">Full bank access includes timed mixed and domain exams, the on-screen calculator, explanations and course analytics.</p>
+          <p className="mt-2 max-w-2xl">Full bank access includes the timed mixed exam, subject-area practice sets, the on-screen calculator, explanations and course analytics.</p>
           <div className="mt-5 flex flex-wrap gap-3">
             {buy ? (
               <a href={buy} className="btn-dark">Get {course.code} access</a>
@@ -82,6 +84,26 @@ export default async function CoursePage({ params }: { params: Promise<{ code: s
               </ul>
               <div className="mt-auto pt-6">
                 <StartMixed courseId={course.id} blueprintId={bp.id} count={mixed.question_count} minutes={mixed.duration_minutes} />
+              </div>
+            </section>
+          )}
+          {subjectExam && (
+            <section className="card flex flex-col">
+              <h2 className="text-heading-sm">{subjectExam.title}</h2>
+              <ul className="mt-3 space-y-1 text-body-sm text-graphite">
+                <li>{subjectExam.question_count} questions from one BGC subject area</li>
+                <li>{subjectExam.duration_minutes}-minute countdown</li>
+                <li>{POLICY[subjectExam.feedback_policy]}</li>
+              </ul>
+              <div className="mt-auto pt-6">
+                {subjects.length > 0 ? (
+                  <StartSubject courseId={course.id} blueprintId={bp.id} subjects={subjects}
+                                count={subjectExam.question_count} minutes={subjectExam.duration_minutes} />
+                ) : (
+                  <Alert tone="info" title="No subject areas published yet">
+                    Subject-area practice opens once questions carrying a subject area are published.
+                  </Alert>
+                )}
               </div>
             </section>
           )}
