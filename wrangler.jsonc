@@ -12,7 +12,7 @@
       "NEXT_PUBLIC_SUPABASE_URL": "https://gyfkyaclmrvfbgyqkukn.supabase.co",
       "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5Zmt5YWNsbXJ2ZmJneXFrdWtuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMyMTEwMTAsImV4cCI6MjEwODc4NzAxMH0.Kp4lNA-J9BZnzXbySM95eMDYUYZZCYAjSAmUHtBjY_8",
       "NEXT_PUBLIC_SITE_URL": "https://payments-paddle-exam-packages-iparkar-lms.z2smxcynhy.workers.dev",
-      "PADDLE_CHECKOUT_ENABLED": "false",
+      "PADDLE_CHECKOUT_ENABLED": "true",
       "PADDLE_CLIENT_TOKEN": "test_f1658f7af7c5fdda82e9207f03d",
       "PADDLE_ENVIRONMENT": "sandbox",
       "PADDLE_PRICE_ID_ASP": "pri_01m61wt2qqwq6cgxw2jf4qmwv0",
