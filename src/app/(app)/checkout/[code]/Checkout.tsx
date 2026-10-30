@@ -1,7 +1,6 @@
 "use client";
 import Script from "next/script";
 import { useState, useRef } from "react";
-import Link from "next/link";
 type Paddle = {Environment:{set:(env:string)=>void};Initialize:(settings:{token:string;eventCallback:(event:{name:string})=>void})=>void;Checkout:{open:(settings:{transactionId:string})=>void}};
 declare global {interface Window {Paddle?:Paddle}}
 export function Checkout({code,days}:{code:string;days:number}) {
@@ -25,5 +24,5 @@ export function Checkout({code,days}:{code:string;days:number}) {
     } catch(error) {setMessage(error instanceof Error?error.message:"Unable to open checkout");}
     finally {setBusy(false);}
   }
-  return <><Script src="https://cdn.paddle.com/paddle/v2/paddle.js" onReady={()=>setReady(true)} onError={()=>setMessage("Secure checkout could not load. Please try again later.")}/><button className="btn-primary" onClick={open} disabled={!ready||busy||completed}>{busy?"Preparing checkout…":"Continue to secure checkout"}</button><p role="status" aria-live="polite">{message}</p>{completed&&<Link className="btn-dark" href={`/courses/${code}`}>Check my {code} access</Link>}<p className="text-caption text-graphite">Closing or completing the checkout screen does not itself grant access. You can return to your course after payment confirmation.</p></>;
+  return <><Script src="https://cdn.paddle.com/paddle/v2/paddle.js" onReady={()=>setReady(true)} onError={()=>setMessage("Secure checkout could not load. Please try again later.")}/><button className="btn-primary" onClick={open} disabled={!ready||busy||completed}>{busy?"Preparing checkout…":"Continue to secure checkout"}</button><p role="status" aria-live="polite">{message}</p>{completed&&<a className="btn-dark" href={`/courses/${code}`}>Check my {code} access</a>}<p className="text-caption text-graphite">Closing or completing the checkout screen does not itself grant access. You can return to your course after payment confirmation.</p></>;
 }
