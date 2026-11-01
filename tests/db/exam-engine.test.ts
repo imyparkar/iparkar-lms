@@ -505,3 +505,35 @@ describe("admin user search", () => {
     expect(res.users[0].entitlements.map((e: any) => e.course_code).sort()).toEqual(["ASP", "CSP"]);
   });
 });
+
+describe("cancel an exam in progress", () => {
+  it("discards the attempt for its owner only, frees the slot, and refuses finalized attempts", async () => {
+    const erin = await createUser(db, { username: "erin" });
+    await grant(db, erin, "ASP");
+    const bp = await currentBlueprint(db, "ASP"); // earlier tests may have versioned the blueprint
+    const r = await start(erin, "ASP", "mixed", null, bp);
+    expect(r.ok).toBe(true);
+    const att = await rpc(db, erin, "get_attempt", [r.attempt_id], ["uuid"]);
+    const q = att.questions[0];
+    expect((await rpc(db, erin, "save_answer", [r.attempt_id, q.question_id, q.options[0].id, 1],
+      ["uuid", "uuid", "uuid", "bigint"])).ok).toBe(true);
+
+    // someone else cannot cancel it
+    expect((await rpc(db, bob, "cancel_attempt", [r.attempt_id], ["uuid"])).error).toBe("NOT_FOUND");
+
+    expect((await rpc(db, erin, "cancel_attempt", [r.attempt_id], ["uuid"])).ok).toBe(true);
+    for (const t of ["exam_attempts where id", "attempt_questions where attempt_id", "attempt_answers where attempt_id"]) {
+      expect((await db.query(`select 1 from ${t} = $1`, [r.attempt_id])).rows).toHaveLength(0);
+    }
+    expect((await db.query(`select 1 from audit_logs where action = 'attempt.cancel' and entity_id = $1`,
+      [r.attempt_id])).rows).toHaveLength(1);
+    expect((await rpc(db, erin, "get_attempt", [r.attempt_id], ["uuid"])).error).toBe("NOT_FOUND");
+
+    // the active-attempt slot is free again, and a submitted attempt cannot be cancelled
+    const r2 = await start(erin, "ASP", "mixed", null, bp);
+    expect(r2.ok).toBe(true);
+    await rpc(db, erin, "submit_attempt", [r2.attempt_id], ["uuid"]);
+    expect((await rpc(db, erin, "cancel_attempt", [r2.attempt_id], ["uuid"])).error).toBe("ATTEMPT_CLOSED");
+    expect((await db.query(`select 1 from exam_attempts where id = $1`, [r2.attempt_id])).rows).toHaveLength(1);
+  });
+});
