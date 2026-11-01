@@ -32,6 +32,8 @@ jobs:
       DB_URL: ${{ secrets.SUPABASE_DB_URL }}
       PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
       SUPABASE_URL: https://nuulrizfgygpmnnjscvh.supabase.co
+      # Publishable (public) key — the same one the quiz site sends to browsers; safe to commit.
+      SUPABASE_PUBLISHABLE_KEY: sb_publishable_2DMJkOwhBAEnOvY-hlZktg_8eEiG9v4
     steps:
       - name: Check secrets
         run: |
@@ -43,8 +45,9 @@ jobs:
 
       - name: Keep-alive ping (Auth API)
         run: |
-          code=$(curl -s -o /dev/null -w '%{http_code}' "$SUPABASE_URL/auth/v1/health")
+          code=$(curl -s -o /dev/null -w '%{http_code}' -H "apikey: $SUPABASE_PUBLISHABLE_KEY" "$SUPABASE_URL/auth/v1/health")
           echo "Auth health: HTTP $code"
+          if [ "$code" != "200" ]; then echo "::warning::Keep-alive ping returned HTTP $code"; fi
 
       - uses: supabase/setup-cli@v1
         with:
