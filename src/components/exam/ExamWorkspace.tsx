@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Calculator as CalcIcon, ChevronLeft, ChevronRight, Flag, Maximize2, Minimize2, LayoutGrid, Check, CloudOff, Loader2 } from "lucide-react";
+import { Calculator as CalcIcon, ChevronLeft, ChevronRight, Flag, Maximize2, Minimize2, LayoutGrid, Check, CloudOff, Loader2, LogOut, X, Send } from "lucide-react";
 import type { AttemptPayload, AttemptQuestion } from "@/lib/types";
 import { getBrowserClient } from "@/lib/supabase/client";
 import { clockLevel, createSync, formatClock, remainingMs, type ClockSync } from "@/lib/exam/clock";
@@ -10,6 +10,7 @@ import { Calculator } from "./Calculator";
 import { useAnswerSync } from "./useAnswerSync";
 import { QuestionNav, type NavFilter } from "./QuestionNav";
 import { SubmitDialog } from "./SubmitDialog";
+import { ConfirmDialog } from "./ConfirmDialog";
 
 type QState = { selected: string | null; flagged: boolean; locked: boolean; feedback: AttemptQuestion["feedback"] };
 
@@ -22,9 +23,13 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
     Object.fromEntries(questions.map((q) => [q.question_id, { selected: q.selected_option_id, flagged: q.flagged, locked: q.locked, feedback: q.feedback }])));
   const [draft, setDraft] = useState<Record<string, string | null>>({}); // immediate mode: selection before "Check"
   const [calcOpen, setCalcOpen] = useState(false);
-  const [navOpen, setNavOpen] = useState(false);
+  const [navOpen, setNavOpen] = useState(false); // navigator is hidden until the student asks for it
   const [filter, setFilter] = useState<NavFilter>("all");
   const [confirm, setConfirm] = useState(false);
+  const [exitOpen, setExitOpen] = useState(false);
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [leaving, setLeaving] = useState<null | "exit" | "cancel">(null);
+  const leavingRef = useRef(false); // set while Save & Exit / Cancel is navigating away
   const [submitting, setSubmitting] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [fullscreen, setFullscreen] = useState(false);
@@ -39,6 +44,7 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
   }, [router, attempt.id]);
 
   const onClosed = useCallback((reason: string) => {
+    if (leavingRef.current) return; // a cancelled attempt is gone; don't bounce to its results
     setNotice(rpcMessage(reason));
     setTimeout(finishAndLeave, 1500);
   }, [finishAndLeave]);
@@ -108,7 +114,7 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
   }, [submitting, drain, markClosed, attempt.id, clearLocal, finishAndLeave]);
 
   useEffect(() => {
-    if (left <= 0 && !autoSubmitted.current) {
+    if (left <= 0 && !autoSubmitted.current && !leavingRef.current) {
       autoSubmitted.current = true;
       void submit(true);
     }
@@ -126,7 +132,6 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
 
   const go = useCallback((i: number) => {
     setIndex(Math.max(0, Math.min(questions.length - 1, i)));
-    setNavOpen(false);
   }, [questions.length]);
 
   useEffect(() => { stemRef.current?.focus({ preventScroll: false }); }, [index]);
@@ -164,8 +169,9 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement;
-      if (confirm || t.closest("[role=dialog]") || ["INPUT", "SELECT", "TEXTAREA"].includes(t.tagName) || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (confirm || exitOpen || cancelOpen || t.closest("[role=dialog], dialog") || ["INPUT", "SELECT", "TEXTAREA"].includes(t.tagName) || e.metaKey || e.ctrlKey || e.altKey) return;
       const k = e.key.toLowerCase();
+      if (k === "escape" && navOpen) { e.preventDefault(); setNavOpen(false); return; }
       const optIdx = "abcdefgh".indexOf(k) >= 0 ? "abcdefgh".indexOf(k) : "12345678".indexOf(k);
       if (optIdx >= 0 && optIdx < q.options.length) { e.preventDefault(); choose(q.options[optIdx].id); }
       else if (k === "arrowright" || k === "n") { e.preventDefault(); go(index + 1); }
@@ -174,7 +180,44 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [confirm, q.options, choose, go, index, toggleFlag]);
+  }, [confirm, exitOpen, cancelOpen, navOpen, q.options, choose, go, index, toggleFlag]);
+
+  const courseHref = `/courses/${encodeURIComponent(attempt.course.code)}`;
+
+  /** Save & Exit: answers already save as they're chosen — make sure the queue is empty, then leave. The attempt stays resumable. */
+  const saveAndExit = useCallback(async () => {
+    setLeaving("exit");
+    setNotice("Saving your answers…");
+    const ok = await drain(8000);
+    if (!ok) {
+      setNotice("Some changes haven’t reached the server yet. They’re kept on this device — check your connection and try Save & Exit again.");
+      setLeaving(null);
+      return;
+    }
+    leavingRef.current = true;
+    setExitOpen(false);
+    if (document.fullscreenElement) await document.exitFullscreen().catch(() => {});
+    router.replace(courseHref);
+  }, [drain, router, courseHref]);
+
+  /** Cancel: discard this attempt on the server (it won't appear in history or analytics), then leave. */
+  const cancelExam = useCallback(async () => {
+    setLeaving("cancel");
+    leavingRef.current = true;
+    const { data: r, error } = await getBrowserClient().rpc("cancel_attempt", { p_attempt: attempt.id });
+    if (error || !r?.ok) {
+      leavingRef.current = false;
+      setLeaving(null);
+      setCancelOpen(false);
+      setNotice(error ? "We couldn’t cancel the exam. Check your connection and try again." : rpcMessage(r?.error));
+      return;
+    }
+    markClosed();
+    clearLocal();
+    setCancelOpen(false);
+    if (document.fullscreenElement) await document.exitFullscreen().catch(() => {});
+    router.replace(courseHref);
+  }, [attempt.id, markClosed, clearLocal, router, courseHref]);
 
   const toggleFullscreen = async () => {
     try {
@@ -201,6 +244,12 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
             </p>
           </div>
           <SaveIndicator status={status} />
+          <button type="button" onClick={() => setNavOpen((o) => !o)} className="btn-ghost px-3" aria-pressed={navOpen}
+            aria-controls="question-navigator" aria-label={navOpen ? "Hide question navigator" : "Show question navigator"}>
+            <LayoutGrid size={16} aria-hidden />
+            <span className="hidden md:inline">{navOpen ? "Hide questions" : "Questions"}</span>
+            <span className="tabular-nums md:hidden">{index + 1}/{questions.length}</span>
+          </button>
           <button type="button" onClick={() => setCalcOpen((o) => !o)} className="btn-ghost px-3" aria-pressed={calcOpen}>
             <CalcIcon size={16} aria-hidden /><span className="hidden md:inline">{calcOpen ? "Hide calculator" : "Show calculator"}</span>
           </button>
@@ -220,10 +269,10 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
         <div role="status" className="bg-midnight px-4 py-2 text-center text-body-sm text-white">{notice}</div>
       )}
 
-      <div className="mx-auto flex w-full max-w-page flex-1 gap-6 px-3 py-6 sm:px-6">
-        {/* ---------- question ---------- */}
-        <main className="min-w-0 flex-1">
-          <article className="card mx-auto max-w-[820px] p-5 sm:p-8" aria-labelledby="stem">
+      <div className="flex w-full flex-1">
+        {/* ---------- question: fills the screen while the navigator is hidden ---------- */}
+        <main className="min-w-0 flex-1 px-3 py-6 sm:px-6">
+          <article className="card w-full p-5 sm:p-8" aria-labelledby="stem">
             <div className="flex items-center justify-between gap-3">
               <p className="text-caption text-slate">Question {index + 1} of {questions.length}</p>
               <button type="button" onClick={toggleFlag} aria-pressed={qs.flagged} disabled={submitting}
@@ -277,32 +326,49 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
           </article>
         </main>
 
-        {/* ---------- navigator (desktop) ---------- */}
-        <aside className="hidden w-[300px] shrink-0 lg:block" aria-label="Question navigator">
-          <div className="sticky top-24">
-            <QuestionNav questions={questions} state={state} current={index} onGo={go} filter={filter} setFilter={setFilter} />
-          </div>
-        </aside>
+        {/* ---------- navigator (desktop): shown on demand, pushes the question aside ---------- */}
+        {navOpen && (
+          <aside id="question-navigator" className="hidden w-[320px] shrink-0 border-l border-hairline bg-white lg:block" aria-label="Question navigator">
+            <div className="sticky top-16 max-h-[calc(100vh-4rem-73px)] overflow-y-auto p-4">
+              <div className="mb-2 flex justify-end">
+                <button type="button" className="btn-text px-2 py-1" onClick={() => setNavOpen(false)} aria-label="Hide question navigator">
+                  <X size={16} aria-hidden /> Hide
+                </button>
+              </div>
+              <QuestionNav questions={questions} state={state} current={index} onGo={go} filter={filter} setFilter={setFilter} />
+              <NavSubmit counts={counts} total={questions.length} disabled={submitting || !!leaving} onSubmit={() => setConfirm(true)} />
+            </div>
+          </aside>
+        )}
       </div>
 
-      {/* ---------- bottom bar ---------- */}
+      {/* ---------- bottom bar: Previous · Save & Exit / Cancel · Next (Submit on the last question) ---------- */}
       <footer className="sticky bottom-0 z-20 border-t border-hairline bg-white">
-        <div className="mx-auto flex max-w-page items-center justify-between gap-2 px-3 py-3 sm:px-6">
-          <div className="flex gap-2">
-            <button type="button" className="btn-outline" onClick={() => go(index - 1)} disabled={index === 0}>
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 py-3 sm:px-6">
+          <div className="justify-self-start">
+            <button type="button" className="btn-outline" onClick={() => go(index - 1)} disabled={index === 0} aria-label="Previous question">
               <ChevronLeft size={16} aria-hidden /> <span className="hidden sm:inline">Previous</span>
             </button>
-            <button type="button" className="btn-outline" onClick={() => go(index + 1)} disabled={index === questions.length - 1}>
-              <span className="hidden sm:inline">Next</span> <ChevronRight size={16} aria-hidden />
+          </div>
+          <div className="flex gap-2 justify-self-center">
+            <button type="button" className="btn-ghost px-3 sm:px-4" onClick={() => setExitOpen(true)} disabled={submitting || !!leaving}>
+              <LogOut size={16} aria-hidden className="hidden sm:block" /> Save &amp; Exit
             </button>
-            <button type="button" className="btn-ghost lg:hidden" onClick={() => setNavOpen(true)} aria-haspopup="dialog">
-              <LayoutGrid size={16} aria-hidden /> {index + 1}/{questions.length}
+            <button type="button" className="btn-text px-3 sm:px-4" onClick={() => setCancelOpen(true)} disabled={submitting || !!leaving}>
+              <X size={16} aria-hidden className="hidden sm:block" /> Cancel
             </button>
           </div>
-          <p className="hidden text-body-sm text-graphite md:block">
-            {counts.answered} answered · {questions.length - counts.answered} unanswered · {counts.flagged} flagged
-          </p>
-          <button type="button" className="btn-primary" onClick={() => setConfirm(true)} disabled={submitting}>Submit exam</button>
+          <div className="justify-self-end">
+            {index === questions.length - 1 ? (
+              <button type="button" className="btn-primary" onClick={() => setConfirm(true)} disabled={submitting || !!leaving}>
+                <Send size={16} aria-hidden className="hidden sm:block" /> <span>Submit<span className="hidden sm:inline"> exam</span></span>
+              </button>
+            ) : (
+              <button type="button" className="btn-outline" onClick={() => go(index + 1)} aria-label="Next question">
+                <span className="hidden sm:inline">Next</span> <ChevronRight size={16} aria-hidden />
+              </button>
+            )}
+          </div>
         </div>
       </footer>
 
@@ -311,7 +377,8 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
         <div className="fixed inset-0 z-40 flex items-end bg-ink/40 lg:hidden" onClick={() => setNavOpen(false)}>
           <div role="dialog" aria-modal="true" aria-label="Question navigator" className="max-h-[80vh] w-full overflow-y-auto rounded-t-card bg-white p-4"
                onClick={(e) => e.stopPropagation()}>
-            <QuestionNav questions={questions} state={state} current={index} onGo={go} filter={filter} setFilter={setFilter} />
+            <QuestionNav questions={questions} state={state} current={index} onGo={(i) => { go(i); setNavOpen(false); }} filter={filter} setFilter={setFilter} />
+            <NavSubmit counts={counts} total={questions.length} disabled={submitting || !!leaving} onSubmit={() => { setNavOpen(false); setConfirm(true); }} />
             <button type="button" className="btn-text mt-3 w-full" onClick={() => setNavOpen(false)}>Close</button>
           </div>
         </div>
@@ -326,6 +393,37 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
         onCancel={() => setConfirm(false)}
         onGo={(pos) => { setConfirm(false); go(pos - 1); }}
         onConfirm={() => { setConfirm(false); void submit(false); }} />
+
+      <ConfirmDialog open={exitOpen} id="exit" title="Save and exit?" cancelLabel="Return to exam"
+        confirmLabel={leaving === "exit" ? "Saving…" : "Save & Exit"} busy={leaving === "exit"}
+        onCancel={() => setExitOpen(false)} onConfirm={() => void saveAndExit()}>
+        <p>Your answers are saved. You can resume this exam from your dashboard or the course page.</p>
+        <p className="font-medium text-ink">The timer keeps running while you’re away. If time runs out, the exam is submitted automatically.</p>
+        {status.pending > 0 && (
+          <p className="rounded-button bg-[#fff4dc] px-3 py-2 text-ink">{status.pending} change{status.pending === 1 ? " is" : "s are"} still syncing. We’ll finish saving before you leave.</p>
+        )}
+      </ConfirmDialog>
+
+      <ConfirmDialog open={cancelOpen} id="cancel" title="Cancel this exam?" tone="danger" cancelLabel="Keep going"
+        confirmLabel={leaving === "cancel" ? "Cancelling…" : "Cancel exam"} busy={leaving === "cancel"}
+        onCancel={() => setCancelOpen(false)} onConfirm={() => void cancelExam()}>
+        <p>This attempt will be discarded{counts.answered > 0 ? `, along with your ${counts.answered} answer${counts.answered === 1 ? "" : "s"}` : ""}. It won’t be scored or appear in your history or analytics.</p>
+        <p className="font-medium text-ink">This can’t be undone.</p>
+      </ConfirmDialog>
+    </div>
+  );
+}
+
+/** Answer summary and an early-submit path inside the navigator panel. */
+function NavSubmit({ counts, total, disabled, onSubmit }: {
+  counts: { answered: number; flagged: number }; total: number; disabled: boolean; onSubmit: () => void;
+}) {
+  return (
+    <div className="mt-3 rounded-card border border-hairline p-4">
+      <p className="text-caption text-graphite">
+        {counts.answered} answered · {total - counts.answered} unanswered · {counts.flagged} flagged
+      </p>
+      <button type="button" className="btn-primary mt-3 w-full" onClick={onSubmit} disabled={disabled}>Submit exam</button>
     </div>
   );
 }
