@@ -70,6 +70,9 @@ jobs:
             -x "storage.buckets_vectors" -x "storage.vector_indexes"
           # Known Supabase restore issues (see Supabase "Backup and Restore using the CLI" guide)
           sed -i -E 's/^(GRANT "postgres" TO "cli_login_postgres".*)$/-- \1/' roles.sql
+          # Role-level server settings (e.g. log_min_messages) can't be set by the postgres user — skip them
+          sed -i -E 's/^(ALTER ROLE .* SET .*)$/-- \1/' roles.sql
+          echo "roles.sql statements kept:"; grep -cvE '^(--|SET |SELECT |$)' roles.sql || true
           sed -i -E 's/^(ALTER .* OWNER TO "supabase_admin";)$/-- \1/' schema.sql
           ls -l
 
