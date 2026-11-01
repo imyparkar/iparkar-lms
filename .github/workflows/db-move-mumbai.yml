@@ -1,0 +1,105 @@
+# One-time move of the LMS database from the Sydney project to the new Mumbai project.
+# Read-only on the old (Sydney) project. Refuses to run unless the new project is empty.
+# Logs show only row counts and error summaries — never question content or user data.
+#
+# How to run:
+#   1. Repo → Settings → Secrets and variables → Actions → add two secrets:
+#        OLD_DB_URL = Session pooler connection string of iparkar-lms (Sydney)
+#        NEW_DB_URL = Session pooler connection string of iparkar (Mumbai)
+#   2. Actions → "One-time DB move (Sydney → Mumbai)" → open the latest run → Re-run all jobs.
+# Delete this file and the two secrets once the move is confirmed.
+
+name: One-time DB move (Sydney → Mumbai)
+
+on:
+  push:
+    branches: [db-move-mumbai]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: db-move-mumbai
+  cancel-in-progress: false
+
+jobs:
+  move:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      OLD_DB_URL: ${{ secrets.OLD_DB_URL }}
+      NEW_DB_URL: ${{ secrets.NEW_DB_URL }}
+    steps:
+      - name: Check secrets point at the right projects
+        run: |
+          if [ -z "$OLD_DB_URL" ] || [ -z "$NEW_DB_URL" ]; then
+            echo "::error::Add the OLD_DB_URL and NEW_DB_URL repository secrets, then re-run this job."; exit 1
+          fi
+          case "$OLD_DB_URL" in *szweqwbdzyvbrsqdggrn*) ;; *) echo "::error::OLD_DB_URL is not the Sydney iparkar-lms project."; exit 1;; esac
+          case "$NEW_DB_URL" in *nuulrizfgygpmnnjscvh*) ;; *) echo "::error::NEW_DB_URL is not the new Mumbai iparkar project."; exit 1;; esac
+          echo "Secrets OK: Sydney → Mumbai"
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Install psql 17
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-common > /dev/null
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y > /dev/null
+          sudo apt-get install -y -qq postgresql-client-17 > /dev/null
+          psql --version
+
+      - name: Safety check — new project must be empty
+        run: |
+          t=$(psql "$NEW_DB_URL" -tAc "select count(*) from pg_tables where schemaname='public'")
+          u=$(psql "$NEW_DB_URL" -tAc "select count(*) from auth.users")
+          echo "New project: $t public tables, $u users"
+          if [ "$t" != "0" ] || [ "$u" != "0" ]; then
+            echo "::error::New project is not empty. Stopping so nothing is overwritten."; exit 1
+          fi
+
+      - name: Dump from Sydney (read-only)
+        run: |
+          mkdir -p "$RUNNER_TEMP/dump" && cd "$RUNNER_TEMP/dump"
+          supabase db dump --db-url "$OLD_DB_URL" -f roles.sql --role-only
+          supabase db dump --db-url "$OLD_DB_URL" -f schema.sql
+          supabase db dump --db-url "$OLD_DB_URL" -f data.sql --use-copy --data-only \
+            -x "storage.buckets_vectors" -x "storage.vector_indexes"
+          # Known Supabase restore issues (see Supabase "Backup and Restore using the CLI" guide)
+          sed -i -E 's/^(GRANT "postgres" TO "cli_login_postgres".*)$/-- \1/' roles.sql
+          sed -i -E 's/^(ALTER .* OWNER TO "supabase_admin";)$/-- \1/' schema.sql
+          ls -l
+
+      - name: Restore into Mumbai
+        run: |
+          cd "$RUNNER_TEMP/dump"
+          if ! psql --single-transaction --variable ON_ERROR_STOP=1 --quiet \
+                --file roles.sql \
+                --file schema.sql \
+                --command 'SET session_replication_role = replica' \
+                --file data.sql \
+                --dbname "$NEW_DB_URL" > /dev/null 2> err.log; then
+            echo "::error::Restore failed and was rolled back (new project left empty)."
+            grep -E "ERROR:" err.log | sed -E 's/(Key \().*$/\1…/' | cut -c1-240
+            exit 1
+          fi
+          echo "Restore completed in a single transaction."
+
+      - name: Verify row counts match
+        run: |
+          q="select 'public.'||table_name, (xpath('/row/c/text()', query_to_xml(format('select count(*) as c from public.%I', table_name), false, true, '')))[1]::text
+             from information_schema.tables where table_schema='public' and table_type='BASE TABLE'
+             union all select 'auth.users', count(*)::text from auth.users
+             union all select 'auth.identities', count(*)::text from auth.identities
+             order by 1"
+          psql "$OLD_DB_URL" -tA -F ' ' -c "$q" > old.txt
+          psql "$NEW_DB_URL" -tA -F ' ' -c "$q" > new.txt
+          echo "table  sydney  mumbai"; join old.txt new.txt
+          if diff -q old.txt new.txt > /dev/null; then echo "✅ All row counts match."; else echo "::error::Row counts differ."; exit 1; fi
+
+      - name: Remove dump files
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/dump"
