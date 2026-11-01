@@ -79,8 +79,8 @@ jobs:
       - name: Restore into Mumbai
         run: |
           cd "$RUNNER_TEMP/dump"
+          # roles.sql is not restored: the LMS has no custom roles, and the standard Supabase roles already exist
           if ! psql --single-transaction --variable ON_ERROR_STOP=1 --quiet \
-                --file roles.sql \
                 --file schema.sql \
                 --command 'SET session_replication_role = replica' \
                 --file data.sql \
