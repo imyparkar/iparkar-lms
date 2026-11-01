@@ -1,0 +1,120 @@
+# Nightly encrypted backup of the iParkar Supabase database (LMS + shared logins),
+# which also keeps the Free-plan project active so it is never paused for inactivity.
+#
+# The repository is PUBLIC, so the backup is encrypted (AES-256, gpg) before upload.
+# Only someone with BACKUP_PASSPHRASE can open it. Logs show sizes and row counts only.
+#
+# Required repository secrets (Settings → Secrets and variables → Actions):
+#   SUPABASE_DB_URL    Session pooler connection string of the "iparkar" (Mumbai) project
+#   BACKUP_PASSPHRASE  A long password you keep safe — without it backups cannot be opened
+#
+# Restore instructions: docs/BACKUP-RESTORE.md
+
+name: Nightly encrypted backup
+
+on:
+  schedule:
+    - cron: "17 22 * * *" # 01:17 Kuwait time, every day
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nightly-backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+      SUPABASE_URL: https://nuulrizfgygpmnnjscvh.supabase.co
+    steps:
+      - name: Check secrets
+        run: |
+          if [ -z "$DB_URL" ] || [ -z "$PASSPHRASE" ]; then
+            echo "::error::Add the SUPABASE_DB_URL and BACKUP_PASSPHRASE repository secrets."; exit 1
+          fi
+          case "$DB_URL" in *nuulrizfgygpmnnjscvh*) ;; *) echo "::error::SUPABASE_DB_URL is not the iparkar (Mumbai) project."; exit 1;; esac
+          if [ ${#PASSPHRASE} -lt 16 ]; then echo "::error::BACKUP_PASSPHRASE must be at least 16 characters."; exit 1; fi
+
+      - name: Keep-alive ping (Auth API)
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' "$SUPABASE_URL/auth/v1/health")
+          echo "Auth health: HTTP $code"
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Dump database
+        run: |
+          d="$RUNNER_TEMP/iparkar-backup"; mkdir -p "$d"; cd "$d"
+          supabase db dump --db-url "$DB_URL" -f schema.sql
+          supabase db dump --db-url "$DB_URL" -f data.sql --use-copy --data-only \
+            -x "storage.buckets_vectors" -x "storage.vector_indexes"
+          supabase db dump --db-url "$DB_URL" -f roles.sql --role-only
+          date -u +"%Y-%m-%dT%H:%M:%SZ" > CREATED_AT.txt
+          ls -l
+
+      - name: Record row counts (counts only)
+        run: |
+          sudo apt-get install -y -qq postgresql-client > /dev/null
+          q="select table_name, (xpath('/row/c/text()', query_to_xml(format('select count(*) as c from public.%I', table_name), false, true, '')))[1]::text
+             from information_schema.tables where table_schema='public' and table_type='BASE TABLE'
+             union all select 'auth.users', count(*)::text from auth.users order by 1"
+          psql "$DB_URL" -tA -F ' ' -c "$q" | tee "$RUNNER_TEMP/iparkar-backup/ROW_COUNTS.txt"
+
+      - name: Save exact permissions (grants.sql)
+        run: |
+          g="$RUNNER_TEMP/iparkar-backup/grants.sql"
+          printf '%s\n' '-- Run after restoring schema.sql + data.sql into a new project.' \
+            'begin;' \
+            'revoke all on all tables in schema public from anon, authenticated, service_role;' \
+            'revoke all on all sequences in schema public from anon, authenticated, service_role;' \
+            'revoke all on all functions in schema public from public, anon, authenticated, service_role;' > "$g"
+          psql "$DB_URL" -tA -c "
+            with r as (select oid, rolname from pg_roles where rolname in ('anon','authenticated','service_role'))
+            select format('grant %s on table public.%I to %I;', string_agg(privilege_type, ', '), table_name, grantee)
+              from information_schema.role_table_grants where table_schema='public' and grantee in ('anon','authenticated','service_role') group by table_name, grantee
+            union all
+            select format('grant %s on sequence public.%I to %I;', p, c.relname, r.rolname) from pg_class c join pg_namespace n on n.oid=c.relnamespace cross join r
+              cross join lateral (select string_agg(x, ', ') p from unnest(array['USAGE','SELECT','UPDATE']) x where has_sequence_privilege(r.oid, c.oid, x)) s
+              where n.nspname='public' and c.relkind='S' and p is not null
+            union all
+            select format('grant execute on function %s to %I;', p.oid::regprocedure, r.rolname) from pg_proc p join pg_namespace n on n.oid=p.pronamespace cross join r
+              where n.nspname='public' and has_function_privilege(r.oid, p.oid, 'EXECUTE')
+            union all
+            select pg_get_triggerdef(t.oid)||';' from pg_trigger t join pg_class c on c.oid=t.tgrelid join pg_namespace n on n.oid=c.relnamespace where n.nspname='auth' and not t.tgisinternal
+            union all
+            select format('select cron.schedule(%L, %L, %L);', jobname, schedule, command) from cron.job
+          " >> "$g"
+          echo 'commit;' >> "$g"
+          echo "grants.sql: $(grep -c '' "$g") lines"
+
+      - name: Encrypt
+        run: |
+          stamp=$(date -u +%Y%m%d)
+          echo "STAMP=$stamp" >> "$GITHUB_ENV"
+          cd "$RUNNER_TEMP"
+          tar -czf - iparkar-backup | gpg --batch --yes --symmetric --cipher-algo AES256 \
+            --pinentry-mode loopback --passphrase-fd 3 3<<<"$PASSPHRASE" \
+            -o "iparkar-db-$stamp.tar.gz.gpg"
+          rm -rf iparkar-backup
+          ls -l "iparkar-db-$stamp.tar.gz.gpg"
+
+      - name: Upload encrypted backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: iparkar-db-${{ env.STAMP }}
+          path: ${{ runner.temp }}/iparkar-db-${{ env.STAMP }}.tar.gz.gpg
+          retention-days: 30
+          if-no-files-found: error
+          compression-level: 0
+
+      - name: Remove local files
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/iparkar-backup" "$RUNNER_TEMP"/iparkar-db-*.gpg
