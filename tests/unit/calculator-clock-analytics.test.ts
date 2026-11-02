@@ -177,3 +177,21 @@ describe("TypeScript allocation mirror", () => {
     expect(allocate([10, 25, 8, 12, 10, 12, 7, 11, 5].map((w, i) => ({ number: i + 1, weight: w })), 20).reduce((a, b) => a + b)).toBe(20);
   });
 });
+
+describe("calculator: TI-30XS keys", () => {
+  it("handles the (−) key, nPr/nCr, x-th root, hyperbolics, variables and angle marks", () => {
+    close("⁻3+5", 2);
+    close("2⁻3", -6);
+    close("5nPr2", 20);
+    close("5nCr2", 10);
+    close("2+5nCr2×2", 22);
+    close("3ˣ√8", 2);
+    close("3ˣ√⁻27", -3);
+    close("sinh(0)", 0);
+    close("tanh⁻¹(0)", 0);
+    close("2x+y", 11, { ...deg, vars: { x: 4, y: 3 } });
+    close("sin((π÷6)ʳ)", 0.5);
+    close("sin(30°)", 0.5, rad);
+    close("3⁄4", 0.75);
+  });
+});

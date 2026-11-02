@@ -4,11 +4,13 @@
  *
  * Grammar (highest precedence last):
  *   expr    := term (('+' | '−') term)*
- *   term    := unary (('×' | '÷') unary | <implicit ×> unary)*
- *   unary   := '−' unary | power
- *   power   := postfix ('^' unary)?            right-associative
- *   postfix := primary ('!' | '²' | '³' | '⁻¹' | '%')*
- *   primary := number | 'π' | 'e' | 'Ans' | 'M' | func '(' args ')' | '(' expr ')'
+ *   term    := combo (('×' | '÷') combo | <implicit ×> combo)*
+ *   combo   := unary (('nPr' | 'nCr') unary)*      (TI-30XS: above × ÷)
+ *   unary   := ('−' | '⁻') unary | power          ('⁻' is the (−) key)
+ *   power   := postfix (('^' | 'ˣ√') unary)?      right-associative
+ *   postfix := primary ('!' | '²' | '³' | '⁻¹' | '%' | '°' | 'ʳ')*
+ *   primary := number | 'π' | 'e' | 'Ans' | 'M' | var | func '(' args ')' | '(' expr ')'
+ *   var     := x | y | z | t | a | b | c        (TI-30XS memory variables)
  *
  * Notes: −2² = −4 (negation binds looser than powers); numbers accept
  * scientific notation with 'E' (e.g. 6.02E23); missing closing parentheses
@@ -25,24 +27,32 @@ export class CalcError extends Error {
 
 type Tok =
   | { t: "num"; v: number }
-  | { t: "op"; v: "+" | "-" | "*" | "/" | "^" }
-  | { t: "post"; v: "!" | "²" | "³" | "⁻¹" | "%" }
+  | { t: "op"; v: "+" | "-" | "*" | "/" | "^" | "xroot" | "nPr" | "nCr" }
+  | { t: "neg" }
+  | { t: "post"; v: "!" | "²" | "³" | "⁻¹" | "%" | "°" | "ʳ" }
+  | { t: "var"; v: string }
   | { t: "lp" }
   | { t: "rp" }
   | { t: "comma" }
   | { t: "const"; v: "pi" | "e" | "ans" | "mem" }
   | { t: "fn"; v: FnName; paren: boolean };
 
-type FnName = "sin" | "cos" | "tan" | "asin" | "acos" | "atan" | "log" | "ln" | "sqrt" | "cbrt" | "abs" | "exp" | "root";
+type FnName =
+  | "sin" | "cos" | "tan" | "asin" | "acos" | "atan"
+  | "sinh" | "cosh" | "tanh" | "asinh" | "acosh" | "atanh"
+  | "log" | "ln" | "sqrt" | "cbrt" | "abs" | "exp" | "root";
 
 const FUNCS: Record<string, FnName> = {
   sin: "sin", cos: "cos", tan: "tan",
   asin: "asin", acos: "acos", atan: "atan",
   "sin⁻¹": "asin", "cos⁻¹": "acos", "tan⁻¹": "atan",
+  sinh: "sinh", cosh: "cosh", tanh: "tanh",
+  "sinh⁻¹": "asinh", "cosh⁻¹": "acosh", "tanh⁻¹": "atanh",
   log: "log", ln: "ln", sqrt: "sqrt", "√": "sqrt", cbrt: "cbrt", "∛": "cbrt",
   abs: "abs", exp: "exp", root: "root",
 };
 const FUNC_KEYS = Object.keys(FUNCS).sort((a, b) => b.length - a.length);
+export const VARIABLES = ["x", "y", "z", "t", "a", "b", "c"] as const;
 
 export function tokenize(src: string): Tok[] {
   const s = src.replace(/\s+/g, "");
@@ -71,11 +81,16 @@ export function tokenize(src: string): Tok[] {
     }
     if (s.startsWith("Ans", i)) { out.push({ t: "const", v: "ans" }); i += 3; continue; }
     if (s.startsWith("⁻¹", i)) { out.push({ t: "post", v: "⁻¹" }); i += 2; continue; }
+    if (s.startsWith("nPr", i) || s.startsWith("nCr", i)) { out.push({ t: "op", v: s.slice(i, i + 3) as "nPr" | "nCr" }); i += 3; continue; }
+    if (s.startsWith("ˣ√", i)) { out.push({ t: "op", v: "xroot" }); i += 2; continue; }
     switch (ch) {
       case "+": out.push({ t: "op", v: "+" }); break;
       case "-": case "−": out.push({ t: "op", v: "-" }); break;
       case "*": case "×": case "·": out.push({ t: "op", v: "*" }); break;
-      case "/": case "÷": out.push({ t: "op", v: "/" }); break;
+      case "/": case "÷": case "⁄": out.push({ t: "op", v: "/" }); break;
+      case "⁻": out.push({ t: "neg" }); break;
+      case "°": case "ʳ": out.push({ t: "post", v: ch }); break;
+      case "x": case "y": case "z": case "t": case "a": case "b": case "c": out.push({ t: "var", v: ch }); break;
       case "^": out.push({ t: "op", v: "^" }); break;
       case "!": case "²": case "³": case "%": out.push({ t: "post", v: ch }); break;
       case "(": out.push({ t: "lp" }); break;
@@ -91,7 +106,7 @@ export function tokenize(src: string): Tok[] {
   return out;
 }
 
-export type EvalContext = { angle: AngleMode; ans: number; memory: number };
+export type EvalContext = { angle: AngleMode; ans: number; memory: number; vars?: Partial<Record<string, number>> };
 
 const FACT_LIMIT = 170;
 
@@ -138,6 +153,12 @@ export function evaluate(src: string, ctx: EvalContext): number {
       case "cbrt": return Math.cbrt(x);
       case "abs": return Math.abs(x);
       case "exp": return Math.exp(x);
+      case "sinh": return Math.sinh(x);
+      case "cosh": return Math.cosh(x);
+      case "tanh": return Math.tanh(x);
+      case "asinh": return Math.asinh(x);
+      case "acosh": if (x < 1) throw new CalcError("DOMAIN"); return Math.acosh(x);
+      case "atanh": if (x <= -1 || x >= 1) throw new CalcError("DOMAIN"); return Math.atanh(x);
       case "root": {
         // root(x, n): the n-th root of x
         if (y === 0) throw new CalcError("DOMAIN");
@@ -151,7 +172,7 @@ export function evaluate(src: string, ctx: EvalContext): number {
   };
 
   const startsPrimary = (t: Tok | undefined) =>
-    !!t && (t.t === "num" || t.t === "const" || t.t === "fn" || t.t === "lp");
+    !!t && (t.t === "num" || t.t === "const" || t.t === "fn" || t.t === "lp" || t.t === "var" || t.t === "neg");
 
   function expr(): number {
     let v = term();
@@ -167,25 +188,43 @@ export function evaluate(src: string, ctx: EvalContext): number {
   }
 
   function term(): number {
-    let v = unary();
+    let v = combo();
     for (;;) {
       const t = peek();
       if (t?.t === "op" && (t.v === "*" || t.v === "/")) {
         next();
-        const r = unary();
+        const r = combo();
         if (t.v === "/") {
           if (r === 0) throw new CalcError("DIVIDE_BY_ZERO");
           v = v / r;
         } else v = v * r;
       } else if (startsPrimary(t)) {
-        v = v * unary(); // implicit multiplication: 2π, 3(4), (2)(3)
+        v = v * combo(); // implicit multiplication: 2π, 3(4), (2)(3)
       } else break;
+    }
+    return v;
+  }
+
+  function combo(): number {
+    let v = unary();
+    for (let t = peek(); t?.t === "op" && (t.v === "nPr" || t.v === "nCr"); t = peek()) {
+      next();
+      const r = unary();
+      if (!Number.isInteger(v) || !Number.isInteger(r) || v < 0 || r < 0) throw new CalcError("DOMAIN");
+      if (r > v) { v = 0; continue; }
+      let p = 1;
+      for (let k = 0; k < r; k++) p *= v - k;
+      v = t.v === "nPr" ? p : Math.round(p / factorial(r));
     }
     return v;
   }
 
   function unary(): number {
     const t = peek();
+    if (t?.t === "neg") {
+      next();
+      return -unary();
+    }
     if (t?.t === "op" && t.v === "-") {
       next();
       return -unary();
@@ -200,6 +239,11 @@ export function evaluate(src: string, ctx: EvalContext): number {
   function power(): number {
     const base = postfix();
     const t = peek();
+    if (t?.t === "op" && t.v === "xroot") {
+      // index ˣ√ radicand
+      next();
+      return applyFn("root", [unary(), base]);
+    }
     if (t?.t === "op" && t.v === "^") {
       next();
       const exp = unary();
@@ -219,6 +263,8 @@ export function evaluate(src: string, ctx: EvalContext): number {
       else if (p === "²") v = v * v;
       else if (p === "³") v = v * v * v;
       else if (p === "%") v = v / 100;
+      else if (p === "°") v = ctx.angle === "RAD" ? (v * Math.PI) / 180 : v;
+      else if (p === "ʳ") v = ctx.angle === "DEG" ? (v * 180) / Math.PI : v;
       else {
         if (v === 0) throw new CalcError("DIVIDE_BY_ZERO");
         v = 1 / v;
@@ -234,6 +280,7 @@ export function evaluate(src: string, ctx: EvalContext): number {
       case "num": return t.v;
       case "const":
         return t.v === "pi" ? Math.PI : t.v === "e" ? Math.E : t.v === "ans" ? ctx.ans : ctx.memory;
+      case "var": return ctx.vars?.[t.v] ?? 0;
       case "lp": {
         const v = expr();
         if (peek()?.t === "rp") next();
