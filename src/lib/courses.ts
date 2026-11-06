@@ -7,13 +7,11 @@ export type CourseUi = {
   label: string;
   /** What the blueprint calls a scored unit: "domain" (BCSP/CIH) or "topic" (BGC GES/QEP). */
   unit: "domain" | "topic";
-  /** Reference sheet available beside the calculator during exams. */
-  referenceSheet?: "bgc-qep-ges";
 };
 
 const COURSES: Record<string, CourseUi> = {
-  EPI: { label: "GES/EPI", unit: "topic", referenceSheet: "bgc-qep-ges" },
-  QEP: { label: "QEP", unit: "topic", referenceSheet: "bgc-qep-ges" },
+  EPI: { label: "GES/EPI", unit: "topic" },
+  QEP: { label: "QEP", unit: "topic" },
 };
 
 export function courseUi(code: string): CourseUi {

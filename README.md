@@ -43,4 +43,4 @@ npm run cf:preview              # build + run on the Cloudflare Workers runtime 
 - Score = correct ÷ total × 100; unanswered questions count as incorrect.
 - Thresholds (80 / 60) are study indicators, configurable by admins, not passing standards.
 - Practice items are original study material, not live exam questions.
-- EPI and QEP use the 16 scored topics of the BGC blueprints (1.1 … 4.0) as domains, offer the BGC equation sheet beside the calculator, and render TeX formulas written between `$$ … $$` in stems and explanations.
+- EPI and QEP use the 16 scored topics of the BGC blueprints (1.1 … 4.0) as domains and render TeX formulas written between `$$ … $$` in stems and explanations.

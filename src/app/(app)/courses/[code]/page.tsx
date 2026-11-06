@@ -54,7 +54,7 @@ export default async function CoursePage({ params }: { params: Promise<{ code: s
       {!course.has_access ? (
         <section className="rounded-card bg-marigold p-8">
           <h2 className="text-heading-sm">Unlock the {course.code} question bank</h2>
-          <p className="mt-2 max-w-2xl">Full bank access includes the timed mixed exam, {subjectExam ? "subject-area practice sets" : `${ui.unit} practice exams`}, the on-screen calculator{ui.referenceSheet ? ", the equation sheet" : ""}, explanations and course analytics.</p>
+          <p className="mt-2 max-w-2xl">Full bank access includes the timed mixed exam, {subjectExam ? "subject-area practice sets" : `${ui.unit} practice exams`}, the on-screen calculator, explanations and course analytics.</p>
           <div className="mt-5 flex flex-wrap gap-3">
             {buy ? (
               <a href={buy} className="btn-dark">Get {course.code} access</a>
@@ -84,7 +84,6 @@ export default async function CoursePage({ params }: { params: Promise<{ code: s
                 <li>{mixed.question_count} questions, weighted to the {ui.label} blueprint</li>
                 <li>{mixed.duration_minutes}-minute countdown; submits automatically at zero</li>
                 <li>{POLICY[mixed.feedback_policy]}</li>
-                {ui.referenceSheet && <li>TI-30XS calculator and the BGC equation sheet available throughout</li>}
               </ul>
               <div className="mt-auto pt-6">
                 <StartMixed courseId={course.id} blueprintId={bp.id} count={mixed.question_count} minutes={mixed.duration_minutes} />
@@ -118,7 +117,6 @@ export default async function CoursePage({ params }: { params: Promise<{ code: s
                 <li>{ui.unit === "topic" ? `${domainExam.question_count} questions from the ${ui.label} blueprint topic you choose` : `${domainExam.question_count} questions from one ${course.code} domain`}</li>
                 <li>{domainExam.duration_minutes}-minute countdown; submits automatically at zero</li>
                 <li>{POLICY[domainExam.feedback_policy]}</li>
-                {ui.referenceSheet && <li>TI-30XS calculator and the BGC equation sheet available throughout</li>}
               </ul>
               <div className="mt-auto pt-6">
                 <StartDomain courseId={course.id} blueprintId={bp.id} domains={bp.domains ?? []} unit={ui.unit}

@@ -32,8 +32,8 @@ describe("BGC topic codes", () => {
     expect(r.issues).toEqual([]);
     expect(r.items[0].domain_code).toBe("1.1");
   });
-  it("labels EPI and QEP by topic and offers the equation sheet", () => {
-    expect(courseUi("EPI")).toMatchObject({ label: "GES/EPI", unit: "topic", referenceSheet: "bgc-qep-ges" });
+  it("labels EPI and QEP by topic", () => {
+    expect(courseUi("EPI")).toEqual({ label: "GES/EPI", unit: "topic" });
     expect(courseUi("qep").unit).toBe("topic");
     expect(courseUi("ASP")).toEqual({ label: "ASP", unit: "domain" });
   });

@@ -1,13 +1,12 @@
 "use client";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { BookOpen, Calculator as CalcIcon, ChevronLeft, ChevronRight, Flag, Maximize2, Minimize2, LayoutGrid, Check, CloudOff, Loader2, LogOut, X, Send } from "lucide-react";
+import { Calculator as CalcIcon, ChevronLeft, ChevronRight, Flag, Maximize2, Minimize2, LayoutGrid, Check, CloudOff, Loader2, LogOut, X, Send } from "lucide-react";
 import type { AttemptPayload, AttemptQuestion } from "@/lib/types";
 import { getBrowserClient } from "@/lib/supabase/client";
 import { clockLevel, createSync, formatClock, remainingMs, type ClockSync } from "@/lib/exam/clock";
 import { letter, rpcMessage } from "@/lib/format";
 import { Calculator } from "./Calculator";
-import { EquationSheet } from "./EquationSheet";
 import { RichText } from "@/components/ui/RichText";
 import { courseUi } from "@/lib/courses";
 import { useAnswerSync } from "./useAnswerSync";
@@ -26,7 +25,6 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
     Object.fromEntries(questions.map((q) => [q.question_id, { selected: q.selected_option_id, flagged: q.flagged, locked: q.locked, feedback: q.feedback }])));
   const [draft, setDraft] = useState<Record<string, string | null>>({}); // immediate mode: selection before "Check"
   const [calcOpen, setCalcOpen] = useState(false);
-  const [sheetOpen, setSheetOpen] = useState(false);
   const ui = courseUi(attempt.course.code);
   const [navOpen, setNavOpen] = useState(false); // navigator is hidden until the student asks for it
   const [filter, setFilter] = useState<NavFilter>("all");
@@ -258,12 +256,6 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
           <button type="button" onClick={() => setCalcOpen((o) => !o)} className="btn-ghost px-3" aria-pressed={calcOpen}>
             <CalcIcon size={16} aria-hidden /><span className="hidden md:inline">{calcOpen ? "Hide calculator" : "Show calculator"}</span>
           </button>
-          {ui.referenceSheet && (
-            <button type="button" onClick={() => setSheetOpen((o) => !o)} className="btn-ghost px-3" aria-pressed={sheetOpen}
-              aria-label={sheetOpen ? "Hide equation sheet" : "Show equation sheet"}>
-              <BookOpen size={16} aria-hidden /><span className="hidden md:inline">{sheetOpen ? "Hide equations" : "Equations"}</span>
-            </button>
-          )}
           {canFullscreen && (
             <button type="button" onClick={toggleFullscreen} className="btn-text hidden px-2 sm:inline-flex" aria-label={fullscreen ? "Exit full screen" : "Enter full screen"}>
               {fullscreen ? <Minimize2 size={18} aria-hidden /> : <Maximize2 size={18} aria-hidden />}
@@ -396,7 +388,6 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
       )}
 
       <Calculator open={calcOpen} onClose={() => setCalcOpen(false)} />
-      {ui.referenceSheet && <EquationSheet open={sheetOpen} onClose={() => setSheetOpen(false)} />}
 
       <SubmitDialog open={confirm} total={questions.length} answered={counts.answered} flagged={counts.flagged}
         unansweredList={questions.filter((x) => !state[x.question_id].selected).map((x) => x.position)}
