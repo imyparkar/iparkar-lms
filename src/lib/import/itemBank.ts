@@ -68,7 +68,7 @@ function validateItem(item: ImportItem, line: number, issues: ParseIssue[]): boo
   const before = issues.length;
   const push = (message: string) => issues.push({ line, ref: item.external_ref, message });
   if (!item.external_ref) push("missing ID");
-  if (!/^[A-Za-z0-9-]{1,12}$/.test(item.domain_code)) push(`invalid domain code "${item.domain_code}"`);
+  if (!/^[A-Za-z0-9.-]{1,12}$/.test(item.domain_code)) push(`invalid domain code "${item.domain_code}"`);
   if (item.task_code && !item.task_code.startsWith(item.domain_code + "-"))
     push(`task "${item.task_code}" does not belong to domain ${item.domain_code}`);
   if (item.stem.length < 10) push("stem is missing or too short");

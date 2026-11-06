@@ -16,7 +16,7 @@ export default async function ImportPage() {
       <details className="card p-4 text-body-sm">
         <summary className="cursor-pointer font-medium">CSV columns</summary>
         <p className="mt-2 font-mono text-caption">external_ref, domain_code, task_code, cognitive_level, topic, stem, option_a … option_f, key, explanation, reference, difficulty</p>
-        <p className="mt-2 text-graphite">Required: external_ref, domain_code, stem, option_a, option_b, key, explanation. Domain codes: ASP D1–D9, CSP D1–D7, CIH I, II, III. CIH task codes: I-T1 … III-T2.</p>
+        <p className="mt-2 text-graphite">Required: external_ref, domain_code, stem, option_a, option_b, key, explanation. Domain codes: ASP D1–D9, CSP D1–D7, CIH I, II, III; EPI and QEP use the blueprint topic numbers 1.1 … 4.0. CIH task codes: I-T1 … III-T2. Formulas may be written in TeX between $$ … $$.</p>
       </details>
       <Importer courses={list} />
     </div>

@@ -28,7 +28,7 @@ export function AuthShell({ title, lead, children, footer }: { title: string; le
         <div>
           <p className="font-serif text-[32px] leading-[1.25]">Timed, blueprint-weighted mock exams with a breakdown of every domain.</p>
           <ul className="mt-8 space-y-3 text-body text-white/85">
-            <li>ASP · CSP · CIH — each with its own question bank</li>
+            <li>ASP · CSP · CIH · GES/EPI · QEP — each with its own question bank</li>
             <li>Countdown timer, flagging and an on-screen scientific calculator</li>
             <li>Domain analytics that show where to study next</li>
           </ul>

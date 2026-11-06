@@ -11,6 +11,8 @@ export function checkoutUrl(courseCode: string): string | null {
     ASP: process.env.NEXT_PUBLIC_CHECKOUT_URL_ASP,
     CSP: process.env.NEXT_PUBLIC_CHECKOUT_URL_CSP,
     CIH: process.env.NEXT_PUBLIC_CHECKOUT_URL_CIH,
+    EPI: process.env.NEXT_PUBLIC_CHECKOUT_URL_EPI,
+    QEP: process.env.NEXT_PUBLIC_CHECKOUT_URL_QEP,
   };
   return map[courseCode] || null;
 }

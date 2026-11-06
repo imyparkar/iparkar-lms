@@ -8,6 +8,7 @@ import { allocate } from "@/lib/exam/allocation";
 import { Pill } from "@/components/ui/Pill";
 import { Alert } from "@/components/ui/Alert";
 import { StartDomain, StartMixed, StartSubject } from "./StartExam";
+import { capitalize, courseUi } from "@/lib/courses";
 
 export async function generateMetadata({ params }: { params: Promise<{ code: string }> }) {
   return { title: (await params).code.toUpperCase() };
@@ -28,6 +29,7 @@ export default async function CoursePage({ params }: { params: Promise<{ code: s
   if (!course) notFound();
 
   const bp = course.blueprint;
+  const ui = courseUi(course.code);
   const mixed = course.exams?.find((e) => e.mode === "mixed");
   const domainExam = course.exams?.find((e) => e.mode === "domain");
   const subjectExam = course.exams?.find((e) => e.mode === "subject");
@@ -52,7 +54,7 @@ export default async function CoursePage({ params }: { params: Promise<{ code: s
       {!course.has_access ? (
         <section className="rounded-card bg-marigold p-8">
           <h2 className="text-heading-sm">Unlock the {course.code} question bank</h2>
-          <p className="mt-2 max-w-2xl">Full bank access includes the timed mixed exam, subject-area practice sets, the on-screen calculator, explanations and course analytics.</p>
+          <p className="mt-2 max-w-2xl">Full bank access includes the timed mixed exam, {subjectExam ? "subject-area practice sets" : `${ui.unit} practice exams`}, the on-screen calculator{ui.referenceSheet ? ", the equation sheet" : ""}, explanations and course analytics.</p>
           <div className="mt-5 flex flex-wrap gap-3">
             {buy ? (
               <a href={buy} className="btn-dark">Get {course.code} access</a>
@@ -79,9 +81,10 @@ export default async function CoursePage({ params }: { params: Promise<{ code: s
             <section className="card flex flex-col">
               <h2 className="text-heading-sm">{mixed.title}</h2>
               <ul className="mt-3 space-y-1 text-body-sm text-graphite">
-                <li>{mixed.question_count} questions, weighted to the {course.code} blueprint</li>
+                <li>{mixed.question_count} questions, weighted to the {ui.label} blueprint</li>
                 <li>{mixed.duration_minutes}-minute countdown; submits automatically at zero</li>
                 <li>{POLICY[mixed.feedback_policy]}</li>
+                {ui.referenceSheet && <li>TI-30XS calculator and the BGC equation sheet available throughout</li>}
               </ul>
               <div className="mt-auto pt-6">
                 <StartMixed courseId={course.id} blueprintId={bp.id} count={mixed.question_count} minutes={mixed.duration_minutes} />
@@ -112,12 +115,13 @@ export default async function CoursePage({ params }: { params: Promise<{ code: s
             <section className="card flex flex-col">
               <h2 className="text-heading-sm">{domainExam.title}</h2>
               <ul className="mt-3 space-y-1 text-body-sm text-graphite">
-                <li>{domainExam.question_count} questions from one {course.code} domain</li>
-                <li>{domainExam.duration_minutes}-minute countdown</li>
+                <li>{ui.unit === "topic" ? `${domainExam.question_count} questions from the ${ui.label} blueprint topic you choose` : `${domainExam.question_count} questions from one ${course.code} domain`}</li>
+                <li>{domainExam.duration_minutes}-minute countdown; submits automatically at zero</li>
                 <li>{POLICY[domainExam.feedback_policy]}</li>
+                {ui.referenceSheet && <li>TI-30XS calculator and the BGC equation sheet available throughout</li>}
               </ul>
               <div className="mt-auto pt-6">
-                <StartDomain courseId={course.id} blueprintId={bp.id} domains={bp.domains ?? []}
+                <StartDomain courseId={course.id} blueprintId={bp.id} domains={bp.domains ?? []} unit={ui.unit}
                              count={domainExam.question_count} minutes={domainExam.duration_minutes} />
               </div>
             </section>
@@ -135,7 +139,7 @@ export default async function CoursePage({ params }: { params: Promise<{ code: s
             <p className="mt-2 text-caption text-graphite">Domain weightings are an initial configuration pending verification against the official blueprint.</p>
           )}
           <table className="mt-4 w-full min-w-[420px]">
-            <thead><tr><th className="table-head">Domain</th><th className="table-head">Name</th><th className="table-head text-right">Weight</th>{mixed && <th className="table-head text-right">Questions in a mixed exam</th>}</tr></thead>
+            <thead><tr><th className="table-head">{capitalize(ui.unit)}</th><th className="table-head">Name</th><th className="table-head text-right">Weight</th>{mixed && <th className="table-head text-right">Questions in a mixed exam</th>}</tr></thead>
             <tbody>
               {(bp.domains ?? []).map((d, i) => (
                 <tr key={d.id}>

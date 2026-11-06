@@ -1,11 +1,12 @@
 import type { Metadata, Viewport } from "next";
+import "katex/dist/katex.min.css";
 import "./globals.css";
 import { PolicyLinks } from "@/components/shell/PolicyLinks";
 
 
 export const metadata: Metadata = {
   title: { default: "iParkar Learning", template: "%s · iParkar Learning" },
-  description: "Practice examinations and study analytics for ASP, CSP and CIH candidates.",
+  description: "Practice examinations and study analytics for ASP, CSP, CIH, GES/EPI and QEP candidates.",
   icons: { icon: "/favicon.svg", apple: "/apple-touch-icon.png" },
   robots: { index: false, follow: false },
 };

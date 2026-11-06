@@ -125,7 +125,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <h2 id="perf-h" className="text-heading-sm">{selected.code} performance</h2>
-              <p className="text-body-sm text-graphite">Analytics are kept separate for each course — domains are never mixed across ASP, CSP and CIH.</p>
+              <p className="text-body-sm text-graphite">Analytics are kept separate for each course — domains are never mixed between courses.</p>
             </div>
             {enrolled.length > 1 && (
               <nav aria-label="Choose course analytics" className="flex gap-1 rounded-button bg-white p-1 border border-hairline">

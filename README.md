@@ -1,6 +1,6 @@
 # iParkar LMS — premium practice examinations (app.iparkar.com)
 
-Course-isolated practice exams for **ASP**, **CSP** and **CIH**: sign-in, paid access, blueprint-weighted
+Course-isolated practice exams for **ASP**, **CSP**, **CIH**, **GES/EPI** (course code `EPI`) and **QEP**: sign-in, paid access, blueprint-weighted
 randomized exams, a server-authoritative timer, on-screen scientific calculator, server-side scoring and
 course-scoped analytics. Linked from the **Practice exam** tab on iparkar.com.
 
@@ -43,3 +43,4 @@ npm run cf:preview              # build + run on the Cloudflare Workers runtime 
 - Score = correct ÷ total × 100; unanswered questions count as incorrect.
 - Thresholds (80 / 60) are study indicators, configurable by admins, not passing standards.
 - Practice items are original study material, not live exam questions.
+- EPI and QEP use the 16 scored topics of the BGC blueprints (1.1 … 4.0) as domains, offer the BGC equation sheet beside the calculator, and render TeX formulas written between `$$ … $$` in stems and explanations.

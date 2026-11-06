@@ -1,12 +1,15 @@
 "use client";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Calculator as CalcIcon, ChevronLeft, ChevronRight, Flag, Maximize2, Minimize2, LayoutGrid, Check, CloudOff, Loader2, LogOut, X, Send } from "lucide-react";
+import { BookOpen, Calculator as CalcIcon, ChevronLeft, ChevronRight, Flag, Maximize2, Minimize2, LayoutGrid, Check, CloudOff, Loader2, LogOut, X, Send } from "lucide-react";
 import type { AttemptPayload, AttemptQuestion } from "@/lib/types";
 import { getBrowserClient } from "@/lib/supabase/client";
 import { clockLevel, createSync, formatClock, remainingMs, type ClockSync } from "@/lib/exam/clock";
 import { letter, rpcMessage } from "@/lib/format";
 import { Calculator } from "./Calculator";
+import { EquationSheet } from "./EquationSheet";
+import { RichText } from "@/components/ui/RichText";
+import { courseUi } from "@/lib/courses";
 import { useAnswerSync } from "./useAnswerSync";
 import { QuestionNav, type NavFilter } from "./QuestionNav";
 import { SubmitDialog } from "./SubmitDialog";
@@ -23,6 +26,8 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
     Object.fromEntries(questions.map((q) => [q.question_id, { selected: q.selected_option_id, flagged: q.flagged, locked: q.locked, feedback: q.feedback }])));
   const [draft, setDraft] = useState<Record<string, string | null>>({}); // immediate mode: selection before "Check"
   const [calcOpen, setCalcOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const ui = courseUi(attempt.course.code);
   const [navOpen, setNavOpen] = useState(false); // navigator is hidden until the student asks for it
   const [filter, setFilter] = useState<NavFilter>("all");
   const [confirm, setConfirm] = useState(false);
@@ -239,7 +244,7 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
           <div className="min-w-0 flex-1">
             <p className="truncate text-body-sm font-semibold">{attempt.course.code} · {attempt.course.name}</p>
             <p className="truncate text-caption text-slate">
-              {attempt.mode === "mixed" ? "Full mixed practice exam" : `Domain exam — ${attempt.domain?.code} ${attempt.domain?.name}`}
+              {attempt.mode === "mixed" ? "Full mixed practice exam" : `${ui.unit === "topic" ? "Topic" : "Domain"} exam — ${attempt.domain?.code} ${attempt.domain?.name}`}
               <span className="hidden sm:inline"> · Question {index + 1} of {questions.length}</span>
             </p>
           </div>
@@ -253,6 +258,12 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
           <button type="button" onClick={() => setCalcOpen((o) => !o)} className="btn-ghost px-3" aria-pressed={calcOpen}>
             <CalcIcon size={16} aria-hidden /><span className="hidden md:inline">{calcOpen ? "Hide calculator" : "Show calculator"}</span>
           </button>
+          {ui.referenceSheet && (
+            <button type="button" onClick={() => setSheetOpen((o) => !o)} className="btn-ghost px-3" aria-pressed={sheetOpen}
+              aria-label={sheetOpen ? "Hide equation sheet" : "Show equation sheet"}>
+              <BookOpen size={16} aria-hidden /><span className="hidden md:inline">{sheetOpen ? "Hide equations" : "Equations"}</span>
+            </button>
+          )}
           {canFullscreen && (
             <button type="button" onClick={toggleFullscreen} className="btn-text hidden px-2 sm:inline-flex" aria-label={fullscreen ? "Exit full screen" : "Enter full screen"}>
               {fullscreen ? <Minimize2 size={18} aria-hidden /> : <Maximize2 size={18} aria-hidden />}
@@ -282,7 +293,7 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
               </button>
             </div>
             <h1 id="stem" ref={stemRef} tabIndex={-1} className="mt-4 whitespace-pre-line text-[18px] font-medium leading-relaxed text-ink outline-none">
-              {q.stem}
+              <RichText text={q.stem} />
             </h1>
             <fieldset className="mt-6" disabled={submitting || qs.locked}>
               <legend className="sr-only">Answer options</legend>
@@ -302,7 +313,7 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
                           ${chosen ? "border-midnight bg-midnight text-white" : "border-ink-20 bg-white text-ink"}`} aria-hidden>
                           {letter(i)}
                         </span>
-                        <span className="pt-0.5 text-body text-ink">{o.body}</span>
+                        <span className="pt-0.5 text-body text-ink"><RichText text={o.body} /></span>
                         {isCorrect && <span className="ml-auto pill bg-[#2f8f4e] text-white">Correct answer</span>}
                         {isWrongPick && <span className="ml-auto pill bg-coral text-ink">Your answer</span>}
                       </label>
@@ -317,7 +328,7 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
             {qs.feedback && (
               <div className="mt-5 rounded-button bg-paper p-4 text-body-sm">
                 <p className="font-semibold">{qs.feedback.is_correct ? "Correct." : "Not quite."}</p>
-                {qs.feedback.explanation && <p className="mt-1 text-graphite">{qs.feedback.explanation}</p>}
+                {qs.feedback.explanation && <p className="mt-1 whitespace-pre-line text-graphite"><RichText text={qs.feedback.explanation} /></p>}
               </div>
             )}
             {!immediate && qs.selected && (
@@ -385,6 +396,7 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
       )}
 
       <Calculator open={calcOpen} onClose={() => setCalcOpen(false)} />
+      {ui.referenceSheet && <EquationSheet open={sheetOpen} onClose={() => setSheetOpen(false)} />}
 
       <SubmitDialog open={confirm} total={questions.length} answered={counts.answered} flagged={counts.flagged}
         unansweredList={questions.filter((x) => !state[x.question_id].selected).map((x) => x.position)}

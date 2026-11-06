@@ -75,9 +75,10 @@ export function StartSubject({ courseId, blueprintId, subjects, count, minutes }
   );
 }
 
-export function StartDomain({ courseId, blueprintId, domains, count, minutes }: {
-  courseId: string; blueprintId: string; domains: BlueprintDomain[]; count: number; minutes: number;
+export function StartDomain({ courseId, blueprintId, domains, count, minutes, unit = "domain" }: {
+  courseId: string; blueprintId: string; domains: BlueprintDomain[]; count: number; minutes: number; unit?: "domain" | "topic";
 }) {
+  const Unit = unit === "topic" ? "Topic" : "Domain";
   const [state, action] = useActionState<StartState, FormData>(startExam, {});
   const [domain, setDomain] = useState("");
   return (
@@ -86,16 +87,16 @@ export function StartDomain({ courseId, blueprintId, domains, count, minutes }: 
       <input type="hidden" name="blueprint_id" value={blueprintId} />
       <input type="hidden" name="mode" value="domain" />
       <div>
-        <label htmlFor="domain_id" className="field-label">Domain</label>
+        <label htmlFor="domain_id" className="field-label">{Unit}</label>
         <select id="domain_id" name="domain_id" className="field-input" required value={domain} onChange={(e) => setDomain(e.target.value)}>
-          <option value="" disabled>Choose a domain…</option>
+          <option value="" disabled>Choose a {unit}…</option>
           {domains.map((d) => (
             <option key={d.id} value={d.id}>{d.code} — {d.name}</option>
           ))}
         </select>
       </div>
       <Problem state={state} />
-      <SubmitButton className="btn-outline" pendingText="Building your exam…">Start {count}-question domain exam · {minutes} min</SubmitButton>
+      <SubmitButton className="btn-outline" pendingText="Building your exam…">Start {count}-question {unit} exam · {minutes} min</SubmitButton>
     </form>
   );
 }

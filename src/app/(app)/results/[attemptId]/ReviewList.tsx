@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Flag } from "lucide-react";
 import type { ReviewItem } from "@/lib/types";
 import { letter } from "@/lib/format";
+import { RichText } from "@/components/ui/RichText";
 
 type F = "all" | "incorrect" | "flagged";
 
@@ -36,7 +37,7 @@ export function ReviewList({ items }: { items: ReviewItem[] }) {
               </span>
               {it.flagged && <span className="pill bg-marigold text-ink"><Flag size={11} fill="currentColor" aria-hidden /> Flagged</span>}
             </div>
-            <p className="mt-3 whitespace-pre-line text-body font-medium">{it.stem}</p>
+            <p className="mt-3 whitespace-pre-line text-body font-medium"><RichText text={it.stem} /></p>
             <ul className="mt-4 space-y-2">
               {it.options.map((o, i) => {
                 const correct = o.id === it.correct_option_id;
@@ -45,7 +46,7 @@ export function ReviewList({ items }: { items: ReviewItem[] }) {
                   <li key={o.id} className={`flex items-start gap-3 rounded-button border px-3 py-2 text-body-sm
                     ${correct ? "border-[#2f8f4e] bg-[#e3f4e8]" : picked ? "border-coral bg-[#fde8e5]" : "border-hairline"}`}>
                     <span className="font-semibold">{letter(i)}</span>
-                    <span className="flex-1">{o.body}</span>
+                    <span className="flex-1"><RichText text={o.body} /></span>
                     {correct && <span className="text-caption font-semibold text-[#14532d]">Correct answer</span>}
                     {picked && !correct && <span className="text-caption font-semibold">Your answer</span>}
                   </li>
@@ -55,7 +56,7 @@ export function ReviewList({ items }: { items: ReviewItem[] }) {
             {it.explanation && (
               <div className="mt-4 rounded-button bg-paper p-4 text-body-sm">
                 <p className="font-semibold">Explanation</p>
-                <p className="mt-1 text-graphite">{it.explanation}</p>
+                <p className="mt-1 whitespace-pre-line text-graphite"><RichText text={it.explanation} /></p>
                 {it.reference && <p className="mt-2 text-caption text-slate">Reference: {it.reference}</p>}
               </div>
             )}
