@@ -9,6 +9,7 @@ export function AppHeader({ name, isAdmin }: { name: string; isAdmin: boolean })
         <Logo />
         <nav aria-label="Main" className="flex items-center gap-1">
           <NavLink href="/dashboard">Dashboard</NavLink>
+          <NavLink href="/study-guides">Study guides</NavLink>
           {isAdmin && <NavLink href="/admin">Admin</NavLink>}
         </nav>
         <div className="flex items-center gap-2">

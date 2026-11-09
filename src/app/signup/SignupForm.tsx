@@ -7,12 +7,13 @@ import { Alert } from "@/components/ui/Alert";
 import { Turnstile } from "@/components/ui/Turnstile";
 import { MARKETING_URL } from "@/lib/env";
 
-export function SignupForm() {
+export function SignupForm({ next }: { next?: string }) {
   const [state, action] = useActionState<FormState, FormData>(signUp, {});
   if (state.message) return <Alert tone="success" title="Almost there">{state.message}</Alert>;
   return (
     <form action={action} className="space-y-5" noValidate>
       {state.error && <Alert tone="error">{state.error}</Alert>}
+      <input type="hidden" name="next" value={next ?? ""} />
       <div>
         <label className="field-label" htmlFor="full_name">Full name</label>
         <input id="full_name" name="full_name" className="field-input" autoComplete="name" required defaultValue={state.fields?.full_name} />

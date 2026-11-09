@@ -111,7 +111,7 @@ export async function signUp(_prev: FormState, form: FormData): Promise<FormStat
     options: {
       captchaToken: captchaToken(form),
       data: { username: parsed.data.username, full_name: parsed.data.full_name },
-      emailRedirectTo: `${SITE_URL}/auth/confirm?next=/dashboard`,
+      emailRedirectTo: `${SITE_URL}/auth/confirm?next=${encodeURIComponent(safeNext(form.get("next")))}`,
     },
   });
   if (isCaptchaError(error)) return { error: CAPTCHA_ERROR, fields };
