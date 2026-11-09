@@ -1,13 +1,36 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getSession } from "@/lib/auth/session";
 import { getServiceClient } from "@/lib/supabase/admin";
 import { findGuide } from "@/lib/studyGuides";
 
 export const dynamic = "force-dynamic";
 
+type R2Obj = { key: string; uploaded: Date; size: number };
+type R2Bucket = {
+  list(o?: { cursor?: string; limit?: number }): Promise<{ objects: R2Obj[]; truncated: boolean; cursor?: string }>;
+  get(key: string): Promise<(R2Obj & { body: ReadableStream }) | null>;
+};
+
+/** Newest PDF whose key contains the guide code as a word (e.g. "csp/…", "iParkar_CSP_Exam…pdf"). */
+async function latestPdf(bucket: R2Bucket, code: string) {
+  const word = new RegExp(`(^|[^a-z])${code.toLowerCase()}([^a-z]|$)`);
+  let best: R2Obj | null = null;
+  let cursor: string | undefined;
+  do {
+    const page = await bucket.list({ cursor, limit: 1000 });
+    for (const o of page.objects) {
+      const k = o.key.toLowerCase();
+      if (k.endsWith(".pdf") && word.test(k) && (!best || o.uploaded > best.uploaded)) best = o;
+    }
+    cursor = page.truncated ? page.cursor : undefined;
+  } while (cursor);
+  return best;
+}
+
 /**
- * Signed-in download of a study guide. Verifies the session, logs the download,
- * then redirects to a 60-second signed URL that forces a file download.
+ * Signed-in download of a study guide: verifies the session, logs the download,
+ * and streams the PDF from the private R2 bucket as an attachment.
  */
 export async function GET(request: NextRequest, { params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
@@ -22,20 +45,32 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   }
   if (session.profile.status !== "active") return NextResponse.redirect(new URL("/login?error=suspended", origin));
 
-  const svc = getServiceClient();
-  const bucket = svc.storage.from("study-guides");
-  // Serve the most recently uploaded PDF in the guide's folder, so a revised guide
-  // only needs uploading — no code change or exact filename required.
-  const { data: files } = await bucket.list(guide.file.folder, { limit: 100, sortBy: { column: "updated_at", order: "desc" } });
-  const latest = files?.find((f) => f.id && f.name.toLowerCase().endsWith(".pdf"));
-  if (!latest) return NextResponse.redirect(new URL(`/study-guides?error=unavailable`, origin));
-  const { data, error } = await bucket.createSignedUrl(`${guide.file.folder}/${latest.name}`, 60, { download: guide.file.downloadName });
-  if (error || !data?.signedUrl) {
-    return NextResponse.redirect(new URL(`/study-guides?error=unavailable`, origin));
+  const unavailable = () => NextResponse.redirect(new URL("/study-guides?error=unavailable", origin));
+  let bucket: R2Bucket | undefined;
+  try {
+    const { env } = await getCloudflareContext({ async: true });
+    bucket = (env as unknown as { STUDY_GUIDES?: R2Bucket }).STUDY_GUIDES;
+  } catch {
+    bucket = undefined;
   }
-  await svc.from("study_guide_downloads").insert({ user_id: session.user.id, guide: guide.code });
+  if (!bucket) return unavailable();
 
-  const res = NextResponse.redirect(data.signedUrl, 302);
-  res.headers.set("Cache-Control", "no-store");
-  return res;
+  const latest = await latestPdf(bucket, guide.code);
+  const obj = latest ? await bucket.get(latest.key) : null;
+  if (!obj) return unavailable();
+
+  // Best-effort audit log; never blocks the download.
+  try {
+    await getServiceClient().from("study_guide_downloads").insert({ user_id: session.user.id, guide: guide.code });
+  } catch { /* ignore */ }
+
+  return new Response(obj.body, {
+    headers: {
+      "Content-Type": "application/pdf",
+      "Content-Length": String(obj.size),
+      "Content-Disposition": `attachment; filename="${guide.file.downloadName}"`,
+      "Cache-Control": "private, no-store",
+      "X-Content-Type-Options": "nosniff",
+    },
+  });
 }

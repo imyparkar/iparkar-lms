@@ -80,3 +80,7 @@ Merge the `iparkar-site` change (Practice tab → `https://app.iparkar.com/cours
 | New blueprint version | Admin → Blueprints → Create, then Make current |
 | Stuck or abandoned exams | Admin → Attempts (auto-finalized at expiry; "Finalize now" for exceptions) |
 | Who changed what | Admin → Audit log |
+
+## Study guides (free, sign-in only)
+
+PDFs live in the private R2 bucket `iparkar-study-guides` (binding `STUDY_GUIDES` in `wrangler.jsonc`; no public access or r2.dev URL). To publish or revise a guide, upload the PDF in Cloudflare → R2 → `iparkar-study-guides`. Any filename works as long as it contains the guide code as a word (e.g. `iParkar_CSP_Exam_Study_Guide.pdf`); the newest matching upload is served as `iParkar-<CODE>-Exam-Study-Guide.pdf`. Downloads go through `/api/study-guides/<code>`, which requires sign-in and logs each download in `study_guide_downloads`. Add new guides to `src/lib/studyGuides.ts`.

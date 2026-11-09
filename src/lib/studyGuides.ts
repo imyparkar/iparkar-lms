@@ -1,12 +1,15 @@
-/** Free study guides for signed-in users. PDFs live in the private `study-guides` storage bucket. */
+/**
+ * Free study guides for signed-in users. PDFs live in the private R2 bucket `iparkar-study-guides`.
+ * The newest PDF whose name contains the guide code (e.g. "CSP") is served, so a revised guide
+ * only needs uploading in the Cloudflare dashboard — any filename, any folder.
+ */
 export type StudyGuide = {
   code: string;
   title: string;
   edition?: string;
   summary?: string;
   stats?: [string, string][];
-  /** folder = storage folder in the `study-guides` bucket; the newest PDF in it is served. */
-  file?: { folder: string; downloadName: string; label: string };
+  file?: { downloadName: string; label: string };
 };
 
 export const STUDY_GUIDES: StudyGuide[] = [
@@ -17,7 +20,7 @@ export const STUDY_GUIDES: StudyGuide[] = [
     summary:
       "Our main study material for the CSP exam. Work each domain chapter by chapter: an opening scenario, core teaching and figures, a worked application, then practice questions with answer explanations. Back matter includes a formula register, glossary and blueprint-to-chapter index.",
     stats: [["47", "blueprint objectives"], ["60", "chapters · 7 domains"], ["1,203", "pages"]],
-    file: { folder: "csp", downloadName: "iParkar-CSP-Exam-Study-Guide.pdf", label: "PDF · 1,203 pages · 23 MB" },
+    file: { downloadName: "iParkar-CSP-Exam-Study-Guide.pdf", label: "PDF · 1,203 pages · 23 MB" },
   },
   { code: "ASP", title: "ASP® Exam Study Guide" },
   { code: "CIH", title: "CIH® Exam Study Guide" },
