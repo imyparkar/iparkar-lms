@@ -34,8 +34,8 @@ export function SignupForm() {
       </div>
       <label className="flex items-start gap-3 text-body-sm text-graphite">
         <input type="checkbox" name="terms" className="mt-1 h-4 w-4 accent-[#02093a]" required />
-        <span>I agree to the <a className="link" href={`${MARKETING_URL}/terms.html`} target="_blank" rel="noreferrer">terms</a> and{" "}
-          <a className="link" href={`${MARKETING_URL}/privacy.html`} target="_blank" rel="noreferrer">privacy notice</a>.</span>
+        <span>I agree to the <a className="link" href={`${MARKETING_URL}/terms`} target="_blank" rel="noreferrer">terms</a> and{" "}
+          <a className="link" href={`${MARKETING_URL}/privacy`} target="_blank" rel="noreferrer">privacy notice</a>.</span>
       </label>
       <Turnstile resetKey={state} />
       <SubmitButton pendingText="Creating account…">Create account</SubmitButton>
