@@ -1,6 +1,6 @@
 # iParkar LMS — premium practice examinations (app.iparkar.com)
 
-Course-isolated practice exams for **ASP**, **CSP**, **CIH**, **GES/EPI** (course code `EPI`) and **QEP**: sign-in, paid access, blueprint-weighted
+Course-isolated practice exams for **ASP**, **CSP**, **CIH**, **GES/EPI** (course code `EPI`), **QEP** and **CIT**: sign-in, paid access, blueprint-weighted
 randomized exams, a server-authoritative timer, on-screen scientific calculator, server-side scoring and
 course-scoped analytics. Linked from the **Practice exam** tab on iparkar.com.
 
@@ -43,4 +43,6 @@ npm run cf:preview              # build + run on the Cloudflare Workers runtime 
 - Score = correct ÷ total × 100; unanswered questions count as incorrect.
 - Thresholds (80 / 60) are study indicators, configurable by admins, not passing standards.
 - Practice items are original study material, not live exam questions.
+- CIT uses the seven CIT2 blueprint domains (D1–D7, weights 18.6 / 13.8 / 14.4 / 15.6 / 15.7 / 11.9 / 10.0) and its 74 knowledge and skill statements as tasks (`D1-K1` … `D7-S4`). Import the bank in Admin → Questions → Import with course CIT, then enable exams in Admin → Courses.
+- The course page accepts `?plan=90|180|365` from iparkar.com; the chosen period is shown, added to the access request and substituted for `{days}` in `NEXT_PUBLIC_CHECKOUT_URL_<COURSE>`.
 - EPI and QEP use the 16 scored topics of the BGC blueprints (1.1 … 4.0) as domains and render TeX formulas written between `$$ … $$` in stems and explanations.

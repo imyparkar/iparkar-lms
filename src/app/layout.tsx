@@ -6,7 +6,7 @@ import { PolicyLinks } from "@/components/shell/PolicyLinks";
 
 export const metadata: Metadata = {
   title: { default: "iParkar Learning", template: "%s · iParkar Learning" },
-  description: "Practice examinations and study analytics for ASP, CSP, CIH, GES/EPI and QEP candidates.",
+  description: "Practice examinations and study analytics for ASP, CSP, CIH, GES/EPI, QEP and CIT candidates.",
   icons: { icon: "/favicon.svg", apple: "/apple-touch-icon.png" },
   robots: { index: false, follow: false },
 };
