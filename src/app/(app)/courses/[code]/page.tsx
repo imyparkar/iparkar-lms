@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import type { MyCourse } from "@/lib/types";
-import { checkoutUrl } from "@/lib/env";
+import { accessPeriod, checkoutUrl } from "@/lib/env";
 import { fmtDate } from "@/lib/format";
 import { allocate } from "@/lib/exam/allocation";
 import { Pill } from "@/components/ui/Pill";
@@ -21,8 +21,14 @@ const POLICY: Record<string, string> = {
   restricted: "You’ll see your score and domain breakdown; question review is not available.",
 };
 
-export default async function CoursePage({ params }: { params: Promise<{ code: string }> }) {
+export default async function CoursePage({ params, searchParams }: {
+  params: Promise<{ code: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const { code } = await params;
+  // Access period chosen on iparkar.com (?plan=90|180|365); carried into checkout or the access request.
+  const days = accessPeriod((await searchParams).plan);
+  const period = days === 365 ? "1 year" : days ? `${days} days` : null;
   const { supabase, user } = await requireUser();
   const { data } = await supabase.rpc("get_my_courses");
   const course = ((data ?? []) as MyCourse[]).find((c) => c.code === code.toUpperCase());
@@ -35,7 +41,9 @@ export default async function CoursePage({ params }: { params: Promise<{ code: s
   const subjectExam = course.exams?.find((e) => e.mode === "subject");
   const subjects = course.subject_areas ?? [];
   const alloc = mixed && bp?.domains ? allocate(bp.domains.map((d) => ({ number: d.number, weight: Number(d.weight) })), mixed.question_count) : [];
-  const buy = checkoutUrl(course.code)?.replace("{user_id}", encodeURIComponent(user.id)).replace("{email}", encodeURIComponent(user.email ?? ""));
+  const buy = checkoutUrl(course.code)?.replace("{user_id}", encodeURIComponent(user.id)).replace("{email}", encodeURIComponent(user.email ?? ""))
+    .replace("{days}", String(days ?? ""));
+  const request = `${course.code} premium access${period ? ` – ${period}` : ""}`;
 
   return (
     <div className="space-y-8">
@@ -54,12 +62,13 @@ export default async function CoursePage({ params }: { params: Promise<{ code: s
       {!course.has_access ? (
         <section className="rounded-card bg-marigold p-8">
           <h2 className="text-heading-sm">Unlock the {course.code} question bank</h2>
+          {period && <p className="mt-1 text-body-sm font-semibold">Selected access period: {period}</p>}
           <p className="mt-2 max-w-2xl">Full bank access includes the timed mixed exam, {subjectExam ? "subject-area practice sets" : `${ui.unit} practice exams`}, the on-screen calculator, explanations and course analytics.</p>
           <div className="mt-5 flex flex-wrap gap-3">
             {buy ? (
-              <a href={buy} className="btn-dark">Get {course.code} access</a>
+              <a href={buy} className="btn-dark">Get {course.code} access{period ? ` · ${period}` : ""}</a>
             ) : (
-              <a href={`mailto:support@iparkar.com?subject=${encodeURIComponent(course.code + " premium access")}`} className="btn-dark">Ask about {course.code} access</a>
+              <a href={`mailto:support@iparkar.com?subject=${encodeURIComponent(request)}`} className="btn-dark">Ask about {course.code} access{period ? ` · ${period}` : ""}</a>
             )}
           </div>
           <p className="mt-4 text-body-sm">One-time payment. No automatic renewal. <a className="link" href="https://iparkar.com/practice-exams/">View course pricing, access periods and included features</a>.</p>
