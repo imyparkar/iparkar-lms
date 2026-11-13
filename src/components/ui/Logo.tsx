@@ -5,7 +5,7 @@ export function Logo({ reversed = false, href = "/dashboard", size = 32 }: { rev
     <Link href={href} className="inline-flex items-center gap-2.5 rounded-button" aria-label="iParkar Learning home">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={reversed ? "/brand/iparkar-mark-reversed.svg" : "/brand/iparkar-mark-primary.svg"} width={size} height={size} alt="" />
-      <span className={`text-[17px] font-semibold tracking-[-0.2px] ${reversed ? "text-white" : "text-ink"}`}>iParkar Learning</span>
+      <span className={`hidden text-[17px] font-semibold tracking-[-0.2px] min-[480px]:inline ${reversed ? "text-white" : "text-ink"}`}>iParkar Learning</span>
     </Link>
   );
 }
