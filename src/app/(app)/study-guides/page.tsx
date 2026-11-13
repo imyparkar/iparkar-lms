@@ -70,7 +70,7 @@ export default async function StudyGuidesPage({ searchParams }: { searchParams: 
         <p className="mt-3 text-body-sm text-graphite">Meanwhile, practise with the <Link className="link" href="/dashboard">course practice exams</Link>.</p>
       </section>
 
-      <p className="text-caption text-graphite">CSP® is a registered mark of the Board of Certified Safety Professionals (BCSP), which has not reviewed or endorsed this guide. Practice questions are original CSP-style items, not actual exam items. For personal study only — please don’t redistribute.</p>
+      <p className="text-caption text-graphite">ASP® and CSP® are registered marks of the Board of Certified Safety Professionals (BCSP), which has not reviewed or endorsed these guides. Practice questions are original items in the style of each exam, not actual exam items. For personal study only — please don’t redistribute.</p>
     </div>
   );
 }
