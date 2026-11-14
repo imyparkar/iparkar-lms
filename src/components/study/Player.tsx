@@ -266,7 +266,7 @@ export function Player({ userId, courseSlug, courseTitle, data, outline, startSe
             {chapter.review_status !== "published" && chapter.review_status !== "approved" && <span className="pill bg-paper text-ink border border-hairline">Draft · awaiting subject review</span>}
           </div>
           <h1 className="mt-3 text-[32px] font-semibold leading-tight tracking-[-0.8px] text-ink sm:text-[40px]">
-            <span className="text-graphite">{chapter.code}</span> {chapter.title}
+            <span>{chapter.code}</span> {chapter.title}
           </h1>
           {chapter.meta.summary && <p className="lead mt-3">{chapter.meta.summary}</p>}
           {isBeta(courseVersion) && <BetaNotice className="mt-4" />}

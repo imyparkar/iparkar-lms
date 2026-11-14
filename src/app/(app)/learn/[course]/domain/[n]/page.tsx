@@ -47,10 +47,10 @@ export default async function DomainPage({ params }: { params: Promise<{ course:
           <li key={ch.code} className="card flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
               <p className="text-caption text-slate">
-                Chapter {ch.code}{ch.objectives.length ? ` · Objective ${ch.objectives.join(", ")}` : " · Prerequisite"}
+                {ch.objectives.length ? `Objective ${ch.objectives.join(", ")}` : "Prerequisite"}
                 {ch.source_pages ? ` · Guide pp. ${ch.source_pages[0]}–${ch.source_pages[1]}` : ""}
               </p>
-              <h2 className="mt-1 text-[18px] font-semibold leading-snug">{ch.title}</h2>
+              <h2 className="mt-1 text-[18px] font-semibold leading-snug text-ink"><span className="mr-1.5">{ch.code}</span>{ch.title}</h2>
               <p className="mt-1 text-body-sm text-graphite">
                 {ch.has_content ? `${ch.sections} sections${ch.est_minutes ? ` · about ${ch.est_minutes} min` : ""}` : "In preparation: lessons are being written and reviewed."}
               </p>

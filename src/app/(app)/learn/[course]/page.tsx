@@ -67,9 +67,9 @@ export default async function CourseOverview({ params }: { params: Promise<{ cou
           {c.domains.map((d, i) => {
             const done = d.chapters.filter((ch) => ch.status === "completed").length;
             return (
-              <li key={d.number}>
-                <Link href={`/learn/${course}/domain/${d.number}`} className="block h-full rounded-card border border-hairline bg-white transition-colors duration-200 hover:bg-paper">
-                  <div className={`rounded-t-card px-5 py-4 text-ink ${PANELS[i % PANELS.length]}`}>
+              <li key={d.number} className="flex h-full flex-col overflow-hidden rounded-card border border-hairline bg-white">
+                <Link href={`/learn/${course}/domain/${d.number}`} className="flex flex-1 flex-col transition-colors duration-200 hover:bg-paper">
+                  <div className={`px-5 py-4 text-ink ${PANELS[i % PANELS.length]}`}>
                     <p className="text-caption">Domain {d.number} · {d.weight}% of the exam</p>
                     <h3 className="mt-1 text-heading-sm">{d.title}</h3>
                   </div>
@@ -79,7 +79,9 @@ export default async function CourseOverview({ params }: { params: Promise<{ cou
                   </div>
                 </Link>
                 {sheets.has(d.number) && c.access.has_access && (
-                  <Link href={`/learn/${course}/formulas/${d.number}`} className="btn-outline mt-3 w-full">Domain {d.number} formula sheet</Link>
+                  <div className="px-5 pb-5">
+                    <Link href={`/learn/${course}/formulas/${d.number}`} className="btn-outline w-full">Formula sheet<span className="sr-only"> for domain {d.number}</span></Link>
+                  </div>
                 )}
               </li>
             );
@@ -87,7 +89,7 @@ export default async function CourseOverview({ params }: { params: Promise<{ cou
         </ul>
       </section>
 
-      <section className="card max-w-[820px] space-y-2 text-body-sm text-graphite" aria-label="About this course">
+      <section className="card space-y-2 text-body-sm text-graphite" aria-label="About this course">
         <p><span className="font-semibold text-ink">About completion.</span> A chapter is complete when you have opened and marked every section as studied, answered every required activity and read its feedback, then pressed Finish chapter. Opening or scrolling never completes a chapter. Completion records your participation; it isn&apos;t a predicted score or a certification.</p>
         <p><span className="font-semibold text-ink">Independence.</span> ASP® is a registered mark of the Board of Certified Safety Professionals (BCSP), which has not reviewed or endorsed this course. Check exam policies at bcsp.org. This study course is separate from iParkar&apos;s practice exams.</p>
       </section>
