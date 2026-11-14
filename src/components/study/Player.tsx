@@ -191,7 +191,7 @@ export function Player({ userId, courseSlug, courseTitle, data, outline, startSe
             {save.state === "expired" && <a className="ml-2 font-medium text-ink underline" href={`/login?next=${encodeURIComponent(`/study/${courseSlug}/${chapter.code}`)}`}>Sign in</a>}
           </p>
           {access?.source === "trial" && access.has_access && (
-            <a href={buyHref ?? `/learn/${courseSlug}`} className="hidden shrink-0 rounded-button bg-sky-tint px-3 py-1.5 text-body-sm font-medium text-ink xl:inline-flex">
+            <a href={buyHref && !buyHref.startsWith("mailto:") ? buyHref : `/learn/${courseSlug}`} className="hidden shrink-0 rounded-button bg-sky-tint px-3 py-1.5 text-body-sm font-medium text-ink xl:inline-flex">
               Free access: {access.days_left} {access.days_left === 1 ? "day" : "days"} left
             </a>
           )}

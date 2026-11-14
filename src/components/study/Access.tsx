@@ -2,14 +2,15 @@ import Link from "next/link";
 import { fmtDate } from "@/lib/format";
 import { startStudyCourse } from "@/lib/study/accessActions";
 import { courseSlug, type StudyAccess, type StudyOffer } from "@/lib/study/types";
+import { isAccessRequest } from "@/lib/study/buy";
 
 const period = (days: number | null) => (days === 365 ? "12 months" : days ? `${days} days` : "");
 
 function BuyButton({ access, buyHref, className = "btn-primary" }: { access: Pick<StudyAccess, "price_label" | "access_days">; buyHref: string | null; className?: string }) {
-  const label = `Buy ${period(access.access_days)} access${access.price_label ? ` · ${access.price_label}` : ""}`;
-  if (!buyHref) {
-    return <p className="text-body-sm text-graphite">Online purchase isn&apos;t open yet. Contact iParkar Learning to buy {period(access.access_days)} access{access.price_label ? ` (${access.price_label})` : ""}.</p>;
-  }
+  if (!buyHref) return null;
+  const label = isAccessRequest(buyHref)
+    ? "Request for Access"
+    : `Buy ${period(access.access_days)} access${access.price_label ? ` · ${access.price_label}` : ""}`;
   return <a href={buyHref} className={className} rel="noopener">{label}</a>;
 }
 
@@ -28,7 +29,7 @@ export function TrialNotice({ access, buyHref }: { access: StudyAccess; buyHref:
     <section aria-label="Free access" className="rounded-card bg-sky-tint p-5 sm:flex sm:items-center sm:justify-between sm:gap-6">
       <div>
         <p className="text-body font-semibold text-ink">Free access: {access.days_left} {access.days_left === 1 ? "day" : "days"} left</p>
-        <p className="mt-1 text-body-sm text-charcoal">Your {access.trial_days}-day free access ends {fmtDate(access.expires_at)}. Buy {period(access.access_days)} of access to keep studying; your progress carries over.</p>
+        <p className="mt-1 text-body-sm text-charcoal">Your {access.trial_days}-day free access ends {fmtDate(access.expires_at)}. {buyHref && isAccessRequest(buyHref) ? "Request" : "Buy"} {period(access.access_days)} of access{access.price_label ? ` (${access.price_label})` : ""} to keep studying; your progress carries over.</p>
       </div>
       <div className="mt-3 shrink-0 sm:mt-0"><BuyButton access={access} buyHref={buyHref} /></div>
     </section>
