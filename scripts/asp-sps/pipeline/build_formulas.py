@@ -30,17 +30,17 @@ for d in man['domains']:
         for s in json.load(open(f))['sections']:
             for blk in s['blocks']:
                 if blk['type'] == 'equation' and EQ.search(blk.get('label', '')):
-                    found.append({k: v for k, v in blk.items() if k not in ('pages',)})
+                    found.append(dict(blk))
                     count += len(EQ.findall(blk['label']))
                 elif blk['type'] == 'table' and blk['columns'] and blk['columns'][0].strip().lower().rstrip('.') in ('eq', 'equation no', 'eq no'):
-                    found.append({k: v for k, v in blk.items() if k not in ('pages',)})
+                    found.append(dict(blk))
                     count += len(blk['rows'])
         if found:
-            blocks.append({'type': 'heading', 'text': f"Chapter {c['id']} · {c['title']}"})
+            blocks.append({'type': 'heading', 'origin': 'editorial', 'text': f"Chapter {c['id']} · {c['title']}"})
             blocks += found
             related.append({'code': c['id'], 'title': c['title']})
     if related:
-        blocks.append({'type': 'related', 'chapters': related})
+        blocks.append({'type': 'related', 'origin': 'editorial', 'chapters': related})
     resources.append({'code': f'formulas-{n}', 'kind': 'formula_sheet', 'domain': n,
                       'title': f"Domain {n} formula sheet · {d['title']}", 'pages': [a, b], 'blocks': blocks,
                       'review_status': 'draft'})
