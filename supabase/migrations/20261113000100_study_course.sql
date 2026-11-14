@@ -26,9 +26,11 @@ begin
     create type public.study_progress_status as enum ('not_started', 'in_progress', 'completed');
   end if;
   if to_regtype('public.study_activity_kind') is null then
-    create type public.study_activity_kind as enum ('single_choice', 'multi_choice', 'numeric', 'ordering');
+    create type public.study_activity_kind as enum ('single_choice', 'multi_choice', 'numeric', 'ordering', 'self_check');
   end if;
 end $$;
+-- self_check: a written response compared with a model answer (formative, always accepted).
+alter type public.study_activity_kind add value if not exists 'self_check';
 
 -- ---------- catalogue ----------
 create table if not exists public.study_courses (
@@ -304,14 +306,14 @@ returns boolean language plpgsql immutable set search_path = public as $$
 declare
   v_num numeric; v_target numeric; v_tol numeric;
 begin
-  if p_kind = 'single_choice' then
+  if p_kind::text = 'single_choice' then
     if jsonb_typeof(p_response -> 'choice') <> 'string' then return null; end if;
     return (p_response ->> 'choice') = (p_key ->> 'correct');
-  elsif p_kind = 'multi_choice' then
+  elsif p_kind::text = 'multi_choice' then
     if jsonb_typeof(p_response -> 'choices') <> 'array' then return null; end if;
     return (select coalesce(array_agg(x order by x), '{}') from (select distinct jsonb_array_elements_text(p_response -> 'choices') x) s)
          = (select coalesce(array_agg(x order by x), '{}') from (select jsonb_array_elements_text(p_key -> 'correct') x) s);
-  elsif p_kind = 'numeric' then
+  elsif p_kind::text = 'numeric' then
     begin
       v_num := (p_response ->> 'value')::numeric;
     exception when others then return null;
@@ -320,7 +322,11 @@ begin
     v_target := (p_key ->> 'value')::numeric;
     v_tol := coalesce((p_key ->> 'abs_tol')::numeric, abs(v_target) * coalesce((p_key ->> 'rel_tol')::numeric, 0.01));
     return abs(v_num - v_target) <= v_tol;
-  elsif p_kind = 'ordering' then
+  elsif p_kind::text = 'self_check' then
+    if jsonb_typeof(p_response -> 'text') <> 'string' or length(btrim(p_response ->> 'text')) = 0
+       or length(p_response ->> 'text') > 3000 then return null; end if;
+    return true;
+  elsif p_kind::text = 'ordering' then
     if jsonb_typeof(p_response -> 'order') <> 'array' then return null; end if;
     return (p_response -> 'order') = (p_key -> 'order');
   end if;
@@ -486,7 +492,7 @@ begin
   if a.id is null then return jsonb_build_object('ok', false, 'error', 'not_found'); end if;
   e := public.study_enrollment_for_chapter(a.chapter_id);
   if e.id is null then return jsonb_build_object('ok', false, 'error', 'not_enrolled'); end if;
-  if p_client_attempt is null or p_response is null or length(p_response::text) > 4000 then
+  if p_client_attempt is null or p_response is null or length(p_response::text) > 6000 then
     return jsonb_build_object('ok', false, 'error', 'invalid_response');
   end if;
   -- The learner must have opened the section that holds the activity.

@@ -41,7 +41,7 @@ export type ActivitySpec = {
   unit?: string; hint?: string | null; tolerance_note?: string;
 };
 export type StudyActivity = {
-  id: string; code: string; kind: "single_choice" | "multi_choice" | "numeric" | "ordering"; is_required: boolean;
+  id: string; code: string; kind: "single_choice" | "multi_choice" | "numeric" | "ordering" | "self_check"; is_required: boolean;
   spec: ActivitySpec; last: ActivityLast | null;
 };
 export type StudySection = {

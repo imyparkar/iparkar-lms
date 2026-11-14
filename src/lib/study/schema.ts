@@ -19,10 +19,10 @@ const Origin = z.object({
   pages: z.tuple([z.number().int().positive(), z.number().int().positive()]).optional(),
 });
 
-const md = z.string().min(1).max(6000);
+const md = z.string().min(1).max(12000);
 
 const Blocks = [
-  z.object({ type: z.literal("heading"), text: z.string().min(1).max(200) }),
+  z.object({ type: z.literal("heading"), text: z.string().min(1).max(200), level: z.number().int().min(2).max(4).optional() }),
   Origin.extend({ type: z.literal("text"), md }),
   Origin.extend({ type: z.literal("list"), ordered: z.boolean(), items: z.array(md).min(1) }),
   Origin.extend({
@@ -39,10 +39,15 @@ const Blocks = [
   }),
   Origin.extend({
     type: z.literal("worked_example"), label: z.string(), title: z.string(), context: z.string().optional(),
-    given: md, find: md,
-    steps: z.array(z.object({ label: z.string(), md: md.optional(), tex: z.string().optional() })
-      .refine((s) => !!s.md || !!s.tex, "step needs md or tex")).min(1),
-    answer: md,
+    given_label: z.string().optional(), given: md, find: md.optional(),
+    steps: z.array(z.object({
+      label: z.string(), md: md.optional(), tex: z.string().optional(),
+      table: z.object({ columns: z.array(z.string()), rows: z.array(z.array(z.string())) }).optional(),
+    }).refine((s) => !!s.md || !!s.tex || !!s.table, "step needs md, tex or table")).min(1),
+    answer: md.optional(),
+  }),
+  Origin.extend({
+    type: z.literal("figure"), label: z.string(), caption: z.string().min(1), description: z.string().min(1).max(10000),
   }),
   Origin.extend({ type: z.literal("scenario"), title: z.string(), body: md, decision: md }),
   Origin.extend({
@@ -98,13 +103,19 @@ export const ActivitySchema = z.discriminatedUnion("kind", [
     sample_response: z.object({ value: z.number() }),
   }),
   ActivityBase.extend({
+    kind: z.literal("self_check"),
+    spec: z.object({ prompt: md }),
+    answer_key: z.object({}),
+    sample_response: z.object({ text: z.string().min(1) }),
+  }),
+  ActivityBase.extend({
     kind: z.literal("ordering"),
     spec: z.object({ prompt: md, items: z.array(Option).min(2) }),
     answer_key: z.object({ order: z.array(z.string()).min(2) }),
     sample_response: z.object({ order: z.array(z.string()) }),
   }),
 ]).superRefine((a, ctx) => {
-  const ids = "options" in a.spec ? a.spec.options.map((o) => o.id) : "items" in a.spec ? a.spec.items.map((o) => o.id) : [];
+  const ids = a.kind === "self_check" ? [] : "options" in a.spec ? a.spec.options.map((o) => o.id) : "items" in a.spec ? a.spec.items.map((o) => o.id) : [];
   if (a.kind === "single_choice" && !ids.includes(a.answer_key.correct)) ctx.addIssue({ code: "custom", message: `${a.code}: key not an option` });
   if (a.kind === "multi_choice" && a.answer_key.correct.some((c) => !ids.includes(c))) ctx.addIssue({ code: "custom", message: `${a.code}: key not an option` });
   if (a.kind === "ordering" && [...a.answer_key.order].sort().join() !== [...ids].sort().join()) ctx.addIssue({ code: "custom", message: `${a.code}: order must use every item once` });

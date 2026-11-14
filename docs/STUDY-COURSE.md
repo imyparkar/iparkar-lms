@@ -1,13 +1,15 @@
 # ASP Self Paced Study Course — engine, policy and handoff
 
-Status on 13 Nov 2026: **engine complete and tested; 1 of 99 chapters authored (1.1, draft, awaiting subject review); 0 reviewed; 0 published.** The course version `1.0.0-draft` cannot be published until every required chapter has content and an approved review status — the database refuses it.
+Status on 14 Nov 2026: **engine complete and tested; 99 of 99 chapters authored as drafts (647 sections, 789 activities, 1,268-page source); 0 subject-reviewed; 0 published.** Chapter 1.1 was written by hand; chapters 1.2–9.7 were converted from the guide PDF by a layout-aware pipeline, with every equation transcribed to TeX by hand and original knowledge checks added. The course version `1.0.0-draft` cannot be published until every chapter has an approved review status: the database refuses it.
 
 ## 1. What was built
 
 | Area | Where |
 |---|---|
 | Curriculum manifest: 9 domains, 99 chapters, exact titles, objective mapping (84 top-level / 109 incl. lettered), PDF page ranges for every chapter, part contents, formula sheet and glossary | `content/asp-sps/manifest.json` (built by `scripts/asp-sps/*.py` from the guide text) |
-| Content register (per chapter: source range, sections, activities, review and check status) | `content/asp-sps/content-register.csv` |
+| Content register (per chapter: source range, sections, activities, KC, worked examples, tables, equations, figures, conversion flags, review and check status) | `content/asp-sps/content-register.csv` |
+| Objective coverage matrix (109 objective codes, 84 top-level → chapters, sections, required activities, KC items; none uncovered) | `content/asp-sps/coverage.csv` |
+| Content pipeline (PDF → chapters) | `scripts/asp-sps/pipeline/` (see its README) |
 | Database: study courses, versions, domains, chapters, sections, activities, enrollments, section/chapter progress, attempts, resume, bookmarks, notes, completions; RLS; RPCs | `supabase/migrations/20261113000100_study_course.sql` |
 | Content schema (validated blocks + activities) and package builder | `src/lib/study/schema.ts`, `src/lib/study/package.ts` |
 | Import CLI | `npm run import:study -- --course asp-sps [--dry-run]` |
@@ -83,10 +85,26 @@ Extensions (documented): Tailwind config gained the design system's brown-green 
 
 Rollback: the feature is isolated in `study_*` objects. To remove it, drop the study functions and tables (`drop table public.study_course_completions, public.study_notes, public.study_bookmarks, public.study_resume, public.study_activity_attempts, public.study_chapter_progress, public.study_section_progress, public.study_enrollments, public.study_activities, public.study_sections, public.study_chapters, public.study_domains, public.study_course_versions, public.study_courses cascade;` then the three `study_*` types). No existing table was altered.
 
-## 9. Authoring the remaining 98 chapters
+## 9. Content produced, and what review must still cover
 
-For each chapter: read its full page range from the guide (`manifest.json` → `pages`), inspect rendered pages for figures and equations, then write `imports/asp-sps/chapters/<id>.json` following 1.1 (schema in `src/lib/study/schema.ts`). Rules: `origin: "source"` blocks carry their page range; original practice is labelled original; recompute every number; keep US exam context (Kuwait examples labelled as supplementary); 3–5 formative knowledge-check questions; `review_status: "draft"` until an authorised reviewer approves. Run `npm run import:study -- --dry-run` after each batch and update `content-register.csv`.
+| Item | Count |
+|---|---:|
+| Chapters with lesson content | 99 / 99 |
+| Sections (5–15 min each, editorial estimates) | 647 |
+| Required activities | 789: 294 original knowledge-check questions (3 per converted chapter, 5 in 1.1; 166 numeric), the guide's own Try-it items (numeric where the answer is a single value, otherwise write-then-compare), and a "first call" on each opening scenario |
+| Worked examples / tables / equations / figures | 333 / 123 / 173 / 180 |
+| Estimated study time (editorial) | about 63 hours |
 
-Remaining IDs: 1.2–1.17; 2.1–2.24; 3.1–3.7; 4.1–4.12; 5.1–5.6; 6.1–6.11; 7.1–7.8; 8.1–8.7; 9.1–9.7. Also outstanding: domain introductions, each part's formula/reference sheet and glossary as course resources, course-wide search, and current-BCSP blueprint verification for the version notes.
+How the converted chapters were made: tables come from the PDF's header fills and row rules (cell by cell, including tables that continue across pages); worked-example rows, callouts, two-column end matter, sub/superscripts and figure alt text come from the layout; all 173 equations were transcribed to TeX from rendered page crops and compile; figures are presented as the guide's own description (alt text) because the drawings themselves are not shipped. Every block keeps its source page.
 
-Known source notes: chapters 1.2, 2.3, 2.4, 6.4, 6.5, 6.6, 7.2, 7.3, 7.4 and 8.4 word their objective statement differently, so `objective_statement` is null in the manifest (the objective codes are present). Objective 2.3 maps to chapters 2.3 and 2.4, and 6.4a to 6.4–6.6, as the guide's index states.
+Verified: every chapter validates against the schema; every chapter imports into the database and can be completed with its answer keys; 647 sections render in the browser with no errors and no TeX fallbacks; axe WCAG 2.2 AA shows 0 violations on converted chapter pages (worked-example tables, figures, equations) at desktop and mobile widths; every number in the knowledge checks was recomputed.
+
+Not yet verified, and required before publication:
+- **Subject-matter review of every chapter** by an authorised reviewer, then `review_status: approved` per chapter (`content-register.csv` tracks it).
+- **Numbers in the guide's own worked examples** (333) are carried as printed. Chapter 1.1's were recomputed; the rest need the same check.
+- **Conversion flags** (63 across all chapters, listed in each chapter's `meta.checks.flags`): tables named from their headers, drawing labels dropped, worked examples whose source has no separate Answer row. Each is a prompt to compare with the PDF page.
+- **Figures**: diagrams are described, not drawn. Decide whether to add the original drawings as protected images.
+- Domain introductions, the part formula sheets and glossaries as course resources, course-wide search, and BCSP calculator/blueprint policy checks (section 7 of the brief) remain to build.
+- Manual screen-reader and keyboard pass; run against the real Supabase staging project.
+
+To rebuild a chapter after a fix: edit its overlay in `imports/asp-sps/authoring/overlays/<id>.json` (or `kc_*.py` / `eq_*.py` and re-save), run `python3 scripts/asp-sps/pipeline/convert.py <id>`, then `npm run import:study -- --dry-run` and the import. Re-imports keep learner progress unless the set of sections or activities changes on a version that already has learners (then publish a new version).

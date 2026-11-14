@@ -5,13 +5,14 @@ import { StudyText } from "./StudyText";
 
 type Result = { attempt_id: string; is_correct: boolean; feedback: ActivityFeedback; correct: Record<string, unknown>; attempts: number; response: Record<string, unknown> };
 
-const KIND_LABEL = { single_choice: "Choose one", multi_choice: "Choose all that apply", numeric: "Calculate", ordering: "Put in order" } as const;
+const KIND_LABEL = { single_choice: "Choose one", multi_choice: "Choose all that apply", numeric: "Calculate", ordering: "Put in order", self_check: "Write, then compare" } as const;
 
 function correctText(a: StudyActivity, correct: Record<string, unknown>) {
   if (a.kind === "numeric") return `${correct.value} ${a.spec.unit ?? ""}`.trim();
   const label = (id: string) => (a.spec.options ?? a.spec.items ?? []).find((o) => o.id === id)?.text ?? id;
   if (a.kind === "single_choice") return label(String(correct.correct));
   if (a.kind === "multi_choice") return (correct.correct as string[]).map(label).join("; ");
+  if (a.kind === "self_check") return "";
   return (correct.order as string[]).map((id, i) => `${i + 1}. ${label(id)}`).join("  ");
 }
 
@@ -37,6 +38,8 @@ export function ActivityCard({ activity, sectionOpen, onSubmit, onFeedbackRead, 
   const [choice, setChoice] = useState<string>("");
   const [choices, setChoices] = useState<string[]>([]);
   const [value, setValue] = useState("");
+  const [text, setText] = useState("");
+  const self = a.kind === "self_check";
   const [order, setOrder] = useState<string[]>(() => (a.spec.items ?? []).map((i) => i.id));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -45,6 +48,7 @@ export function ActivityCard({ activity, sectionOpen, onSubmit, onFeedbackRead, 
   const response = (): Record<string, unknown> | null => {
     if (a.kind === "single_choice") return choice ? { choice } : null;
     if (a.kind === "multi_choice") return choices.length ? { choices } : null;
+    if (a.kind === "self_check") return text.trim() ? { text: text.trim().slice(0, 3000) } : null;
     if (a.kind === "numeric") {
       const n = Number(value.replace(/,/g, "").trim());
       return value.trim() && Number.isFinite(n) ? { value: n } : null;
@@ -55,7 +59,7 @@ export function ActivityCard({ activity, sectionOpen, onSubmit, onFeedbackRead, 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     const r = response();
-    if (!r) { setError(a.kind === "numeric" ? "Enter a number (digits, optional decimal point)." : "Choose an answer first."); return; }
+    if (!r) { setError(a.kind === "numeric" ? "Enter a number (digits, optional decimal point)." : self ? "Write your answer first, even a short one." : "Choose an answer first."); return; }
     setBusy(true); setError(null);
     try {
       const res = await onSubmit(a, r);
@@ -83,7 +87,7 @@ export function ActivityCard({ activity, sectionOpen, onSubmit, onFeedbackRead, 
   return (
     <section className="rounded-card border border-hairline bg-white" aria-labelledby={`${uid}-q`}>
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-hairline px-5 py-3">
-        <p className="text-caption text-slate">{KIND_LABEL[a.kind]} · Original practice {a.is_required ? "· Required activity" : "· Optional"}</p>
+        <p className="text-caption text-slate">{KIND_LABEL[a.kind]} · {a.spec.prompt.startsWith("Try it") ? "Practice from the guide" : "Original practice"} {a.is_required ? "· Required activity" : "· Optional"}</p>
         {result && <span className={`pill ${viewed ? "bg-midnight text-white" : "bg-marigold text-ink"}`}>{viewed ? "Feedback read" : "Read the feedback"}</span>}
       </div>
       <div className="space-y-4 px-5 py-4">
@@ -121,6 +125,13 @@ export function ActivityCard({ activity, sectionOpen, onSubmit, onFeedbackRead, 
                 <p id={`${uid}-tol`} className="mt-1 text-body-sm text-graphite">{a.spec.tolerance_note} Enter the number only.{a.spec.hint ? ` Hint: ${a.spec.hint}` : ""}</p>
               </div>
             )}
+            {self && (
+              <div>
+                <label htmlFor={`${uid}-t`} className="field-label">Your answer</label>
+                <textarea id={`${uid}-t`} className="field-input min-h-[96px]" maxLength={3000} value={text} onChange={(e) => setText(e.target.value)} aria-describedby={`${uid}-sh`} />
+                <p id={`${uid}-sh`} className="mt-1 text-body-sm text-graphite">Write your answer before you look. It is saved for you and is not marked.</p>
+              </div>
+            )}
             {a.kind === "ordering" && (
               <ol className="space-y-2" aria-label="Current order">
                 {order.map((id, i) => (
@@ -135,23 +146,28 @@ export function ActivityCard({ activity, sectionOpen, onSubmit, onFeedbackRead, 
               </ol>
             )}
             <div className="flex flex-wrap items-center gap-2">
-              <button type="submit" className="btn-outline" disabled={busy || !sectionOpen}>{busy ? "Checking…" : "Check answer"}</button>
+              <button type="submit" className="btn-outline" disabled={busy || !sectionOpen}>{busy ? "Saving…" : self ? "Show the model answer" : "Check answer"}</button>
               {retrying && <button type="button" className="btn-text" onClick={() => setRetrying(false)}>Cancel</button>}
             </div>
           </form>
         )}
 
         {result && !retrying && (
-          <div role="status" aria-live="polite" className={`rounded-button p-4 ${result.is_correct ? "bg-sky-tint" : "bg-paper"}`}>
-            <p className="text-body font-semibold text-ink">{result.is_correct ? "Correct." : "Not quite."} <span className="font-normal text-graphite">Attempt {result.attempts}.</span></p>
+          <div role="status" aria-live="polite" className={`rounded-button p-4 ${result.is_correct && !self ? "bg-sky-tint" : "bg-paper"}`}>
+            {self
+              ? <>
+                  <p className="text-body font-semibold text-ink">Compare your answer <span className="font-normal text-graphite">Attempt {result.attempts}.</span></p>
+                  {chosen && typeof chosen.text === "string" && <p className="mt-2 whitespace-pre-wrap rounded-button border border-hairline bg-white p-3 text-body-sm text-charcoal"><span className="font-semibold text-ink">You wrote: </span>{chosen.text}</p>}
+                </>
+              : <p className="text-body font-semibold text-ink">{result.is_correct ? "Correct." : "Not quite."} <span className="font-normal text-graphite">Attempt {result.attempts}.</span></p>}
             {chosen && a.kind === "numeric" && <p className="mt-1 text-body-sm text-graphite">You answered {String(chosen.value)} {a.spec.unit}.</p>}
-            {!result.is_correct && <p className="mt-1 text-body-sm text-ink">Expected answer: <strong>{correctText(a, result.correct)}</strong></p>}
+            {!self && !result.is_correct && <p className="mt-1 text-body-sm text-ink">Expected answer: <strong>{correctText(a, result.correct)}</strong></p>}
             <p className="mt-2 text-body text-charcoal"><StudyText md={result.feedback.explanation} /></p>
             {!result.is_correct && chosen && "choice" in chosen && result.feedback.options?.[String(chosen.choice)] && (
               <p className="mt-2 text-body text-charcoal"><span className="font-semibold text-ink">About your choice: </span><StudyText md={result.feedback.options[String(chosen.choice)]} /></p>
             )}
             <div className="mt-3 flex flex-wrap gap-2">
-              {!viewed && <button type="button" className="btn-outline" onClick={markRead} disabled={busy}>I&apos;ve read the feedback</button>}
+              {!viewed && <button type="button" className="btn-outline" onClick={markRead} disabled={busy}>{self ? "I've compared my answer" : "I've read the feedback"}</button>}
               <button type="button" className="btn-text" onClick={() => { setRetrying(true); setError(null); }}>Try again</button>
               {!result.is_correct && result.feedback.review_section && (
                 <button type="button" className="btn-text" onClick={() => onReview(result.feedback.review_section!)}>Review the lesson</button>

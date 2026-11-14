@@ -44,14 +44,14 @@ export function StudyBlock({ block, renderActivity }: { block: Block; renderActi
                 {block.rows.map((r, i) => (
                   <tr key={i}>
                     {r.map((cell, j) => j === 0
-                      ? <th key={j} scope="row" className="table-cell text-left font-medium text-ink">{cell}</th>
-                      : <td key={j} className="table-cell text-charcoal">{cell}</td>)}
+                      ? <th key={j} scope="row" className="table-cell text-left font-medium text-ink"><StudyText md={cell} /></th>
+                      : <td key={j} className="table-cell text-charcoal"><StudyText md={cell} /></td>)}
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          {block.note && <figcaption className="mt-2 text-body-sm text-graphite">{block.note}</figcaption>}
+          {block.note && <figcaption className="mt-2 text-body-sm text-graphite"><StudyText md={block.note} /></figcaption>}
         </figure>
       );
     case "equation":
@@ -91,20 +91,34 @@ export function StudyBlock({ block, renderActivity }: { block: Block; renderActi
             <h4 className="mt-1 text-[18px] font-semibold leading-snug text-ink">{block.title}</h4>
           </header>
           <dl className="divide-y divide-hairline">
-            {[{ label: "Given", md: block.given }, { label: "Find", md: block.find }, ...block.steps].map((st, i) => (
+            {[{ label: block.given_label ?? "Given", md: block.given }, ...(block.find ? [{ label: "Find", md: block.find }] : []), ...block.steps].map((st, i) => (
               <div key={i} className="grid gap-1 px-5 py-3 sm:grid-cols-[140px_1fr] sm:gap-4">
-                <dt className="text-body-sm font-semibold text-ink">{st.label}</dt>
-                <dd className="text-body text-charcoal">
-                  {"tex" in st && st.tex ? <TexBlock tex={st.tex} /> : <StudyText md={st.md} />}
+                <dt className="text-body-sm font-semibold text-ink">{st.label === "·" ? <span className="sr-only">Step</span> : st.label}</dt>
+                <dd className="min-w-0 text-body text-charcoal">
+                  {"table" in st && st.table ? <MiniTable columns={st.table.columns} rows={st.table.rows} label={`${block.label} table`} />
+                    : "tex" in st && st.tex ? <TexBlock tex={st.tex} /> : <StudyText md={st.md} />}
                 </dd>
               </div>
             ))}
-            <div className="grid gap-1 rounded-b-card bg-sky-tint px-5 py-3 sm:grid-cols-[140px_1fr] sm:gap-4">
-              <dt className="text-body-sm font-semibold text-ink">Answer</dt>
-              <dd className="text-body text-ink"><StudyText md={block.answer} /></dd>
-            </div>
+            {block.answer && (
+              <div className="grid gap-1 rounded-b-card bg-sky-tint px-5 py-3 sm:grid-cols-[140px_1fr] sm:gap-4">
+                <dt className="text-body-sm font-semibold text-ink">Answer</dt>
+                <dd className="text-body text-ink"><StudyText md={block.answer} /></dd>
+              </div>
+            )}
           </dl>
         </section>
+      );
+    case "figure":
+      return (
+        <figure className="rounded-card border border-hairline bg-white p-5">
+          <p className="text-body-sm font-semibold text-ink">{block.label}</p>
+          <p className="mt-1 text-body-sm text-graphite"><StudyText md={block.caption} /></p>
+          <div className="mt-3 rounded-button bg-paper p-4">
+            <p className="text-caption text-slate">What the figure shows</p>
+            <p className="mt-1 text-body text-charcoal"><StudyText md={block.description} /></p>
+          </div>
+        </figure>
       );
     case "scenario":
       return (
@@ -167,6 +181,17 @@ export function StudyBlock({ block, renderActivity }: { block: Block; renderActi
     case "activity":
       return <>{renderActivity(block.code)}</>;
   }
+}
+
+function MiniTable({ columns, rows, label }: { columns: string[]; rows: string[][]; label: string }) {
+  return (
+    <div className="overflow-x-auto" tabIndex={0} role="region" aria-label={label}>
+      <table className="w-full min-w-[420px] border-collapse">
+        <thead><tr>{columns.map((c, i) => <th key={i} scope="col" className="table-head">{c}</th>)}</tr></thead>
+        <tbody>{rows.map((r, i) => <tr key={i}>{r.map((cell, j) => <td key={j} className="table-cell text-charcoal"><StudyText md={cell} /></td>)}</tr>)}</tbody>
+      </table>
+    </div>
+  );
 }
 
 /** Plain-language provenance line for a section. */
