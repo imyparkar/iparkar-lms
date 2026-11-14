@@ -1,6 +1,6 @@
 # ASP Self Paced Study Course — engine, policy and handoff
 
-Status on 14 Nov 2026: **engine complete and tested; 99 of 99 chapters authored as drafts (647 sections, 789 activities, 1,268-page source); 0 subject-reviewed; 0 published.** Chapter 1.1 was written by hand; chapters 1.2–9.7 were converted from the guide PDF by a layout-aware pipeline, with every equation transcribed to TeX by hand and original knowledge checks added. The course version `1.0.0-draft` cannot be published until every chapter has an approved review status: the database refuses it.
+Status on 14 Nov 2026: **live as version 1.0.0-beta** (see section 0). 99 of 99 chapters authored (647 sections, 789 activities, 1,268-page source); published by the owner as a beta with a visible notice; **0 subject-reviewed**. Chapter 1.1 was written by hand; chapters 1.2–9.7 were converted from the guide PDF by a layout-aware pipeline, with every equation transcribed to TeX by hand and original knowledge checks added.
 
 ## 0. Live status (14 Nov 2026)
 
