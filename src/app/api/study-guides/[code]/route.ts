@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getSession } from "@/lib/auth/session";
 import { getServiceClient } from "@/lib/supabase/admin";
-import { findGuide } from "@/lib/studyGuides";
+import { canDownload, findGuide, studyAccessCodes } from "@/lib/studyGuides";
 
 export const dynamic = "force-dynamic";
 
@@ -29,7 +29,7 @@ async function latestPdf(bucket: R2Bucket, code: string) {
 }
 
 /**
- * Signed-in download of a study guide: verifies the session, logs the download,
+ * Download of a study guide for learners with access to its study course: verifies the session and access, logs the download,
  * and streams the PDF from the private R2 bucket as an attachment.
  */
 export async function GET(request: NextRequest, { params }: { params: Promise<{ code: string }> }) {
@@ -44,6 +44,12 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     return NextResponse.redirect(new URL(`/login?next=${encodeURIComponent(next)}`, origin));
   }
   if (session.profile.status !== "active") return NextResponse.redirect(new URL("/login?error=suspended", origin));
+
+  // The PDF comes with its Self Paced Study Course: free trial, purchase or admin grant.
+  const access = await studyAccessCodes(session.supabase);
+  if (!canDownload(guide, access, session.profile.role === "admin")) {
+    return NextResponse.redirect(new URL(`/study-guides?error=locked&guide=${guide.code.toLowerCase()}`, origin));
+  }
 
   const unavailable = () => NextResponse.redirect(new URL("/study-guides?error=unavailable", origin));
   let bucket: R2Bucket | undefined;

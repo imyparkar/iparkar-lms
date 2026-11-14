@@ -8,6 +8,7 @@ import { NotEnrolled } from "@/components/study/NotEnrolled";
 import { TrialNotice, accessLine, Paywall } from "@/components/study/Access";
 import { studyBuyUrl } from "@/lib/study/buy";
 import { BetaNotice, isBeta } from "@/components/study/BetaNotice";
+import { guideForStudyCourse } from "@/lib/studyGuides";
 
 export const metadata = { title: "Course overview" };
 export const dynamic = "force-dynamic";
@@ -22,6 +23,7 @@ export default async function CourseOverview({ params }: { params: Promise<{ cou
   if (!data?.ok) return <NotEnrolled offer={data?.offer} />;
   const c = data as StudyCourse;
   const buy = studyBuyUrl(c.course.code, user);
+  const guide = guideForStudyCourse(c.course.code);
   const sheets = new Map(c.resources.filter((r) => r.kind === "formula_sheet").map((r) => [r.domain, r]));
   const p = c.progress;
   const authored = c.domains.flatMap((d) => d.chapters).filter((ch) => ch.has_content).length;
@@ -40,6 +42,7 @@ export default async function CourseOverview({ params }: { params: Promise<{ cou
           <p className="lead mt-4 max-w-[640px]">Ninety-nine chapters across the nine ASP11 domains, taught from the {c.course.source_title ?? "study guide"} (Edition {c.course.source_edition}). Work through them in any order; we recommend the guide&apos;s order, starting with chapters 1.1 and 1.2.</p>
           <div className="mt-6 flex flex-wrap gap-2">
             {c.access.has_access && <Link href={resume} className="btn-primary">{c.resume ? `Continue: chapter ${c.resume.chapter}` : "Start with chapter 1.1"}</Link>}
+            {c.access.has_access && guide && <a href={`/api/study-guides/${guide.code.toLowerCase()}`} className="btn-outline">↓ Download the {guide.code} study guide (PDF)</a>}
           </div>
         </div>
         <div className="card space-y-4">

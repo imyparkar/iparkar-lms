@@ -3,6 +3,7 @@ import { fmtDate } from "@/lib/format";
 import { startStudyCourse } from "@/lib/study/accessActions";
 import { courseSlug, type StudyAccess, type StudyOffer } from "@/lib/study/types";
 import { isAccessRequest } from "@/lib/study/buy";
+import { guideForStudyCourse } from "@/lib/studyGuides";
 
 const period = (days: number | null) => (days === 365 ? "12 months" : days ? `${days} days` : "");
 
@@ -61,13 +62,14 @@ export function Paywall({ access, buyHref, courseTitle, done, total, slug }: {
 /** Course not started yet: start the free trial. */
 export function StartOffer({ offer, compact = false }: { offer: StudyOffer; compact?: boolean }) {
   const slug = courseSlug(offer.code);
+  const guide = guideForStudyCourse(offer.code);
   return (
     <section aria-labelledby={`offer-${slug}`} className={compact ? "" : "card max-w-[720px]"}>
       <p className="text-caption text-slate">iParkar Learning · Self-paced study</p>
       <h2 id={`offer-${slug}`} className="mt-1 text-heading-sm">{offer.title}</h2>
       {offer.description && <p className="mt-2 text-body text-graphite">{offer.description}</p>}
       <p className="mt-2 text-body text-charcoal">
-        {offer.trial_days ? `Start with ${offer.trial_days} days of free access to every chapter. ` : ""}
+        {offer.trial_days ? `Start with ${offer.trial_days} days of free access to every chapter${guide ? ` and the ${guide.code} study guide PDF` : ""}. ` : ""}
         {offer.access_days ? `After that, ${period(offer.access_days)} of access${offer.price_label ? ` is ${offer.price_label}` : " can be bought"}. ` : ""}
         Sold separately from the ASP practice exams.
       </p>
@@ -75,6 +77,7 @@ export function StartOffer({ offer, compact = false }: { offer: StudyOffer; comp
         <form action={startStudyCourse} className="mt-4">
           <input type="hidden" name="course" value={slug} />
           <button type="submit" className="btn-primary">{offer.trial_days ? `Start ${offer.trial_days}-day free access` : "Start the course"}</button>
+          <Link href={`/learn/${slug}/buy`} className="btn-outline ml-2">Buy{offer.price_label ? ` · ${offer.price_label}` : ""}</Link>
         </form>
       ) : (
         <p className="mt-3 text-body-sm text-graphite">Enrollment for this course is not open yet.</p>

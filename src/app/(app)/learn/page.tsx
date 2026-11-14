@@ -6,6 +6,7 @@ import { ProgressMeter, StatusPill } from "@/components/study/Progress";
 import { BuyButton, StartOffer, accessLine } from "@/components/study/Access";
 import { studyBuyUrl } from "@/lib/study/buy";
 import type { StudyOffer } from "@/lib/study/types";
+import { guideForStudyCourse } from "@/lib/studyGuides";
 
 export const metadata = { title: "My learning" };
 export const dynamic = "force-dynamic";
@@ -44,6 +45,7 @@ export default async function MyLearning({ searchParams }: { searchParams: Promi
         const slug = courseSlug(c.code);
         const p = c.progress;
         const buy = studyBuyUrl(c.code, user);
+        const guide = guideForStudyCourse(c.code);
         const resumeHref = c.resume ? `/study/${slug}/${c.resume.chapter}${c.resume.section ? `?s=${c.resume.section}` : ""}` : `/study/${slug}/1.1`;
         return (
           <section key={c.code} aria-labelledby={`c-${c.code}`} className="space-y-6">
@@ -64,6 +66,7 @@ export default async function MyLearning({ searchParams }: { searchParams: Promi
                     : buy ? <BuyButton access={c.access} buyHref={buy} /> : null}
                   {c.access.has_access && c.access.source === "trial" && buy && <BuyButton access={c.access} buyHref={buy} className="btn rounded-button bg-white text-ink hover:bg-paper" />}
                   <Link href={`/learn/${slug}`} className="btn rounded-button bg-white text-ink hover:bg-paper">Course overview</Link>
+                  {c.access.has_access && guide && <a href={`/api/study-guides/${guide.code.toLowerCase()}`} className="btn rounded-button bg-white text-ink hover:bg-paper">↓ {guide.code} study guide (PDF)</a>}
                   {c.completed_at && <Link href={`/learn/${slug}/completion`} className="btn rounded-button bg-white text-ink hover:bg-paper">Completion record</Link>}
                 </div>
               </div>
