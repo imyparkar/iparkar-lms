@@ -12,7 +12,6 @@
  */
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { createClient } from "@supabase/supabase-js";
 import { buildPackage } from "../src/lib/study/package";
 import { BlockSchema } from "../src/lib/study/schema";
 
@@ -50,7 +49,6 @@ async function main() {
   console.log(`Manifest: ${pkg.chapters.length} chapters in ${pkg.domains.length} domains · version ${pkg.course.version}`);
   console.log(`Authored chapters (${authored.length}): ${authored.join(", ") || "none"}`);
   console.log(`In preparation: ${pkg.chapters.length - authored.length}`);
-  issues.forEach((i) => console.log(`  ✗ ${i.chapter ?? ""} ${i.message}`));
 
   // Per-domain resources (formula sheets) and commercial settings.
   const resFile = join("imports", course, "resources.json");
@@ -65,35 +63,55 @@ async function main() {
   const accessFile = join("content", course, "access.json");
   const access = existsSync(accessFile) ? JSON.parse(readFileSync(accessFile, "utf8")) : null;
   if (access) console.log(`Access: ${access.enrollment_policy} enrollment · ${access.trial_days ?? "no"}-day trial · ${access.access_days} days for ${access.price_label}`);
-  if (issues.length) process.exit(1);
+  if (issues.length) {
+    issues.forEach((i) => console.log(`  ✗ ${i.chapter ?? ""} ${i.message}`));
+    console.log(`${issues.length} problem(s); nothing was imported.`);
+    process.exit(1);
+  }
   if (args.out) writeFileSync(args.out, JSON.stringify(pkg));
-  if (args["dry-run"]) return;
+  if (args["dry-run"]) { console.log("Dry run OK: everything validated. Nothing was imported."); return; }
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL, key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !key || !process.env.ADMIN_EMAIL || !process.env.ADMIN_PASSWORD) throw new Error("Supabase URL/anon key (.env.local) and ADMIN_EMAIL/ADMIN_PASSWORD are required");
-  const supabase = createClient(url, key, { auth: { persistSession: false } });
-  const { error: authError } = await supabase.auth.signInWithPassword({ email: process.env.ADMIN_EMAIL, password: process.env.ADMIN_PASSWORD });
-  if (authError) throw authError;
-  const { data, error } = await supabase.rpc("admin_study_import", { p: pkg });
-  if (error) throw error;
+  console.log(`Signing in to ${url} as ${process.env.ADMIN_EMAIL} …`);
+  // Plain HTTPS calls (no auth client state), so failures are always reported.
+  const auth = await fetch(`${url}/auth/v1/token?grant_type=password`, {
+    method: "POST", headers: { apikey: key, "Content-Type": "application/json" },
+    body: JSON.stringify({ email: process.env.ADMIN_EMAIL, password: process.env.ADMIN_PASSWORD }),
+  });
+  const session = await auth.json().catch(() => ({}));
+  if (!auth.ok || !session.access_token) {
+    throw new Error(`Sign-in failed (HTTP ${auth.status}): ${session.error_description ?? session.msg ?? session.error ?? "no details"}`);
+  }
+  const rpc = async (fn: string, body: unknown) => {
+    const r = await fetch(`${url}/rest/v1/rpc/${fn}`, {
+      method: "POST", body: JSON.stringify(body),
+      headers: { apikey: key, Authorization: `Bearer ${session.access_token}`, "Content-Type": "application/json" },
+    });
+    const text = await r.text();
+    if (!r.ok) throw new Error(`${fn} failed (HTTP ${r.status}): ${text.slice(0, 500)}`);
+    return JSON.parse(text);
+  };
+  console.log("Signed in. Importing (this can take a minute) …");
+
+  const data = await rpc("admin_study_import", { p: pkg });
   console.log("Imported:", JSON.stringify(data));
   if (data?.ok === false) process.exit(1);
   if (resources.length) {
-    const r = await supabase.rpc("admin_study_import_resources", { p: { course: pkg.course.code, version: pkg.course.version, resources } });
-    if (r.error) throw r.error;
-    console.log("Resources:", JSON.stringify(r.data));
+    console.log("Resources:", JSON.stringify(await rpc("admin_study_import_resources", { p: { course: pkg.course.code, version: pkg.course.version, resources } })));
   }
   if (access) {
-    const r = await supabase.rpc("admin_study_set_course_access", {
+    console.log("Access settings:", JSON.stringify(await rpc("admin_study_set_course_access", {
       p_course_code: pkg.course.code, p_policy: access.enrollment_policy, p_trial_days: access.trial_days,
       p_access_days: access.access_days, p_price_label: access.price_label,
-    });
-    if (r.error) throw r.error;
-    console.log("Access settings:", JSON.stringify(r.data));
+    })));
   }
 }
 
-main().catch((e) => {
-  console.error(e.message ?? e);
+let finished = false;
+process.on("exit", (code) => { if (!finished && code === 0) console.error("Stopped before finishing (no result received). Please send this output to support."); });
+main().then(() => { finished = true; }).catch((e) => {
+  finished = true;
+  console.error("Error:", e?.message || JSON.stringify(e) || String(e));
   process.exit(1);
 });
