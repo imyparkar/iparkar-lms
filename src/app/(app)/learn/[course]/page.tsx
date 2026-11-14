@@ -69,7 +69,7 @@ export default async function CourseOverview({ params }: { params: Promise<{ cou
             return (
               <li key={d.number} className="flex h-full flex-col overflow-hidden rounded-card border border-hairline bg-white">
                 <Link href={`/learn/${course}/domain/${d.number}`} className="flex flex-1 flex-col transition-colors duration-200 hover:bg-paper">
-                  <div className={`px-5 py-4 text-ink ${PANELS[i % PANELS.length]}`}>
+                  <div className={`flex-1 px-5 py-4 text-ink ${PANELS[i % PANELS.length]}`}>
                     <p className="text-caption">Domain {d.number} · {d.weight}% of the exam</p>
                     <h3 className="mt-1 text-heading-sm">{d.title}</h3>
                   </div>
