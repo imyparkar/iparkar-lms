@@ -1,5 +1,5 @@
 import { requireAdmin } from "@/lib/auth/session";
-import { grantEntitlement, revokeEntitlement, setUserStatus } from "@/lib/admin/actions";
+import { grantEntitlement, grantStudyAccess, revokeEntitlement, revokeStudyAccess, setUserStatus } from "@/lib/admin/actions";
 import { Flash } from "@/components/ui/Flash";
 import { Pill } from "@/components/ui/Pill";
 import { fmtDate } from "@/lib/format";
@@ -9,6 +9,13 @@ export const metadata = { title: "Students & access" };
 type U = { id: string; username: string; full_name: string | null; email: string; role: string; status: string; created_at: string; attempts: number;
   entitlements: { id: string; course_code: string; source: string; starts_at: string; expires_at: string | null; revoked_at: string | null; active: boolean }[] };
 
+type StudyRow = { id: string; user_id: string; status: string; access_source: string; enrolled_at: string;
+  access_expires_at: string | null; revoked_at: string | null; study_courses: { code: string } | { code: string }[] | null };
+
+const studyCode = (r: StudyRow) => (Array.isArray(r.study_courses) ? r.study_courses[0]?.code : r.study_courses?.code) ?? "?";
+const studyActive = (r: StudyRow) => r.status === "active" && (!r.access_expires_at || new Date(r.access_expires_at) > new Date());
+const SOURCE: Record<string, string> = { trial: "free trial", purchase: "purchase", admin: "admin grant", pilot: "pilot", self: "self enrol" };
+
 export default async function StudentsPage({ searchParams }: { searchParams: Promise<{ q?: string; notice?: string; error?: string }> }) {
   const sp = await searchParams;
   const { supabase, profile } = await requireAdmin();
@@ -17,6 +24,15 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
     supabase.from("courses").select("id, code").order("sort_order"),
   ]);
   const users = (data?.users ?? []) as U[];
+  // Study courses (My learning) are a separate catalogue from the practice-exam packages.
+  const [{ data: studyCourses }, { data: studyRaw }] = await Promise.all([
+    supabase.from("study_courses").select("code, title").order("code"),
+    users.length
+      ? supabase.from("study_enrollments").select("id, user_id, status, access_source, enrolled_at, access_expires_at, revoked_at, study_courses(code)")
+          .in("user_id", users.map((u) => u.id))
+      : Promise.resolve({ data: [] as StudyRow[] }),
+  ]);
+  const study = (studyRaw ?? []) as StudyRow[];
   const q = sp.q ?? "";
 
   return (
@@ -50,6 +66,7 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
               </div>
             </div>
 
+            <h3 className="border-t border-hairline pt-4 text-body font-semibold">Exam packages</h3>
             {u.entitlements.length > 0 && (
               <table className="w-full">
                 <thead><tr><th className="table-head">Course</th><th className="table-head">Source</th><th className="table-head">From</th><th className="table-head">Until</th><th className="table-head">Status</th><th className="table-head" /></tr></thead>
@@ -76,9 +93,9 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
               </table>
             )}
 
-            <form action={grantEntitlement} className="flex flex-wrap items-end gap-2 border-t border-hairline pt-4 text-body-sm">
+            <form action={grantEntitlement} className="flex flex-wrap items-end gap-2 text-body-sm">
               <input type="hidden" name="user_id" value={u.id} /><input type="hidden" name="q" value={q} />
-              <div><label className="field-label" htmlFor={`c-${u.id}`}>Grant course</label>
+              <div><label className="field-label" htmlFor={`c-${u.id}`}>Grant exam package</label>
                 <select id={`c-${u.id}`} name="course_id" className="field-input py-1.5">{courses?.map((c) => <option key={c.id} value={c.id}>{c.code}</option>)}</select></div>
               <div><label className="field-label" htmlFor={`s-${u.id}`}>Type</label>
                 <select id={`s-${u.id}`} name="source" className="field-input py-1.5"><option value="complimentary">Complimentary</option><option value="admin_grant">Admin grant</option><option value="purchase">Manual purchase record</option></select></div>
@@ -87,6 +104,50 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
               <div className="min-w-[160px] flex-1"><label className="field-label" htmlFor={`n-${u.id}`}>Note</label><input id={`n-${u.id}`} name="note" className="field-input py-1.5" /></div>
               <button className="btn-outline" type="submit">Grant access</button>
             </form>
+            <div className="space-y-3 border-t border-hairline pt-4">
+              <h3 className="text-body font-semibold">My learning (study courses)</h3>
+              {study.filter((r) => r.user_id === u.id).length > 0 && (
+                <table className="w-full">
+                  <thead><tr><th className="table-head">Course</th><th className="table-head">Source</th><th className="table-head">Enrolled</th><th className="table-head">Until</th><th className="table-head">Status</th><th className="table-head" /></tr></thead>
+                  <tbody>
+                    {study.filter((r) => r.user_id === u.id).map((r) => {
+                      const active = studyActive(r);
+                      return (
+                        <tr key={r.id}>
+                          <td className="table-cell font-medium">{studyCode(r)}</td>
+                          <td className="table-cell">{SOURCE[r.access_source] ?? r.access_source}</td>
+                          <td className="table-cell">{fmtDate(r.enrolled_at)}</td>
+                          <td className="table-cell">{r.access_expires_at ? fmtDate(r.access_expires_at) : "No expiry"}</td>
+                          <td className="table-cell"><Pill tone={active ? "strong" : "neutral"}>{r.status === "revoked" ? "Revoked" : active ? "Active" : r.access_source === "trial" ? "Trial ended" : "Expired"}</Pill></td>
+                          <td className="table-cell text-right">
+                            {r.status === "active" && (
+                              <form action={revokeStudyAccess} className="inline-flex gap-2">
+                                <input type="hidden" name="enrollment_id" value={r.id} /><input type="hidden" name="q" value={q} />
+                                <input name="reason" placeholder="Reason" className="field-input w-36 py-1 text-caption" aria-label="Revocation reason" />
+                                <button className="btn-text py-1 text-caption" type="submit">Revoke</button>
+                              </form>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
+              {studyCourses && studyCourses.length > 0 && (
+                <form action={grantStudyAccess} className="flex flex-wrap items-end gap-2 text-body-sm">
+                  <input type="hidden" name="user_id" value={u.id} /><input type="hidden" name="q" value={q} />
+                  <div><label className="field-label" htmlFor={`sc-${u.id}`}>Study course</label>
+                    <select id={`sc-${u.id}`} name="course_code" className="field-input py-1.5">{studyCourses.map((c) => <option key={c.code} value={c.code}>{c.code} · {c.title}</option>)}</select></div>
+                  <div><label className="field-label" htmlFor={`sd-${u.id}`}>Days from today (0 = no expiry)</label>
+                    <input id={`sd-${u.id}`} name="days" type="number" min={0} max={3650} defaultValue={30} className="field-input w-28 py-1.5" /></div>
+                  <div className="min-w-[160px] flex-1"><label className="field-label" htmlFor={`sn-${u.id}`}>Note</label><input id={`sn-${u.id}`} name="note" className="field-input py-1.5" /></div>
+                  <button className="btn-outline" type="submit">Grant study access</button>
+                </form>
+              )}
+              <p className="text-caption text-graphite">Granting keeps the learner&apos;s progress, notes and bookmarks, and replaces any ended trial or lapsed access.</p>
+            </div>
+
           </li>
         ))}
         {!users.length && <li className="card text-graphite">No users found.</li>}

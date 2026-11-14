@@ -173,3 +173,41 @@ describe("administration", () => {
     expect(await rpc(db, admin, "study_can_view_asset", ["asp-sps/fig-1.4-1-abc.webp"], ["text"])).toBe(true);
   });
 });
+
+describe("admin grants study access from Students & access", () => {
+  const grant = (actor: string, user: string, d: number) =>
+    rpc(db, actor, "admin_study_grant_access", [user, "asp-sps", d, "requested by email"], ["uuid", "text", "int", "text"]);
+
+  it("refuses non-admins", async () => {
+    expect((await grant(nob, nob, 30)).error).toBe("forbidden");
+  });
+
+  it("restores access after the free trial ends, keeping the same enrollment", async () => {
+    const u = await createUser(db, { username: "trialend" });
+    expect((await rpc(db, u, "study_self_enroll", ["asp-sps"], ["text"])).ok).toBe(true);
+    const before = await enrollment(u);
+    await expire(u);
+    const r = await grant(admin, u, 30);
+    expect(r.ok).toBe(true);
+    const after = await enrollment(u);
+    expect(after.id).toBe(before.id);
+    expect(after.access_source).toBe("admin");
+    expect(days(after.access_expires_at)).toBeGreaterThan(29);
+  });
+
+  it("enrolls a learner who never started, with no expiry for 0 days", async () => {
+    const u = await createUser(db, { username: "fresh" });
+    expect((await grant(admin, u, 0)).ok).toBe(true);
+    const e = await enrollment(u);
+    expect(e.status).toBe("active");
+    expect(e.access_expires_at).toBeNull();
+  });
+
+  it("reactivates a revoked enrollment", async () => {
+    const u = await createUser(db, { username: "revoked" });
+    await grant(admin, u, 10);
+    await rpc(db, admin, "admin_study_revoke", [(await enrollment(u)).id, "test"], ["uuid", "text"]);
+    expect((await grant(admin, u, 10)).ok).toBe(true);
+    expect((await enrollment(u)).status).toBe("active");
+  });
+});

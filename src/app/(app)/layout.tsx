@@ -1,10 +1,12 @@
 import { requireUser } from "@/lib/auth/session";
 import { AppHeader } from "@/components/shell/AppHeader";
+import { IdleLogout } from "@/components/shell/IdleLogout";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const { profile } = await requireUser();
   return (
     <>
+      <IdleLogout />
       <AppHeader name={profile.full_name || profile.username} isAdmin={profile.role === "admin"} />
       <main className="mx-auto max-w-content px-4 pb-20 pt-8 sm:px-8">{children}</main>
       <footer className="border-t border-hairline py-6 text-center text-caption text-graphite no-print">

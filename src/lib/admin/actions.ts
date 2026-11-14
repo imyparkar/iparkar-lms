@@ -165,3 +165,18 @@ export async function updateIndicators(form: FormData) {
   const res = await call("admin_update_setting", { p_key: "study_indicators", p_value: { strong, developing, min_questions: min } }, ["/admin/settings"]);
   redirect(`/admin/settings?${res.ok ? "notice=Study indicators saved" : `error=${encodeURIComponent(res.error ?? "")}`}`);
 }
+
+/** Study course (My learning) access from Students & access. */
+export async function grantStudyAccess(form: FormData) {
+  const days = Math.max(0, Math.floor(Number(form.get("days") || 0)));
+  const res = await call("admin_study_grant_access", {
+    p_user: form.get("user_id"), p_course_code: form.get("course_code"), p_days: days, p_note: form.get("note") || null,
+  }, ["/admin/students", "/admin/study"]);
+  redirect(`/admin/students?q=${encodeURIComponent(String(form.get("q") ?? ""))}&${res.ok ? "notice=Study access granted" : `error=${encodeURIComponent(res.error ?? "")}`}`);
+}
+
+export async function revokeStudyAccess(form: FormData) {
+  const res = await call("admin_study_revoke", { p_enrollment: form.get("enrollment_id"), p_reason: form.get("reason") || "Revoked by admin" },
+    ["/admin/students", "/admin/study"]);
+  redirect(`/admin/students?q=${encodeURIComponent(String(form.get("q") ?? ""))}&${res.ok ? "notice=Study access revoked" : `error=${encodeURIComponent(res.error ?? "")}`}`);
+}

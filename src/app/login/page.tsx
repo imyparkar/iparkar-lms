@@ -6,6 +6,7 @@ export const metadata = { title: "Sign in" };
 
 const NOTICES: Record<string, string> = {
   "signed-out": "You’re signed out.",
+  idle: "You were signed out after 10 minutes without activity. Sign in to continue where you left off.",
   suspended: "This account is suspended. Contact support@iparkar.com.",
   "link-expired": "That link has expired or was already used. Request a new one.",
 };
