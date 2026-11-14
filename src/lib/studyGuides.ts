@@ -27,9 +27,9 @@ export const STUDY_GUIDES: StudyGuide[] = [
     title: "ASP® Exam Study Guide",
     edition: "Edition 1.0 · BCSP ASP11 blueprint",
     summary:
-      "Our main study material for the ASP exam. Each chapter opens with a workplace scenario, teaches the topic with original figures and equation boxes, then works the calculations step by step before practice questions and answer explanations. Back matter includes a formula sheet, glossary and blueprint-to-chapter index.",
-    stats: [["84", "blueprint objectives"], ["99", "chapters · 9 domains"], ["1,268", "pages"]],
-    file: { downloadName: "iParkar-ASP-Exam-Study-Guide.pdf", label: "PDF · 1,268 pages · 23 MB" },
+      "Our main study material for the ASP exam. Each chapter opens with a workplace scenario, teaches the topic with original figures and equation boxes, then works the calculations step by step before Try it questions with worked solutions. Front matter includes a study plan, guide outline and blueprint-to-chapter index; each part ends with a formula sheet; the back matter holds the glossary and full bibliography.",
+    stats: [["84", "blueprint objectives"], ["99", "chapters · 9 domains"], ["1,301", "pages"]],
+    file: { downloadName: "iParkar-ASP-Exam-Study-Guide.pdf", label: "PDF · 1,301 pages · 24 MB" },
   },
   { code: "CIH", title: "CIH® Exam Study Guide" },
   { code: "CFPS", title: "CFPS® Exam Study Guide" },
