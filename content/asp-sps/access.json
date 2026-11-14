@@ -1,0 +1,7 @@
+{
+  "_note": "Commercial settings applied by `npm run import:study`. Self enrollment opens only once a version is published and marked as the enrollment default. Map the Paddle price to this course in the study_products table (separate from the practice-exam course_products).",
+  "enrollment_policy": "self",
+  "trial_days": 7,
+  "access_days": 365,
+  "price_label": "US$120"
+}

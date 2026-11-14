@@ -7,6 +7,7 @@
   "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
   "observability": { "enabled": true },
   // Private study-guide PDFs (no public access); served only by /api/study-guides/[code] after sign-in.
+  // Also holds the study courses' protected drawings under lms-assets/, served only by /api/study/asset.
   "r2_buckets": [{ "binding": "STUDY_GUIDES", "bucket_name": "iparkar-study-guides" }],
   "routes": [{ "pattern": "app.iparkar.com", "custom_domain": true }]
   // Secrets (set with `wrangler secret put`): SUPABASE_SERVICE_ROLE_KEY, PADDLE_WEBHOOK_SECRET

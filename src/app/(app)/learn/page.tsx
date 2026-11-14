@@ -3,14 +3,24 @@ import { requireUser } from "@/lib/auth/session";
 import { fmtDate, fmtDateTime } from "@/lib/format";
 import { courseSlug, type MyStudyCourse } from "@/lib/study/types";
 import { ProgressMeter, StatusPill } from "@/components/study/Progress";
+import { BuyButton, StartOffer, accessLine } from "@/components/study/Access";
+import { studyBuyUrl } from "@/lib/study/buy";
+import type { StudyOffer } from "@/lib/study/types";
 
 export const metadata = { title: "My learning" };
 export const dynamic = "force-dynamic";
 
-export default async function MyLearning() {
-  const { supabase } = await requireUser();
-  const { data } = await supabase.rpc("get_my_study_courses");
+const START_ERRORS: Record<string, string> = {
+  enrollment_closed: "That course isn't open for enrollment yet.",
+  not_signed_in: "Please sign in again to start the course.",
+};
+
+export default async function MyLearning({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+  const sp = await searchParams;
+  const { supabase, user } = await requireUser();
+  const [{ data }, { data: offerData }] = await Promise.all([supabase.rpc("get_my_study_courses"), supabase.rpc("get_study_offers")]);
   const courses = (Array.isArray(data) ? data : []) as MyStudyCourse[];
+  const offers = (Array.isArray(offerData) ? offerData : []) as StudyOffer[];
 
   return (
     <div className="space-y-10">
@@ -19,7 +29,11 @@ export default async function MyLearning() {
         <p className="lead mt-3">Self-paced study courses: read each chapter, practise, and pick up exactly where you left off on any device.</p>
       </header>
 
-      {courses.length === 0 && (
+      {sp.error && <p role="alert" className="max-w-[720px] rounded-card bg-coral p-4 text-body text-ink">{START_ERRORS[sp.error] ?? "Something went wrong. Please try again."}</p>}
+
+      {offers.map((o) => <StartOffer key={o.code} offer={o} />)}
+
+      {courses.length === 0 && offers.length === 0 && (
         <section className="card max-w-[720px]">
           <h2 className="text-heading-sm">No study courses yet</h2>
           <p className="mt-2 text-body text-graphite">When you&apos;re enrolled in a self-paced study course it appears here. Study courses are separate from the practice exams on your <Link className="link" href="/dashboard">dashboard</Link>.</p>
@@ -29,6 +43,7 @@ export default async function MyLearning() {
       {courses.map((c) => {
         const slug = courseSlug(c.code);
         const p = c.progress;
+        const buy = studyBuyUrl(c.code, user);
         const resumeHref = c.resume ? `/study/${slug}/${c.resume.chapter}${c.resume.section ? `?s=${c.resume.section}` : ""}` : `/study/${slug}/1.1`;
         return (
           <section key={c.code} aria-labelledby={`c-${c.code}`} className="space-y-6">
@@ -41,8 +56,13 @@ export default async function MyLearning() {
                 </p>
                 <div className="mt-6"><ProgressMeter dark done={p.completed_chapters} total={p.required_chapters} label="Chapters completed" /></div>
                 <p className="mt-3 text-body-sm text-white">{p.domains_completed} of {p.domains_total} domains complete · Last activity {fmtDateTime(c.last_activity_at)}</p>
+                <p className="mt-1 text-body-sm font-medium text-white">{accessLine(c.access)}</p>
+                {!c.access.has_access && <p className="mt-3 text-body-sm text-white">Your progress is saved. Buy access to continue where you left off.</p>}
                 <div className="mt-6 flex flex-wrap gap-2">
-                  <Link href={resumeHref} className="btn-primary">{c.resume ? "Continue learning" : "Start the course"}</Link>
+                  {c.access.has_access
+                    ? <Link href={resumeHref} className="btn-primary">{c.resume ? "Continue learning" : "Start the course"}</Link>
+                    : buy ? <BuyButton access={c.access} buyHref={buy} /> : null}
+                  {c.access.has_access && c.access.source === "trial" && buy && <BuyButton access={c.access} buyHref={buy} className="btn rounded-button bg-white text-ink hover:bg-paper" />}
                   <Link href={`/learn/${slug}`} className="btn rounded-button bg-white text-ink hover:bg-paper">Course overview</Link>
                   {c.completed_at && <Link href={`/learn/${slug}/completion`} className="btn rounded-button bg-white text-ink hover:bg-paper">Completion record</Link>}
                 </div>

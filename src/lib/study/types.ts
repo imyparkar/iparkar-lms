@@ -7,9 +7,22 @@ export type ProgressSummary = {
   required_chapters: number; completed_chapters: number; domains_total: number; domains_completed: number; domains: DomainProgress[];
 };
 
+/** Time-limited access to a study course (trial or paid). expires_at null = no time limit. */
+export type StudyAccess = {
+  has_access: boolean; source: "admin" | "pilot" | "self" | "trial" | "purchase";
+  expires_at: string | null; trial_started_at: string | null; days_left: number | null;
+  trial_days: number | null; access_days: number | null; price_label: string | null;
+};
+export type StudyOffer = {
+  code: string; title: string; description: string | null; self_enroll: boolean;
+  trial_days: number | null; access_days: number | null; price_label: string | null;
+};
+export type StudyResourceRef = { code: string; kind: "formula_sheet"; domain: number | null; title: string };
+
 export type MyStudyCourse = {
   code: string; title: string; version: string; version_status: string; is_pilot: boolean;
   enrolled_at: string; last_activity_at: string | null; completed_at: string | null;
+  access: StudyAccess;
   progress: ProgressSummary;
   resume: { chapter: string; chapter_title: string; section: string | null } | null;
   recent: { chapter: string; title: string; status: ProgressStatus; at: string }[];
@@ -29,6 +42,8 @@ export type StudyCourse = {
   progress: ProgressSummary;
   resume: { chapter: string; section: string | null; chapter_title: string } | null;
   domains: CourseDomain[];
+  access: StudyAccess;
+  resources: StudyResourceRef[];
 };
 
 export type ActivityFeedback = { explanation: string; options?: Record<string, string>; review_section?: string };
@@ -64,6 +79,7 @@ export type StudyChapter = {
   sections: StudySection[];
   missing: Missing;
   progress: ProgressSummary;
+  access: StudyAccess;
 };
 
 export const STATUS_LABEL: Record<ProgressStatus, string> = {

@@ -7,15 +7,34 @@ import { StudyBlock, provenance } from "./Blocks";
 import { ActivityCard } from "./Activity";
 import { StatusPill } from "./Progress";
 import { useStudySync } from "./useStudySync";
+import { Calculator } from "@/components/exam/Calculator";
+
+/** Desktop only (≥1024 px). The virtual calculator is never mounted on phones or small tablets. */
+function useIsDesktop() {
+  const [desktop, setDesktop] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const on = () => setDesktop(mq.matches);
+    on();
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
+  return desktop;
+}
 
 type Outline = { number: number; title: string; chapters: { code: string; title: string; status: keyof typeof STATUS_LABEL; has_content: boolean }[] }[];
 
 const newId = () => (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`.replace(/[^0-9a-f-]/g, "0"));
 
-export function Player({ userId, courseSlug, courseTitle, data, outline, startSection }: {
+export function Player({ userId, courseSlug, courseTitle, data, outline, startSection, formulaHref = null, buyHref = null }: {
   userId: string; courseSlug: string; courseTitle: string; data: StudyChapter; outline: Outline; startSection: string | null;
+  formulaHref?: string | null; buyHref?: string | null;
 }) {
   const { chapter } = data;
+  const desktop = useIsDesktop();
+  const [calcOpen, setCalcOpen] = useState(false);
+  useEffect(() => { if (!desktop) setCalcOpen(false); }, [desktop]);
+  const access = data.access;
   const [sections, setSections] = useState<StudySection[]>(data.sections);
   const [missing, setMissing] = useState<Missing>(data.missing);
   const [progress, setProgress] = useState<ProgressSummary>(data.progress);
@@ -171,6 +190,17 @@ export function Player({ userId, courseSlug, courseTitle, data, outline, startSe
             {save.state === "error" && <button type="button" className="ml-2 font-medium text-ink underline" onClick={retry}>Retry</button>}
             {save.state === "expired" && <a className="ml-2 font-medium text-ink underline" href={`/login?next=${encodeURIComponent(`/study/${courseSlug}/${chapter.code}`)}`}>Sign in</a>}
           </p>
+          {access?.source === "trial" && access.has_access && (
+            <a href={buyHref ?? `/learn/${courseSlug}`} className="hidden shrink-0 rounded-button bg-sky-tint px-3 py-1.5 text-body-sm font-medium text-ink xl:inline-flex">
+              Free access: {access.days_left} {access.days_left === 1 ? "day" : "days"} left
+            </a>
+          )}
+          {formulaHref && <a href={formulaHref} target="_blank" rel="noopener" className="btn-text hidden shrink-0 md:inline-flex">Formula sheet<span className="sr-only"> (opens in a new tab)</span></a>}
+          {desktop && (
+            <button type="button" className="btn-text shrink-0" aria-pressed={calcOpen} onClick={() => setCalcOpen((o) => !o)}>
+              {calcOpen ? "Hide calculator" : "Calculator"}
+            </button>
+          )}
           <button type="button" className="btn-text hidden shrink-0 lg:inline-flex" aria-pressed={focus} onClick={() => setFocus((f) => !f)}>{focus ? "Show outline" : "Focus mode"}</button>
           <button type="button" className="btn-text shrink-0 lg:hidden" aria-expanded={outlineOpen} aria-controls="outline" onClick={() => setOutlineOpen((o) => !o)}>Outline</button>
         </div>
@@ -336,6 +366,7 @@ export function Player({ userId, courseSlug, courseTitle, data, outline, startSe
           <p className="mt-6 text-caption text-graphite">{courseTitle}. Study records show participation and formative practice, not exam readiness. Not affiliated with or endorsed by BCSP.</p>
         </main>
       </div>
+      {desktop && <Calculator open={calcOpen} onClose={() => setCalcOpen(false)} />}
     </div>
   );
 }

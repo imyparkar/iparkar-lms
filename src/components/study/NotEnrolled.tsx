@@ -1,6 +1,10 @@
 import Link from "next/link";
+import type { StudyOffer } from "@/lib/study/types";
+import { StartOffer } from "./Access";
 
-export function NotEnrolled() {
+/** Not enrolled: offer the free start when the course allows it, otherwise explain. */
+export function NotEnrolled({ offer }: { offer?: StudyOffer | null }) {
+  if (offer?.self_enroll) return <StartOffer offer={offer} />;
   return (
     <div className="card max-w-[720px]">
       <h1 className="text-heading-sm">You&apos;re not enrolled in this course</h1>

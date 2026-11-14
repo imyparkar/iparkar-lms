@@ -48,6 +48,11 @@ const Blocks = [
   }),
   Origin.extend({
     type: z.literal("figure"), label: z.string(), caption: z.string().min(1), description: z.string().min(1).max(10000),
+    /** Original drawing served from private storage; never a public URL. */
+    image: z.object({
+      key: z.string().regex(/^[a-z0-9-]+\/[A-Za-z0-9._-]+\.(webp|png)$/),
+      width: z.number().int().positive(), height: z.number().int().positive(), page: z.number().int().optional(),
+    }).optional(),
   }),
   Origin.extend({ type: z.literal("scenario"), title: z.string(), body: md, decision: md }),
   Origin.extend({

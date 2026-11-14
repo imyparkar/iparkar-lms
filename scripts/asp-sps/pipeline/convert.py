@@ -117,8 +117,12 @@ class Chapter:
                 m = re.match(r'^(Figure \d+\.\d+-\d+)(?: ·)? (.*)$', caption)
                 if m or alt:
                     lab = m.group(1) if m else 'Figure'
+                    cap_tops = [v['top'] for v in visual if v['x0'] < 60 and (re.match(r'^Figure \d', v['text']) or v['text'].startswith('Alt text:'))]
+                    bottom = (min(cap_tops) if cap_tops else max(v.get('bottom', v['top'] + 10) for v in visual))
+                    first = self.items.index(visual[0]) if visual[0] in self.items else None
                     self.emit(visual[0]['page'], {'type': 'figure', 'label': lab, 'caption': (m.group(2) if m else 'Original drawing.'),
-                                                  'description': join_lines(alt) or (m.group(2) if m else '')})
+                                                  'description': join_lines(alt) or (m.group(2) if m else ''),
+                                                  '_crop': self.region(first, visual[0]['page'], bottom, set(id(v) for v in visual))})
                     visual = [v for v in rest_lines]
                     if visual:
                         flush_visual()
@@ -247,7 +251,8 @@ class Chapter:
                 eq_here = [v for v in visual if re.search(r'Eq\. \d+\.\d+-\d+', v['text'])]
                 self.emit(x['page'], {'type': 'figure', 'label': m.group(1), 'caption': m.group(2),
                                       'description': join_lines(alt) or caption,
-                                      '_raw': ' / '.join(v['text'] for v in visual)[:600]})
+                                      '_raw': ' / '.join(v['text'] for v in visual)[:600],
+                                      '_crop': self.region(i, x['page'], x['top'], set(id(v) for v in visual))})
                 visual = []
                 i = j; continue
             # ---------------- equation label inside a visual band
@@ -321,6 +326,21 @@ class Chapter:
             self.flags.append(f"caption without table: {pending_caption}")
 
     # ------------------------------------------------------------------
+    def region(self, idx, page, bottom, visual_ids):
+        """Drawing area above a figure caption: from the last flowing item on the page down to the caption."""
+        top = 52
+        if idx is not None:
+            for j in range(idx - 1, -1, -1):
+                y = self.items[j]
+                if y['page'] != page:
+                    break
+                if id(y) in visual_ids:
+                    continue
+                if y['kind'] == 'table' or (y['kind'] == 'line' and y.get('bottom', 0) < bottom - 5):
+                    top = (y.get('bottom') or y['top'] + 12) + 3
+                    break
+        return {'page': page, 'top': round(top, 1), 'bottom': round(bottom - 2, 1)}
+
     def worked(self, i):
         it = self.items
         x = it[i]
@@ -746,6 +766,28 @@ def main(cid, show=False):
         est = max(3, min(30, round(words(s['blocks']) / 140 + 1.5 * len(acts))))
         out_secs.append({'code': code, 'sort_order': n, 'title': s['title'], 'est_minutes': est,
                          'blocks': s['blocks'], 'activities': acts})
+    # side-by-side captions wrap into a second, label-less figure: fold it into the first
+    for s_ in out_secs:
+        keep = []
+        for b in s_['blocks']:
+            if b['type'] == 'figure' and b['label'] == 'Figure' and keep and keep[-1]['type'] == 'figure':
+                prev = keep[-1]
+                prev['description'] = b['description']
+                cap = prev['caption'].rstrip()
+                if not cap.endswith('.') and '. ' in cap:
+                    prev['caption'] = cap[:cap.rfind('. ') + 1]
+                continue
+            keep.append(b)
+        s_['blocks'] = keep
+    # render figure drawings to protected images
+    for s_ in out_secs:
+        for b in s_['blocks']:
+            if b['type'] == 'figure' and b.get('_crop'):
+                img = render_crop(b['_crop'], f"fig-{b['label'].split(' ')[-1]}")
+                if img:
+                    b['image'] = img
+                else:
+                    ch.flags.append(f"{b['label']}: drawing region too small to crop")
     # strip private keys
     for s in out_secs:
         for b in s['blocks']:
@@ -784,6 +826,50 @@ def main(cid, show=False):
     for f in ch.flags:
         print('  !', f)
     return chapter
+
+
+ASSETS = os.environ.get('ASP_ASSETS', f'{ROOT}/imports/asp-sps/assets')
+
+
+def render_crop(crop, name, resolution=150):
+    """Crop a region of the guide page to WebP; key carries a content hash so caches never go stale."""
+    import hashlib, io
+    top, bottom = crop['top'], crop['bottom']
+    p = PDF.pages[crop['page'] - 1]
+    # prefer the drawing's own rounded card: the box that ends just above the caption
+    cards = [o for o in p.curves + p.rects
+             if 150 < o['x1'] - o['x0'] < 560 and 60 < o['bottom'] - o['top'] < 760
+             and -4 <= bottom + 2 - o['bottom'] <= 45]
+    if cards:
+        c = max(cards, key=lambda o: o['bottom'])
+        top, bottom = c['top'] - 1, c['bottom'] + 1
+        x0, x1 = max(46, c['x0'] - 1), min(549, c['x1'] + 1)
+    else:
+        x0, x1 = 46, 549
+    if bottom - top < 25:
+        return None
+    im = p.crop((x0, max(48, top), x1, min(790, bottom))).to_image(resolution=resolution).original.convert('RGB')
+    try:
+        p.flush_cache()
+    except Exception:
+        pass
+    # trim uniform margins (page background) so the drawing sits tight
+    from PIL import ImageChops, Image
+    bg = Image.new('RGB', im.size, im.getpixel((2, 2)))
+    diff = ImageChops.difference(im, bg).convert('L').point(lambda v: 255 if v > 12 else 0)
+    box = diff.getbbox()
+    if not box:
+        return None
+    pad = 8
+    im = im.crop((max(0, box[0] - pad), max(0, box[1] - pad), min(im.width, box[2] + pad), min(im.height, box[3] + pad)))
+    if im.height < 30:
+        return None
+    buf = io.BytesIO(); im.save(buf, 'WEBP', quality=86, method=6)
+    data = buf.getvalue()
+    key = f"asp-sps/{name}-{hashlib.sha256(data).hexdigest()[:10]}.webp"
+    os.makedirs(os.path.dirname(f'{ASSETS}/{key}'), exist_ok=True)
+    open(f'{ASSETS}/{key}', 'wb').write(data)
+    return {'key': key, 'width': im.width, 'height': im.height, 'page': crop['page']}
 
 
 def MAN_SUMMARY(cid):

@@ -4,6 +4,8 @@ import { requireUser } from "@/lib/auth/session";
 import { courseCode, type StudyCourse } from "@/lib/study/types";
 import { ProgressMeter, StatusPill } from "@/components/study/Progress";
 import { NotEnrolled } from "@/components/study/NotEnrolled";
+import { Paywall, TrialNotice } from "@/components/study/Access";
+import { studyBuyUrl } from "@/lib/study/buy";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Domain" };
@@ -11,19 +13,23 @@ export const metadata = { title: "Domain" };
 export default async function DomainPage({ params }: { params: Promise<{ course: string; n: string }> }) {
   const { course, n } = await params;
   if (!/^[a-z]{2,8}(-[a-z]{2,8})?$/.test(course) || !/^\d{1,2}$/.test(n)) notFound();
-  const { supabase } = await requireUser();
+  const { supabase, user } = await requireUser();
   const { data } = await supabase.rpc("get_study_course", { p_course_code: courseCode(course) });
-  if (!data?.ok) return <NotEnrolled />;
+  if (!data?.ok) return <NotEnrolled offer={data?.offer} />;
   const c = data as StudyCourse;
+  const buy = studyBuyUrl(c.course.code, user);
   const d = c.domains.find((x) => x.number === Number(n));
   if (!d) notFound();
   const done = d.chapters.filter((ch) => ch.status === "completed").length;
+  const sheet = c.resources.find((r) => r.kind === "formula_sheet" && r.domain === d.number);
 
   return (
     <div className="space-y-8">
       <nav aria-label="Breadcrumb" className="text-body-sm text-graphite">
         <Link href="/learn" className="hover:text-ink">My learning</Link> / <Link href={`/learn/${course}`} className="hover:text-ink">{c.course.title}</Link> / <span className="text-ink">Domain {d.number}</span>
       </nav>
+      <TrialNotice access={c.access} buyHref={buy} />
+      {!c.access.has_access && <Paywall access={c.access} buyHref={buy} courseTitle={c.course.title} done={c.progress.completed_chapters} total={c.progress.required_chapters} slug={course} />}
       <header className="grid gap-6 lg:grid-cols-[1.4fr_1fr] lg:items-end">
         <div>
           <p className="text-subheading text-graphite">Domain {d.number} · {d.weight}% of the exam (as stated by the guide)</p>
@@ -32,7 +38,8 @@ export default async function DomainPage({ params }: { params: Promise<{ course:
           {d.number === 1 && <p className="lead mt-3">Start with chapters 1.1 and 1.2. Every later calculation chapter assumes the unit habits and maths tools they teach.</p>}
         </div>
         <div className="card"><ProgressMeter done={done} total={d.chapters.length} label="Chapters completed in this domain" />
-          <p className="mt-3 text-body-sm text-graphite">{done === d.chapters.length ? "Domain complete." : "The domain completes when every chapter in it is finished."}</p></div>
+          <p className="mt-3 text-body-sm text-graphite">{done === d.chapters.length ? "Domain complete." : "The domain completes when every chapter in it is finished."}</p>
+          {sheet && c.access.has_access && <Link href={`/learn/${course}/formulas/${d.number}`} className="btn-outline mt-4">Open the formula sheet</Link>}</div>
       </header>
 
       <ol className="space-y-3">
@@ -50,7 +57,7 @@ export default async function DomainPage({ params }: { params: Promise<{ course:
             </div>
             <div className="flex shrink-0 items-center gap-3">
               {ch.has_content ? <StatusPill status={ch.status} /> : <span className="pill border border-hairline bg-paper text-ink">In preparation</span>}
-              {ch.has_content && <Link className="btn-outline" href={`/study/${course}/${ch.code}`}>{ch.status === "not_started" ? "Start" : ch.status === "completed" ? "Review" : "Continue"}<span className="sr-only"> chapter {ch.code}</span></Link>}
+              {ch.has_content && c.access.has_access && <Link className="btn-outline" href={`/study/${course}/${ch.code}`}>{ch.status === "not_started" ? "Start" : ch.status === "completed" ? "Review" : "Continue"}<span className="sr-only"> chapter {ch.code}</span></Link>}
             </div>
           </li>
         ))}

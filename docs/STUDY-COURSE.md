@@ -37,11 +37,25 @@ Activities are graded in SQL; keys never leave the database before an attempt. S
 
 Enrolments are pinned to a course version. Imports upsert by stable codes (chapter `1.1`, section `unit-factor`, activity `kc-psi`), so ids and learner progress survive wording fixes. On a version that has enrolments, the import compares the set of chapters, required sections and required activities before/after and **rejects material changes** — create a new version (`--version 1.1.0`) and decide how to move learners (not automated; needs an admin decision). Completion records snapshot learner name, course title and version label. `admin_study_reset_chapter` is the only reset path: admin-only, reason required, audited, completion history kept.
 
-## 4. Enrolment
+## 4. Enrolment, free trial and paid access (migration `20261114000100_study_access.sql`)
 
-Separate from practice-exam entitlements and payments (nothing in Paddle, products or exam access was touched). `study_courses.enrollment_policy` is `admin` by default; `self` allows `study_self_enroll` into the published default version. Pilot enrolment (`/admin/study`, tick "Pilot") lets named reviewers use an unpublished version and is labelled "Pilot (unpublished)" in the learner UI.
+Owner's decision (14 Nov 2026): every signed-in user gets **7 days of free access**; after that the **ASP Study Course is sold at US$120 for 365 days**, as a product separate from the ASP practice-exam package. Settings live in `content/asp-sps/access.json` and are applied by `npm run import:study` (`admin_study_set_course_access`).
 
-**Decision needed from the owner:** who gets the course once published — every signed-in user (like the free PDF guide → set policy `self`), ASP practice-exam buyers, or a separate product.
+| Who | How they get in | Time limit |
+|---|---|---|
+| Any signed-in learner | My learning shows "Start 7-day free access" (`study_self_enroll`) once a version is **published** and marked the enrolment default | `trial_started_at` + 7 days. One trial per learner per course, ever; it is never restarted |
+| Buyer | Verified Paddle `transaction.completed` whose price is in `study_products` → `service_apply_study_purchase` | 365 days from purchase (a trial's remaining days are replaced, not added); a renewal before expiry adds 365 days to the current end |
+| Reviewer / staff | `/admin/study` enrol (Pilot for unpublished versions) | none (`access_expires_at` null). `admin_study_set_access` can set or extend any learner's end date, with a reason, audited |
+
+When access lapses, chapters, activities, formula sheets and drawings are refused by the database (every learner write goes through `study_enrollment_for_chapter`, which now requires unexpired access). Progress, notes, bookmarks and any completion record are kept, My learning and the course overview still show progress, and the player is replaced by a "Your 7-day free access has ended — buy 12 months · US$120" panel. Refunds (`adjustment` approved, action `refund`) call `service_revoke_study_purchase`, which takes back exactly the days that payment granted (never below now). Practice-exam entitlements (`course_entitlements`, `course_products`) are untouched: a study purchase grants no exam access and an exam purchase grants no study access.
+
+**To start selling** (not done; needs the owner): create the US$120 one-time price in Paddle; add `insert into study_products (course_id, provider, provider_price_id, access_days) select id, 'paddle', 'pri_…', 365 from study_courses where code = 'ASP-SPS';` and set `NEXT_PUBLIC_CHECKOUT_URL_ASP_SPS` to a checkout page that passes `custom_data.user_id` (placeholders `{user_id}`, `{email}`). Until the URL is set, the buy button is replaced by "Online purchase isn't open yet".
+
+## 4a. Original drawings (protected images), formula sheets and calculator
+
+- **Drawings.** 177 figures carry the guide's original drawing, cropped from the PDF (the figure's own rounded card, 150 dpi, WebP, 7 MB in total) by `convert.py`, with the guide's description kept under "Figure in words". Files are named `asp-sps/fig-<label>-<content hash>.webp`, stored in the **private** `iparkar-study-guides` R2 bucket under `lms-assets/` (upload: `scripts/upload-study-assets.sh asp-sps`), and served only by `GET /api/study/asset?k=<key>` after `study_can_view_asset` confirms an administrator or a learner with current access to that course (`Cache-Control: private`, `nosniff`, same-origin resource policy). No public URL exists. Right-click and drag are discouraged in the player. **Limit:** anything a learner can see can still be screenshotted or photographed; the protection stops unauthenticated and lapsed access, link sharing and hot-linking, not copying by an authorised viewer.
+- **Formula sheets.** One per domain (`/learn/asp-sps/formulas/1…9`, linked from the overview, each domain page and the player header), assembled by `build_formulas.py` from the chapters' transcribed equations and "Eq." tables — all 184 numbered equations on the guide's nine formula sheets, with symbols and units and links back to each chapter. Stored in `study_resources`, served by `get_study_resource` with the same access check, printable. Glossary pages are not built (owner's decision).
+- **TI-30XS calculator.** The existing exam emulator (`components/exam/Calculator.tsx`) is available in the player on screens ≥ 1024 px through a "Calculator / Hide calculator" toggle. Below 1024 px the button and the calculator are not rendered at all.
 
 ## 5. Security
 
@@ -66,7 +80,13 @@ All study tables have RLS on and no grants to `anon`/`authenticated` except admi
 
 Extensions (documented): Tailwind config gained the design system's brown-green tokens (`forest-green`, `olive-green`, `moss-green`), which existed in the artifact but not in the app config, and `maxWidth.reading` (720 px). Breadcrumbs on `paper` use `graphite` because `ink-54` on paper is 4.49:1. On phones narrower than 480 px the header shows the mark without the wordmark (the link keeps its accessible name) so the nav fits.
 
-## 7. Verification done (13 Nov 2026)
+## 7. Verification done
+
+14 Nov 2026 (access, drawings, formula sheets, calculator):
+- `vitest run`: 129/129 (9 new access tests: offer → 7-day trial once; lapsed trial refuses chapters, activities, resources and drawings but keeps progress; purchase replaces the trial with 365 days; idempotent per payment; renewal extends; buy-without-trial enrols; refund takes back the days; no practice-exam entitlement; service functions refused to learners; admin/pilot unlimited; admin extension).
+- Browser (production build + mock): new learner starts the free access from My learning and lands in 1.1 with "Free access: 7 days left"; drawings load through the protected route (1031 px WebP); anonymous request redirected to sign-in; expired learner gets the paywall and HTTP 403 for a drawing; calculator opens/hides on desktop; at 390 px no calculator is rendered; formula sheet renders. axe WCAG 2.2 A/AA: 0 violations on My learning, overview, domain, formula sheet, player (with calculator open) and paywall, for trial, expired and new learners, at 1440 and 390 px. The existing 1.1 journey (resume on second device, finish, privacy) still passes.
+
+13 Nov 2026:
 
 - `vitest run`: 120/120 tests pass (21 new study tests + existing suites; the upgrade test confirms the migration is re-runnable).
 - `tsc --noEmit` clean; `next build` succeeds; ESLint clean for new code.
@@ -78,12 +98,18 @@ Extensions (documented): Tailwind config gained the design system's brown-green 
 
 ## 8. Setup and rollback
 
-1. Apply `supabase/migrations/20261113000100_study_course.sql` to the staging project (`supabase db push` or SQL editor). It is additive and re-runnable.
-2. `npm run import:study -- --course asp-sps --dry-run`, then without `--dry-run` (needs `ADMIN_EMAIL`/`ADMIN_PASSWORD`).
+1. Apply `supabase/migrations/20261113000100_study_course.sql` and `20261114000100_study_access.sql` (`supabase db push` or SQL editor). Both are additive and re-runnable; the second renames the two read RPCs' bodies to `study_course_payload` / `study_chapter_payload` behind access-checking wrappers and adds `study_products`, `study_purchases`, `study_resources` and `payments.study_course_id`.
+2. `npm run import:study -- --course asp-sps --dry-run`, then without `--dry-run` (needs `ADMIN_EMAIL`/`ADMIN_PASSWORD`). This also loads the nine formula sheets and the access settings.
+2a. `scripts/upload-study-assets.sh asp-sps` uploads the drawings to the private bucket (needs `wrangler login`).
 3. In `/admin/study`, pilot-enrol reviewers by username.
-4. Deploy as usual (`npm run cf:deploy`). Nothing is public until learners are enrolled.
+4. Deploy as usual (`npm run cf:deploy`). Nobody outside the pilot sees the course until a version is published: the free-access offer appears only for a published default version.
 
-Rollback: the feature is isolated in `study_*` objects. To remove it, drop the study functions and tables (`drop table public.study_course_completions, public.study_notes, public.study_bookmarks, public.study_resume, public.study_activity_attempts, public.study_chapter_progress, public.study_section_progress, public.study_enrollments, public.study_activities, public.study_sections, public.study_chapters, public.study_domains, public.study_course_versions, public.study_courses cascade;` then the three `study_*` types). No existing table was altered.
+### Previewing before going live
+
+- **On your computer, no backend needed** (fastest): in the repo, `npx tsx tests/e2e/mock-supabase.ts` in one terminal; in another create `.env.local` with `NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321`, `NEXT_PUBLIC_SUPABASE_ANON_KEY=anon`, `SUPABASE_SERVICE_ROLE_KEY=service` (and optionally a test `NEXT_PUBLIC_CHECKOUT_URL_ASP_SPS`), then `npm run dev` and open http://localhost:3000. Sign in with `learner@`, `trial@`, `expired@`, `new@` or `admin@example.test` (password `password123`) to see unlimited, 7-days-left, ended and not-started states. The mock runs the real migrations in memory, marks chapters approved so the trial can be shown, and forgets everything when stopped. Delete `.env.local` afterwards.
+- **On real infrastructure without affecting app.iparkar.com:** apply both migrations, import as a draft (`--version 1.0.0-draft`), pilot-enrol yourself in `/admin/study`, upload the drawings, then `npx opennextjs-cloudflare build && npx wrangler versions upload` — this creates a preview version with its own `*.workers.dev` preview URL while production keeps serving the current version (enable preview URLs on the Worker if needed). Promote with `wrangler versions deploy` only when satisfied. Because there is one Supabase project, the migrations and the draft import do touch the production database, but they are additive and invisible to learners until a version is published or someone is enrolled.
+
+Rollback: the feature is isolated in `study_*` objects. To remove it, drop the study functions and tables (`drop table public.study_course_completions, public.study_notes, public.study_bookmarks, public.study_resume, public.study_activity_attempts, public.study_chapter_progress, public.study_section_progress, public.study_enrollments, public.study_activities, public.study_sections, public.study_chapters, public.study_domains, public.study_course_versions, public.study_courses cascade;` then the three `study_*` types, plus `study_products`, `study_purchases`, `study_resources`). The only change to an existing table is the nullable `payments.study_course_id` column (`alter table public.payments drop column study_course_id`).
 
 ## 9. Content produced, and what review must still cover
 
@@ -92,10 +118,11 @@ Rollback: the feature is isolated in `study_*` objects. To remove it, drop the s
 | Chapters with lesson content | 99 / 99 |
 | Sections (5–15 min each, editorial estimates) | 647 |
 | Required activities | 789: 294 original knowledge-check questions (3 per converted chapter, 5 in 1.1; 166 numeric), the guide's own Try-it items (numeric where the answer is a single value, otherwise write-then-compare), and a "first call" on each opening scenario |
-| Worked examples / tables / equations / figures | 333 / 123 / 173 / 180 |
+| Worked examples / tables / equations / figures | 333 / 123 / 173 / 177 (all with the original drawing) |
+| Formula sheets | 9 (184 numbered equations) |
 | Estimated study time (editorial) | about 63 hours |
 
-How the converted chapters were made: tables come from the PDF's header fills and row rules (cell by cell, including tables that continue across pages); worked-example rows, callouts, two-column end matter, sub/superscripts and figure alt text come from the layout; all 173 equations were transcribed to TeX from rendered page crops and compile; figures are presented as the guide's own description (alt text) because the drawings themselves are not shipped. Every block keeps its source page.
+How the converted chapters were made: tables come from the PDF's header fills and row rules (cell by cell, including tables that continue across pages); worked-example rows, callouts, two-column end matter, sub/superscripts and figure alt text come from the layout; all 173 equations were transcribed to TeX from rendered page crops and compile; figures show the original drawing (protected, section 4a) with the guide's own description (alt text) beneath. Every block keeps its source page.
 
 Verified: every chapter validates against the schema; every chapter imports into the database and can be completed with its answer keys; 647 sections render in the browser with no errors and no TeX fallbacks; axe WCAG 2.2 AA shows 0 violations on converted chapter pages (worked-example tables, figures, equations) at desktop and mobile widths; every number in the knowledge checks was recomputed.
 
@@ -103,8 +130,9 @@ Not yet verified, and required before publication:
 - **Subject-matter review of every chapter** by an authorised reviewer, then `review_status: approved` per chapter (`content-register.csv` tracks it).
 - **Numbers in the guide's own worked examples** (333) are carried as printed. Chapter 1.1's were recomputed; the rest need the same check.
 - **Conversion flags** (63 across all chapters, listed in each chapter's `meta.checks.flags`): tables named from their headers, drawing labels dropped, worked examples whose source has no separate Answer row. Each is a prompt to compare with the PDF page.
-- **Figures**: diagrams are described, not drawn. Decide whether to add the original drawings as protected images.
-- Domain introductions, the part formula sheets and glossaries as course resources, course-wide search, and BCSP calculator/blueprint policy checks (section 7 of the brief) remain to build.
+- **Drawings**: 177 crops were checked on contact sheets; a reviewer should still compare each against its page (a few side-by-side layouts were cropped to the drawing's own card).
+- Domain introductions, course-wide search, and BCSP calculator/blueprint policy checks (section 7 of the brief) remain to build. Formula sheets need the same subject review as chapters (`review_status` is `draft`).
+- Paddle price, `study_products` row and checkout URL for the US$120 product (section 4).
 - Manual screen-reader and keyboard pass; run against the real Supabase staging project.
 
 To rebuild a chapter after a fix: edit its overlay in `imports/asp-sps/authoring/overlays/<id>.json` (or `kc_*.py` / `eq_*.py` and re-save), run `python3 scripts/asp-sps/pipeline/convert.py <id>`, then `npm run import:study -- --dry-run` and the import. Re-imports keep learner progress unless the set of sections or activities changes on a version that already has learners (then publish a new version).

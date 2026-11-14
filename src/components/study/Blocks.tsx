@@ -1,5 +1,6 @@
 import type { Block } from "@/lib/study/schema";
 import { StudyText, TexBlock } from "./StudyText";
+import { ProtectedImage } from "./ProtectedImage";
 
 const CALLOUT: Record<string, { card: string; label: string }> = {
   source_note: { card: "bg-sky-tint", label: "Source note" },
@@ -17,7 +18,9 @@ function Caption({ children }: { children: React.ReactNode }) {
  * Renders one lesson block. `renderActivity` places interactive activities
  * (client components) where the author put them.
  */
-export function StudyBlock({ block, renderActivity }: { block: Block; renderActivity: (code: string) => React.ReactNode }) {
+export function StudyBlock({ block, renderActivity, chapterHref = (code) => `./${code}` }: {
+  block: Block; renderActivity: (code: string) => React.ReactNode; chapterHref?: (code: string) => string;
+}) {
   switch (block.type) {
     case "heading":
       return <h3 className="pt-4 text-heading-sm text-ink">{block.text}</h3>;
@@ -112,12 +115,22 @@ export function StudyBlock({ block, renderActivity }: { block: Block; renderActi
     case "figure":
       return (
         <figure className="rounded-card border border-hairline bg-white p-5">
-          <p className="text-body-sm font-semibold text-ink">{block.label}</p>
-          <p className="mt-1 text-body-sm text-graphite"><StudyText md={block.caption} /></p>
-          <div className="mt-3 rounded-button bg-paper p-4">
-            <p className="text-caption text-slate">What the figure shows</p>
-            <p className="mt-1 text-body text-charcoal"><StudyText md={block.description} /></p>
-          </div>
+          {block.image && <ProtectedImage image={block.image} alt={`${block.label}: ${block.caption}`} />}
+          <figcaption className={block.image ? "mt-3" : ""}>
+            <span className="text-body-sm font-semibold text-ink">{block.label}</span>{" "}
+            <span className="text-body-sm text-graphite"><StudyText md={block.caption} /></span>
+          </figcaption>
+          {block.image ? (
+            <details className="mt-3 rounded-button bg-paper p-4">
+              <summary className="cursor-pointer text-body-sm font-medium text-ink">Figure in words</summary>
+              <p className="mt-2 text-body text-charcoal"><StudyText md={block.description} /></p>
+            </details>
+          ) : (
+            <div className="mt-3 rounded-button bg-paper p-4">
+              <p className="text-caption text-slate">What the figure shows</p>
+              <p className="mt-1 text-body text-charcoal"><StudyText md={block.description} /></p>
+            </div>
+          )}
         </figure>
       );
     case "scenario":
@@ -165,7 +178,7 @@ export function StudyBlock({ block, renderActivity }: { block: Block; renderActi
           <h4 className="text-heading-sm text-ink">Related chapters</h4>
           <ul className="mt-3 flex flex-wrap gap-2">
             {block.chapters.map((c) => (
-              <li key={c.code}><a className="inline-flex rounded-button border border-hairline bg-white px-3 py-2 text-body-sm text-ink hover:bg-sky-tint" href={`./${c.code}`}>
+              <li key={c.code}><a className="inline-flex rounded-button border border-hairline bg-white px-3 py-2 text-body-sm text-ink hover:bg-sky-tint" href={chapterHref(c.code)}>
                 <span className="font-semibold">{c.code}</span>&nbsp;{c.title}</a></li>
             ))}
           </ul>

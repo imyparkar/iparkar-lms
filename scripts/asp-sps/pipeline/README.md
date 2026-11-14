@@ -9,6 +9,11 @@ Turns the iParkar ASP Exam Study Guide PDF into lesson packages for `npm run imp
 | Chapter assembly | `convert.py <id>` / `runall.py <domain>` | `imports/asp-sps/chapters/<id>.json` (git-ignored) |
 | Equation crops for transcription | `eqcrops.py <domain>` | PNG sheets of each equation as printed |
 | Review digest | `digest.py <id> …` | summary, errors, terms and worked-example answers per chapter |
+| Original drawings | `convert.py` (automatic) | each figure's drawing cropped from its rounded card at 150 dpi, trimmed, saved as WebP under `imports/asp-sps/assets/asp-sps/fig-<label>-<hash>.webp` (`ASP_ASSETS` to override); the figure block gets `image: {key, width, height, page}` |
+| Formula sheets | `build_formulas.py` | `imports/asp-sps/resources.json`: one sheet per domain, assembled from the chapters' transcribed equations and "Eq." tables (all 184 numbered equations on the guide's nine formula sheets) |
+
+Upload the drawings to the private bucket with `scripts/upload-study-assets.sh asp-sps`. Browser checks
+(Playwright + axe) live in `../qa/` and run against `next start` with the mock backend.
 
 Hand-written inputs live in `imports/asp-sps/authoring/` (git-ignored, because this repo is public):
 `overlays/<id>.json` holds the transcribed TeX for each equation (`equations`), the original

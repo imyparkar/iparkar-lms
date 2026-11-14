@@ -8,9 +8,17 @@
  *   NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321 NEXT_PUBLIC_SUPABASE_ANON_KEY=anon \
  *   SUPABASE_SERVICE_ROLE_KEY=service npm run dev
  *
- * Seeds: admin@example.test / learner@example.test / other@example.test (password "password123"),
- * the asp-sps manifest plus any authored chapters in imports/asp-sps/chapters, and pilot
- * enrollments for learner and other. Tokens are unsigned; auth is simulated, RLS and RPCs are real.
+ * Seeds (password "password123" for all):
+ *   admin@example.test   — administrator (sees drawings and the admin screens)
+ *   learner@example.test — pilot enrollment, no time limit
+ *   other@example.test   — pilot enrollment, no time limit
+ *   trial@example.test   — free access, 7 days left
+ *   expired@example.test — free access that ended yesterday (paywall)
+ *   new@example.test     — signed in, not started (sees "Start 7-day free access")
+ * the asp-sps manifest, authored chapters in imports/asp-sps/chapters, the formula sheets in
+ * imports/asp-sps/resources.json and content/asp-sps/access.json. So that the trial journey can be
+ * previewed, the mock marks the chapters approved and publishes the version (MOCK_PUBLISH=0 to
+ * keep it a draft). Tokens are unsigned; auth is simulated, RLS and RPCs are real.
  */
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
@@ -21,7 +29,7 @@ import { buildPackage } from "../../src/lib/study/package";
 const PORT = Number(process.env.MOCK_PORT ?? 54321);
 const db = await createDb();
 const users: Record<string, string> = {};
-for (const u of ["admin", "learner", "other"]) {
+for (const u of ["admin", "learner", "other", "trial", "expired", "new"]) {
   users[`${u}@example.test`] = await createUser(db, { username: u, role: u === "admin" ? "admin" : "student" });
 }
 await db.query(`update profiles set full_name = 'Heena Parkar' where username = 'learner'`);
@@ -35,6 +43,23 @@ if (issues.length) throw new Error(JSON.stringify(issues));
 const imp = await rpc(db, users["admin@example.test"], "admin_study_import", [JSON.stringify(pkg)], ["jsonb"]);
 for (const u of ["learner@example.test", "other@example.test"]) {
   await rpc(db, users["admin@example.test"], "admin_study_enroll", [users[u], imp.version_id, true], ["uuid", "uuid", "boolean"]);
+}
+const adminId = users["admin@example.test"];
+const resFile = join(root, "imports/asp-sps/resources.json");
+if (existsSync(resFile)) {
+  const resources = JSON.parse(readFileSync(resFile, "utf8")).resources;
+  console.log("resources", (await rpc(db, adminId, "admin_study_import_resources", [JSON.stringify({ course: pkg.course.code, version: pkg.course.version, resources })], ["jsonb"])));
+}
+const access = JSON.parse(readFileSync(join(root, "content/asp-sps/access.json"), "utf8"));
+await rpc(db, adminId, "admin_study_set_course_access", [pkg.course.code, access.enrollment_policy, access.trial_days, access.access_days, access.price_label],
+          ["text", "text", "int", "int", "text"]);
+if (process.env.MOCK_PUBLISH !== "0") {
+  await db.query(`update study_chapters set review_status = 'approved' where version_id = $1`, [imp.version_id]); // [mock] preview only
+  console.log("publish", await rpc(db, adminId, "admin_study_set_version_status", [imp.version_id, "published", true], ["uuid", "text", "boolean"]));
+  for (const [u, sql] of [["trial", "now() + interval '7 days' - interval '1 minute'"], ["expired", "now() - interval '1 day'"]]) {
+    await rpc(db, users[`${u}@example.test`], "study_self_enroll", ["ASP-SPS"], ["text"]);
+    await db.query(`update study_enrollments set access_expires_at = ${sql}, trial_started_at = ${sql} - interval '7 days' where user_id = $1`, [users[`${u}@example.test`]]);
+  }
 }
 console.log("seeded", imp.counts);
 

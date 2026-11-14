@@ -14,6 +14,7 @@ import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { createClient } from "@supabase/supabase-js";
 import { buildPackage } from "../src/lib/study/package";
+import { BlockSchema } from "../src/lib/study/schema";
 
 function loadEnvLocal(file = ".env.local") {
   if (!existsSync(file)) return;
@@ -50,6 +51,20 @@ async function main() {
   console.log(`Authored chapters (${authored.length}): ${authored.join(", ") || "none"}`);
   console.log(`In preparation: ${pkg.chapters.length - authored.length}`);
   issues.forEach((i) => console.log(`  ✗ ${i.chapter ?? ""} ${i.message}`));
+
+  // Per-domain resources (formula sheets) and commercial settings.
+  const resFile = join("imports", course, "resources.json");
+  const resources = existsSync(resFile) ? JSON.parse(readFileSync(resFile, "utf8")).resources ?? [] : [];
+  for (const r of resources) {
+    r.blocks.forEach((b: unknown, i: number) => {
+      const v = BlockSchema.safeParse(b);
+      if (!v.success) issues.push({ chapter: r.code, message: `block ${i}: ${v.error.issues[0]?.message}` });
+    });
+  }
+  console.log(`Resources: ${resources.map((r: { code: string }) => r.code).join(", ") || "none"}`);
+  const accessFile = join("content", course, "access.json");
+  const access = existsSync(accessFile) ? JSON.parse(readFileSync(accessFile, "utf8")) : null;
+  if (access) console.log(`Access: ${access.enrollment_policy} enrollment · ${access.trial_days ?? "no"}-day trial · ${access.access_days} days for ${access.price_label}`);
   if (issues.length) process.exit(1);
   if (args.out) writeFileSync(args.out, JSON.stringify(pkg));
   if (args["dry-run"]) return;
@@ -62,6 +77,20 @@ async function main() {
   const { data, error } = await supabase.rpc("admin_study_import", { p: pkg });
   if (error) throw error;
   console.log("Imported:", JSON.stringify(data));
+  if (data?.ok === false) process.exit(1);
+  if (resources.length) {
+    const r = await supabase.rpc("admin_study_import_resources", { p: { course: pkg.course.code, version: pkg.course.version, resources } });
+    if (r.error) throw r.error;
+    console.log("Resources:", JSON.stringify(r.data));
+  }
+  if (access) {
+    const r = await supabase.rpc("admin_study_set_course_access", {
+      p_course_code: pkg.course.code, p_policy: access.enrollment_policy, p_trial_days: access.trial_days,
+      p_access_days: access.access_days, p_price_label: access.price_label,
+    });
+    if (r.error) throw r.error;
+    console.log("Access settings:", JSON.stringify(r.data));
+  }
 }
 
 main().catch((e) => {

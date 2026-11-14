@@ -4,6 +4,9 @@ import { requireUser } from "@/lib/auth/session";
 import { courseCode } from "@/lib/study/types";
 import type { StudyChapter, StudyCourse } from "@/lib/study/types";
 import { Player } from "@/components/study/Player";
+import { NotEnrolled } from "@/components/study/NotEnrolled";
+import { Paywall } from "@/components/study/Access";
+import { studyBuyUrl } from "@/lib/study/buy";
 
 export const dynamic = "force-dynamic";
 
@@ -27,20 +30,23 @@ export default async function ChapterPage({ params, searchParams }: {
   if (!data?.ok) {
     if (data?.error === "not_found") notFound();
     return (
-      <main className="mx-auto max-w-reading px-4 py-20">
-        <div className="card">
-          <h1 className="text-heading-sm">You&apos;re not enrolled in this course</h1>
-          <p className="mt-2 text-body text-graphite">Your account doesn&apos;t have an active enrollment for this study course, or your enrollment has ended. Lesson content is only shown to enrolled learners.</p>
-          <Link href="/learn" className="btn-primary mt-4">Go to My learning</Link>
-        </div>
+      <main id="main" className="mx-auto max-w-reading px-4 py-20">
+        <p className="mb-6 text-body-sm"><Link href="/learn" className="text-ink underline underline-offset-2">← My learning</Link></p>
+        {data?.error === "access_expired" && courseData?.ok
+          ? <Paywall access={data.access} buyHref={studyBuyUrl(courseCode(course), user)} courseTitle={(courseData as StudyCourse).course.title}
+                     done={data.progress?.completed_chapters} total={data.progress?.required_chapters} slug={course} />
+          : <NotEnrolled offer={data?.offer} />}
       </main>
     );
   }
   const c = courseData as StudyCourse;
+  const sheet = c.resources.find((r) => r.kind === "formula_sheet" && r.domain === (data as StudyChapter).chapter.domain.number);
   const outline = c.domains.map((d) => ({
     number: d.number, title: d.title,
     chapters: d.chapters.map((ch) => ({ code: ch.code, title: ch.title, status: ch.status, has_content: ch.has_content })),
   }));
   return <Player userId={user.id} courseSlug={course} courseTitle={c.course.title} data={data as StudyChapter}
-                 outline={outline} startSection={sp.s ?? null} />;
+                 outline={outline} startSection={sp.s ?? null}
+                 formulaHref={sheet ? `/learn/${course}/formulas/${sheet.domain}` : null}
+                 buyHref={studyBuyUrl(c.course.code, user)} />;
 }

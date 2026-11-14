@@ -4,11 +4,11 @@ Turns a chapter's pages into a list of raw blocks using the PDF's drawing:
 table header fills + row rules, worked-example rows, orange callout bars,
 heading sizes, bullet glyphs and two-column end matter. Output feeds convert.py.
 """
-import os
 import json, logging, re, sys, collections
 import pdfplumber
 
 logging.disable(logging.WARNING)
+import os
 PDF = pdfplumber.open(os.environ.get('ASP_GUIDE_PDF', 'guide.pdf'))
 
 HEAD_FILL = (0.969, 0.937, 0.914)
@@ -248,7 +248,7 @@ def chapter_lines(p0, p1):
             if not rows and t['hbottom'] > 700:
                 carry = dict(t, header=header)   # header only at the foot of the page
                 continue
-            items.append({'kind': 'table', 'page': pn, 'top': t['top'], 'header': header, 'rows': rows})
+            items.append({'kind': 'table', 'page': pn, 'top': t['top'], 'bottom': t['bottom'], 'header': header, 'rows': rows})
         rest = [w for w in words if id(w) not in used]
         try:
             p.flush_cache()
@@ -262,7 +262,7 @@ def chapter_lines(p0, p1):
             for k, part in enumerate(parts):
                 bar = next((b for b in bars if b['top'] - 3 <= part.top <= b['bottom'] + 3 and part.x0 > b['x0']), None)
                 bul = any(abs(((b['top'] + b['bottom']) / 2) - ((part.top + part.bottom) / 2)) < 7 and 0 < part.x0 - b['x1'] < 18 for b in bullets)
-                items.append({'kind': 'line', 'page': pn, 'top': part.top, 'x0': round(part.x0), 'x1': round(part.x1),
+                items.append({'kind': 'line', 'page': pn, 'top': part.top, 'bottom': part.bottom, 'x0': round(part.x0), 'x1': round(part.x1),
                               'size': part.size, 'font': part.font, 'text': dehyphen(part.text),
                               'bar': round(bar['top']) if bar is not None else None, 'bullet': bul,
                               'column': (len(parts) > 1 and k) or (0 if part.x0 < 290 else (1 if part.x0 > 300 and part.size < 10 else 0)),
