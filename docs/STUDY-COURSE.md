@@ -2,6 +2,12 @@
 
 Status on 14 Nov 2026: **engine complete and tested; 99 of 99 chapters authored as drafts (647 sections, 789 activities, 1,268-page source); 0 subject-reviewed; 0 published.** Chapter 1.1 was written by hand; chapters 1.2–9.7 were converted from the guide PDF by a layout-aware pipeline, with every equation transcribed to TeX by hand and original knowledge checks added. The course version `1.0.0-draft` cannot be published until every chapter has an approved review status: the database refuses it.
 
+## 0. Live status (14 Nov 2026)
+
+Version **1.0.0-beta** is published on app.iparkar.com (production Supabase project `iparkar`): 99 chapters, 647 sections, 789 activities, 9 formula sheets, 177 drawings in R2 (`iparkar-study-guides/lms-assets/asp-sps/`). Every signed-in user can start 7 days of free access; after that the buy button is a **Request for Access** email to support@iparkar.com until a Paddle price, `study_products` row and `NEXT_PUBLIC_CHECKOUT_URL_ASP_SPS` exist. Chapters were marked approved by the owner as a beta decision (audit `study_beta_approval`); every chapter shows "Beta · content under review". Subject-matter review is still outstanding (section 9). To grant paid access by hand: `/admin/study` enrol, or `admin_study_set_access` with an end date.
+
+Note: the Supabase login has CAPTCHA protection, so `npm run import:study` (which signs in from the terminal) only works while CAPTCHA is briefly switched off.
+
 ## 1. What was built
 
 | Area | Where |
