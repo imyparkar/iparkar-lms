@@ -7,6 +7,7 @@ import { ProgressMeter } from "@/components/study/Progress";
 import { NotEnrolled } from "@/components/study/NotEnrolled";
 import { TrialNotice, accessLine, Paywall } from "@/components/study/Access";
 import { studyBuyUrl } from "@/lib/study/buy";
+import { BetaNotice, isBeta } from "@/components/study/BetaNotice";
 
 export const metadata = { title: "Course overview" };
 export const dynamic = "force-dynamic";
@@ -29,6 +30,7 @@ export default async function CourseOverview({ params }: { params: Promise<{ cou
   return (
     <div className="space-y-12">
       <nav aria-label="Breadcrumb" className="text-body-sm text-graphite"><Link href="/learn" className="hover:text-ink">My learning</Link> / <span className="text-ink">{c.course.title}</span></nav>
+      {isBeta(c.course.version) && <BetaNotice />}
       <TrialNotice access={c.access} buyHref={buy} />
       {!c.access.has_access && <Paywall access={c.access} buyHref={buy} courseTitle={c.course.title} done={p.completed_chapters} total={p.required_chapters} slug={course} />}
       <header className="grid gap-8 lg:grid-cols-[1.3fr_1fr] lg:items-end">

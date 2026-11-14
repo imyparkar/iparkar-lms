@@ -48,5 +48,5 @@ export default async function ChapterPage({ params, searchParams }: {
   return <Player userId={user.id} courseSlug={course} courseTitle={c.course.title} data={data as StudyChapter}
                  outline={outline} startSection={sp.s ?? null}
                  formulaHref={sheet ? `/learn/${course}/formulas/${sheet.domain}` : null}
-                 buyHref={studyBuyUrl(c.course.code, user)} />;
+                 buyHref={studyBuyUrl(c.course.code, user)} courseVersion={c.course.version} />;
 }

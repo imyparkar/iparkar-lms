@@ -8,6 +8,7 @@ import { ActivityCard } from "./Activity";
 import { StatusPill } from "./Progress";
 import { useStudySync } from "./useStudySync";
 import { Calculator } from "@/components/exam/Calculator";
+import { BetaNotice, isBeta } from "./BetaNotice";
 
 /** Desktop only (≥1024 px). The virtual calculator is never mounted on phones or small tablets. */
 function useIsDesktop() {
@@ -26,9 +27,9 @@ type Outline = { number: number; title: string; chapters: { code: string; title:
 
 const newId = () => (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`.replace(/[^0-9a-f-]/g, "0"));
 
-export function Player({ userId, courseSlug, courseTitle, data, outline, startSection, formulaHref = null, buyHref = null }: {
+export function Player({ userId, courseSlug, courseTitle, data, outline, startSection, formulaHref = null, buyHref = null, courseVersion = "" }: {
   userId: string; courseSlug: string; courseTitle: string; data: StudyChapter; outline: Outline; startSection: string | null;
-  formulaHref?: string | null; buyHref?: string | null;
+  formulaHref?: string | null; buyHref?: string | null; courseVersion?: string;
 }) {
   const { chapter } = data;
   const desktop = useIsDesktop();
@@ -268,6 +269,7 @@ export function Player({ userId, courseSlug, courseTitle, data, outline, startSe
             <span className="text-graphite">{chapter.code}</span> {chapter.title}
           </h1>
           {chapter.meta.summary && <p className="lead mt-3">{chapter.meta.summary}</p>}
+          {isBeta(courseVersion) && <BetaNotice className="mt-4" />}
           <p className="mt-2 text-body-sm text-graphite">
             {chapter.objectives.length ? `ASP11 objective ${chapter.objectives.join(", ")}` : "Prerequisite for the calculation objectives"}
             {chapter.est_minutes ? ` · about ${chapter.est_minutes} min (editorial estimate)` : ""}
