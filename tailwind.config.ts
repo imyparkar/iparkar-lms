@@ -34,6 +34,10 @@ export default {
         vermillion: "#e32d14",
         mocha: "#b18164",
         peach: "#f6d5b8",
+        // brown-green family (added to the design system after the first sync)
+        "forest-green": "#2e6f40",
+        "olive-green": "#636b2f",
+        "moss-green": "#8a9a5b",
         hairline: "rgba(0,0,0,0.08)",
       },
       fontFamily: {
@@ -56,7 +60,7 @@ export default {
         nav: "0px 0.7px 1.462px 0px rgba(0,0,0,0.015), 0px 3px 9px 0px rgba(0,0,0,0.03)",
         mockup: "0px 4px 12px rgba(0,0,0,0.1)",
       },
-      maxWidth: { page: "1440px", content: "1120px" },
+      maxWidth: { page: "1440px", content: "1120px", reading: "720px" },
       spacing: { nav: "64px" },
     },
   },

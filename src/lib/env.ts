@@ -18,6 +18,8 @@ export function checkoutUrl(courseCode: string): string | null {
     EPI: process.env.NEXT_PUBLIC_CHECKOUT_URL_EPI,
     QEP: process.env.NEXT_PUBLIC_CHECKOUT_URL_QEP,
     CIT: process.env.NEXT_PUBLIC_CHECKOUT_URL_CIT,
+    // ASP Self Paced Study Course — a separate product from the ASP practice-exam package.
+    "ASP-SPS": process.env.NEXT_PUBLIC_CHECKOUT_URL_ASP_SPS,
   };
   return map[courseCode] || null;
 }

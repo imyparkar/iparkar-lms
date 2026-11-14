@@ -9,3 +9,4 @@ next-env.d.ts
 # Premium item banks never enter this repo (it is public).
 /imports/*
 !/imports/README.txt
+__pycache__/

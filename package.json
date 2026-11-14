@@ -11,7 +11,8 @@
     "import:bank": "tsx scripts/import-item-bank.ts",
     "cf:build": "opennextjs-cloudflare build",
     "cf:preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
+    "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "import:study": "tsx scripts/import-study-course.ts"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.11",

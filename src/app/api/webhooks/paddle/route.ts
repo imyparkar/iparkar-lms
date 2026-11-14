@@ -8,7 +8,9 @@ import { getServiceClient } from "@/lib/supabase/admin";
  * (service_apply_purchase), independent of the provider.
  *
  * Checkout must pass custom_data: { user_id: "<supabase user id>" }.
- * Map Paddle price IDs to courses in the course_products table.
+ * Map Paddle price IDs to practice-exam courses in course_products, and to
+ * self-paced study courses in study_products. The two catalogues are separate:
+ * a price grants only what its own table maps it to.
  */
 type PaddleEvent = {
   event_id: string;
@@ -66,18 +68,29 @@ export async function POST(request: NextRequest) {
     ? await db.from("course_products").select("course_id, access_days, kind").eq("provider", "paddle").in("provider_price_id", priceIds).eq("is_active", true)
     : { data: [] as { course_id: string; access_days: number | null; kind: string }[] };
 
+  const { data: studyProducts } = priceIds.length
+    ? await db.from("study_products").select("course_id, access_days").eq("provider", "paddle").in("provider_price_id", priceIds).eq("is_active", true)
+    : { data: [] as { course_id: string; access_days: number }[] };
+
   if (evt.event_type === "transaction.completed") {
-    if (!userId || !products?.length) {
+    if (!userId || (!products?.length && !studyProducts?.length)) {
       await db.from("audit_logs").insert({ action: "payment.unmatched", entity: "payment", entity_id: payment.id, details: { event_id: evt.event_id, priceIds, userId } });
       return NextResponse.json({ ok: true, matched: false });
     }
-    for (const p of products) {
+    for (const p of products ?? []) {
       await db.from("payments").update({ course_id: p.course_id }).eq("id", payment.id);
       const { error } = await db.rpc("service_apply_purchase", {
         p_user: userId, p_course: p.course_id, p_access_days: p.access_days, p_payment: payment.id,
         p_source: p.kind === "subscription" ? "subscription" : "purchase", p_subscription: evt.data.subscription_id ?? null,
       });
       if (error) return NextResponse.json({ error: "grant failed" }, { status: 500 });
+    }
+    for (const sp of studyProducts ?? []) {
+      await db.from("payments").update({ study_course_id: sp.course_id }).eq("id", payment.id);
+      const { data, error } = await db.rpc("service_apply_study_purchase", {
+        p_user: userId, p_course: sp.course_id, p_days: sp.access_days, p_payment: payment.id,
+      });
+      if (error || data?.ok === false) return NextResponse.json({ error: "study grant failed" }, { status: 500 });
     }
     return NextResponse.json({ ok: true });
   }
@@ -94,7 +107,17 @@ export async function POST(request: NextRequest) {
         await db.rpc("service_revoke_for_payment", { p_user: o.user_id, p_course: o.course_id, p_reason: isRefund ? "Refunded" : "Subscription canceled" });
       }
     }
-    return NextResponse.json({ ok: true, revoked: original?.length ?? 0 });
+    // Study-course purchases are one-off; only refunds apply. Take back that payment's days.
+    let studyRevoked = 0;
+    if (isRefund) {
+      const { data: studyOriginal } = await db.from("payments").select("id").eq("provider", "paddle")
+        .eq("event_type", "transaction.completed").eq("provider_txn_id", ref).not("study_course_id", "is", null).limit(5);
+      for (const o of studyOriginal ?? []) {
+        await db.rpc("service_revoke_study_purchase", { p_payment: o.id, p_reason: "Refunded" });
+        studyRevoked++;
+      }
+    }
+    return NextResponse.json({ ok: true, revoked: (original?.length ?? 0) + studyRevoked });
   }
 
   return NextResponse.json({ ok: true, ignored: evt.event_type });

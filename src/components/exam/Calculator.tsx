@@ -440,7 +440,7 @@ export function Calculator({ open, onClose }: { open: boolean; onClose: () => vo
     const rows = [];
     for (let i = start; i < Math.min(total, start + 4); i++) {
       if (i === historyLines.length) {
-        rows.push(<div key="input" className="relative h-[22px] whitespace-nowrap px-[10px]" aria-label="Current entry">{inputLine}</div>);
+        rows.push(<div key="input" className="relative h-[22px] whitespace-nowrap px-[10px]" role="group" aria-label="Current entry">{inputLine}</div>);
       } else {
         const l = historyLines[i];
         rows.push(

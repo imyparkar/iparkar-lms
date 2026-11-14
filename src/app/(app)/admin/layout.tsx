@@ -4,7 +4,7 @@ import { NavLink } from "@/components/shell/NavLink";
 const LINKS = [
   ["/admin", "Overview"], ["/admin/questions", "Questions"], ["/admin/questions/import", "Import"],
   ["/admin/blueprints", "Blueprints"], ["/admin/students", "Students & access"], ["/admin/attempts", "Attempts"],
-  ["/admin/settings", "Exam settings"], ["/admin/audit", "Audit log"],
+  ["/admin/settings", "Exam settings"], ["/admin/study", "Study courses"], ["/admin/audit", "Audit log"],
 ] as const;
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {

@@ -1,0 +1,2436 @@
+{
+ "schema": "iparkar.course-manifest/1",
+ "course": {
+  "code": "ASP-SPS",
+  "title": "ASP Self Paced Study Course",
+  "product": "iParkar Learning",
+  "version": "1.0.0-draft",
+  "completion_policy": "all_required_chapters"
+ },
+ "source": {
+  "title": "iParkar ASP® Exam Study Guide",
+  "file": "iParkar-ASP-Exam-Study-Guide.pdf",
+  "edition": "1.0",
+  "edition_date": "2026-11",
+  "pdf_pages": 1268,
+  "index_pages": [
+   2,
+   6
+  ],
+  "stated_blueprint": "ASP11 V.2024.04.24",
+  "blueprint_note": "The guide's stated alignment. Current BCSP blueprint not yet verified for this course version.",
+  "extraction": "Text extracted from the project PDF (two halves: pp. 1-634 and 635-1268). Page numbers read from running footers; covers and closing dividers inferred from neighbours."
+ },
+ "domains": [
+  {
+   "domain": 1,
+   "title": "Mathematical calculations",
+   "weight": 10,
+   "chapter_count": 17,
+   "pages": {
+    "divider": 7,
+    "contents": [
+     8,
+     8
+    ],
+    "chapters": [
+     9,
+     148
+    ],
+    "closing_divider": 149,
+    "formula_sheet": [
+     150,
+     159
+    ],
+    "glossary": [
+     160,
+     163
+    ]
+   }
+  },
+  {
+   "domain": 2,
+   "title": "Safety programs and concepts",
+   "weight": 25,
+   "chapter_count": 24,
+   "pages": {
+    "divider": 164,
+    "contents": [
+     165,
+     166
+    ],
+    "chapters": [
+     167,
+     424
+    ],
+    "closing_divider": 425,
+    "formula_sheet": [
+     426,
+     431
+    ],
+    "glossary": [
+     432,
+     437
+    ]
+   }
+  },
+  {
+   "domain": 3,
+   "title": "Ergonomics",
+   "weight": 8,
+   "chapter_count": 7,
+   "pages": {
+    "divider": 438,
+    "contents": [
+     439,
+     439
+    ],
+    "chapters": [
+     440,
+     519
+    ],
+    "closing_divider": 520,
+    "formula_sheet": [
+     521,
+     522
+    ],
+    "glossary": [
+     523,
+     524
+    ]
+   }
+  },
+  {
+   "domain": 4,
+   "title": "Fire prevention and protection",
+   "weight": 12,
+   "chapter_count": 12,
+   "pages": {
+    "divider": 525,
+    "contents": [
+     526,
+     526
+    ],
+    "chapters": [
+     527,
+     671
+    ],
+    "closing_divider": 672,
+    "formula_sheet": [
+     673,
+     677
+    ],
+    "glossary": [
+     678,
+     681
+    ]
+   }
+  },
+  {
+   "domain": 5,
+   "title": "Emergency preparedness and response",
+   "weight": 10,
+   "chapter_count": 6,
+   "pages": {
+    "divider": 682,
+    "contents": [
+     683,
+     683
+    ],
+    "chapters": [
+     684,
+     754
+    ],
+    "closing_divider": 755,
+    "formula_sheet": [
+     756,
+     757
+    ],
+    "glossary": [
+     758,
+     759
+    ]
+   }
+  },
+  {
+   "domain": 6,
+   "title": "Industrial hygiene and occupational health",
+   "weight": 12,
+   "chapter_count": 11,
+   "pages": {
+    "divider": 760,
+    "contents": [
+     761,
+     761
+    ],
+    "chapters": [
+     762,
+     887
+    ],
+    "closing_divider": 888,
+    "formula_sheet": [
+     889,
+     892
+    ],
+    "glossary": [
+     893,
+     896
+    ]
+   }
+  },
+  {
+   "domain": 7,
+   "title": "Environmental management",
+   "weight": 7,
+   "chapter_count": 8,
+   "pages": {
+    "divider": 897,
+    "contents": [
+     898,
+     898
+    ],
+    "chapters": [
+     899,
+     1015
+    ],
+    "closing_divider": 1016,
+    "formula_sheet": [
+     1017,
+     1020
+    ],
+    "glossary": [
+     1021,
+     1024
+    ]
+   }
+  },
+  {
+   "domain": 8,
+   "title": "Training, education, and communication",
+   "weight": 11,
+   "chapter_count": 7,
+   "pages": {
+    "divider": 1025,
+    "contents": [
+     1026,
+     1026
+    ],
+    "chapters": [
+     1027,
+     1144
+    ],
+    "closing_divider": 1145,
+    "formula_sheet": [
+     1146,
+     1147
+    ],
+    "glossary": [
+     1148,
+     1150
+    ]
+   }
+  },
+  {
+   "domain": 9,
+   "title": "Legal",
+   "weight": 5,
+   "chapter_count": 7,
+   "pages": {
+    "divider": 1151,
+    "contents": [
+     1152,
+     1152
+    ],
+    "chapters": [
+     1153,
+     1261
+    ],
+    "closing_divider": 1262,
+    "formula_sheet": [
+     1263,
+     1264
+    ],
+    "glossary": [
+     1265,
+     1268
+    ]
+   }
+  }
+ ],
+ "chapters": [
+  {
+   "id": "1.1",
+   "domain": 1,
+   "number": 1,
+   "title": "Units, conversions and the problem-solving routine",
+   "objectives": [
+    "1.16"
+   ],
+   "prerequisite": false,
+   "pages": [
+    9,
+    17
+   ],
+   "objective_statement": "ASP11 Domain 1, Objective 16: perform unit conversions between metric and imperial units (BCSP 2024)"
+  },
+  {
+   "id": "1.2",
+   "domain": 1,
+   "number": 2,
+   "title": "Algebra, geometry and trigonometry toolkit",
+   "objectives": [],
+   "prerequisite": true,
+   "pages": [
+    18,
+    24
+   ],
+   "objective_statement": null
+  },
+  {
+   "id": "1.3",
+   "domain": 1,
+   "number": 3,
+   "title": "Storage capacity",
+   "objectives": [
+    "1.1"
+   ],
+   "prerequisite": false,
+   "pages": [
+    25,
+    31
+   ],
+   "objective_statement": "ASP11 Domain 1, Objective 1: calculate storage capacity (BCSP 2024)"
+  },
+  {
+   "id": "1.4",
+   "domain": 1,
+   "number": 4,
+   "title": "General physics: force, motion, momentum, friction, energy",
+   "objectives": [
+    "1.10"
+   ],
+   "prerequisite": false,
+   "pages": [
+    32,
+    38
+   ],
+   "objective_statement": "ASP11 Domain 1, Objective 10: perform general physics calculations, including force, acceleration, velocity, momentum and friction (BCSP 2024)"
+  },
+  {
+   "id": "1.5",
+   "domain": 1,
+   "number": 5,
+   "title": "Rigging and load calculations",
+   "objectives": [
+    "1.2"
+   ],
+   "prerequisite": false,
+   "pages": [
+    39,
+    45
+   ],
+   "objective_statement": "ASP11 Domain 1, Objective 2: perform rigging and load calculations (BCSP 2024)"
+  },
+  {
+   "id": "1.6",
+   "domain": 1,
+   "number": 6,
+   "title": "Fall protection calculations",
+   "objectives": [
+    "1.7"
+   ],
+   "prerequisite": false,
+   "pages": [
+    46,
+    58
+   ],
+   "objective_statement": "ASP11 Domain 1, Objective 7: calculate fall protection parameters, including free-fall distance, maximum arresting force, force of impact, total fall distance and clearance (BCSP 2024)"
+  },
+  {
+   "id": "1.7",
+   "domain": 1,
+   "number": 7,
+   "title": "Trenching and excavation slope calculations",
+   "objectives": [
+    "1.4"
+   ],
+   "prerequisite": false,
+   "pages": [
+    59,
+    65
+   ],
+   "objective_statement": "ASP11 Domain 1, Objective 4: calculate slope angle and depth ratio for trenching and excavation (BCSP 2024)"
+  },
+  {
+   "id": "1.8",
+   "domain": 1,
+   "number": 8,
+   "title": "Flow rates: ventilation, hydraulic and pneumatic",
+   "objectives": [
+    "1.3"
+   ],
+   "prerequisite": false,
+   "pages": [
+    66,
+    74
+   ],
+   "objective_statement": "ASP11 Domain 1, Objective 3: calculate flow rates for ventilation, hydraulic and pneumatic systems (BCSP 2024)"
+  },
+  {
+   "id": "1.9",
+   "domain": 1,
+   "number": 9,
+   "title": "Noise calculations",
+   "objectives": [
+    "1.5"
+   ],
+   "prerequisite": false,
+   "pages": [
+    75,
+    81
+   ],
+   "objective_statement": "ASP11 Domain 1, Objective 5: calculate noise hazards, including timeweighted average, dual machinery and noise reduction rates (BCSP 2024)"
+  },
+  {
+   "id": "1.10",
+   "domain": 1,
+   "number": 10,
+   "title": "Climate calculations: heat index, WBGT and wind chill",
+   "objectives": [
+    "1.6"
+   ],
+   "prerequisite": false,
+   "pages": [
+    82,
+    91
+   ],
+   "objective_statement": "ASP11 Domain 1, Objective 6: calculate climate and environmental conditions, including ambient temperature, wind chill and heat index (BCSP 2024)"
+  },
+  {
+   "id": "1.11",
+   "domain": 1,
+   "number": 11,
+   "title": "Exposure assessment calculations",
+   "objectives": [
+    "1.14"
+   ],
+   "prerequisite": false,
+   "pages": [
+    92,
+    100
+   ],
+   "objective_statement": "ASP11 Domain 1, Objective 14: conduct exposure assessments, including biological and chemical, TLV, STEL and TWA (BCSP 2024)"
+  },
+  {
+   "id": "1.12",
+   "domain": 1,
+   "number": 12,
+   "title": "Radiation calculations",
+   "objectives": [
+    "1.15"
+   ],
+   "prerequisite": false,
+   "pages": [
+    101,
+    107
+   ],
+   "objective_statement": "ASP11 Domain 1, Objective 15: calculate radiation exposure, including shielding, half-life and dosage (BCSP 2024)"
+  },
+  {
+   "id": "1.13",
+   "domain": 1,
+   "number": 13,
+   "title": "The NIOSH lifting equation",
+   "objectives": [
+    "1.9"
+   ],
+   "prerequisite": false,
+   "pages": [
+    108,
+    114
+   ],
+   "objective_statement": "ASP11 Domain 1, Objective 9: calculate manual lift parameters using the NIOSH lifting equation (BCSP 2024)"
+  },
+  {
+   "id": "1.14",
+   "domain": 1,
+   "number": 14,
+   "title": "Descriptive statistics and probability",
+   "objectives": [
+    "1.11"
+   ],
+   "prerequisite": false,
+   "pages": [
+    115,
+    122
+   ],
+   "objective_statement": "ASP11 Domain 1, Objective 11: calculate descriptive statistics, including central tendency, variability, probability and standard deviation (BCSP 2024)"
+  },
+  {
+   "id": "1.15",
+   "domain": 1,
+   "number": 15,
+   "title": "Reliability and probability of failure",
+   "objectives": [
+    "1.12"
+   ],
+   "prerequisite": false,
+   "pages": [
+    123,
+    129
+   ],
+   "objective_statement": "ASP11 Domain 1, Objective 12: calculate the probability of a failure mode (BCSP 2024)"
+  },
+  {
+   "id": "1.16",
+   "domain": 1,
+   "number": 16,
+   "title": "Lagging indicators and incident costs",
+   "objectives": [
+    "1.8"
+   ],
+   "prerequisite": false,
+   "pages": [
+    130,
+    137
+   ],
+   "objective_statement": "ASP11 Domain 1, Objective 8: calculate lagging indicators, including incidence rates, lost time and direct costs (BCSP 2024)"
+  },
+  {
+   "id": "1.17",
+   "domain": 1,
+   "number": 17,
+   "title": "Financial indicators: CBA, ROI, LCC and cost of risk",
+   "objectives": [
+    "1.13"
+   ],
+   "prerequisite": false,
+   "pages": [
+    138,
+    148
+   ],
+   "objective_statement": "ASP11 Domain 1, Objective 13: calculate financial indicators, including costbenefit analysis, cost of risk, life-cycle cost, return on investment and the effects of losses (BCSP 2024)"
+  },
+  {
+   "id": "2.1",
+   "domain": 2,
+   "number": 1,
+   "title": "Safety management systems: ISO 45001 and ANSI/ASSP Z10.0",
+   "objectives": [
+    "2.1"
+   ],
+   "prerequisite": false,
+   "pages": [
+    167,
+    178
+   ],
+   "objective_statement": "ASP11 Domain 2, Objective 1: understand safety management systems for program development, including ISO 45001 and ANSI Z10.0 (BCSP 2024)"
+  },
+  {
+   "id": "2.2",
+   "domain": 2,
+   "number": 2,
+   "title": "The hierarchy of controls",
+   "objectives": [
+    "2.2"
+   ],
+   "prerequisite": false,
+   "pages": [
+    179,
+    188
+   ],
+   "objective_statement": "ASP11 Domain 2, Objective 2: apply the hierarchy of hazard controls (BCSP 2024)"
+  },
+  {
+   "id": "2.3",
+   "domain": 2,
+   "number": 3,
+   "title": "Hazard analysis I: JHA, what-if, checklist and change analysis",
+   "objectives": [
+    "2.3"
+   ],
+   "prerequisite": false,
+   "pages": [
+    189,
+    202
+   ],
+   "objective_statement": null
+  },
+  {
+   "id": "2.4",
+   "domain": 2,
+   "number": 4,
+   "title": "Hazard analysis II: FMEA, fault tree and fishbone",
+   "objectives": [
+    "2.3"
+   ],
+   "prerequisite": false,
+   "pages": [
+    203,
+    213
+   ],
+   "objective_statement": null
+  },
+  {
+   "id": "2.5",
+   "domain": 2,
+   "number": 5,
+   "title": "Risk matrices and risk ranking",
+   "objectives": [
+    "2.4"
+   ],
+   "prerequisite": false,
+   "pages": [
+    214,
+    223
+   ],
+   "objective_statement": "ASP11 Domain 2, Objective 4: apply risk matrix methodology for ranking and mitigation (BCSP 2024)"
+  },
+  {
+   "id": "2.6",
+   "domain": 2,
+   "number": 6,
+   "title": "GHS classification, labels and safety data sheets",
+   "objectives": [
+    "2.5"
+   ],
+   "prerequisite": false,
+   "pages": [
+    224,
+    235
+   ],
+   "objective_statement": "ASP11 Domain 2, Objective 5: implement the Globally Harmonized System (GHS) (BCSP 2024)"
+  },
+  {
+   "id": "2.7",
+   "domain": 2,
+   "number": 7,
+   "title": "Hazardous energy control",
+   "objectives": [
+    "2.6"
+   ],
+   "prerequisite": false,
+   "pages": [
+    236,
+    246
+   ],
+   "objective_statement": "ASP11 Domain 2, Objective 6: implement hazardous energy control programs (BCSP 2024)"
+  },
+  {
+   "id": "2.8",
+   "domain": 2,
+   "number": 8,
+   "title": "Electrical principles",
+   "objectives": [
+    "2.7"
+   ],
+   "prerequisite": false,
+   "pages": [
+    247,
+    257
+   ],
+   "objective_statement": "ASP11 Domain 2, Objective 7: understand general electrical principles, including Ohm's law, power, impedance, energy, resistance and circuits (BCSP 2024)"
+  },
+  {
+   "id": "2.9",
+   "domain": 2,
+   "number": 9,
+   "title": "Trenching and excavations",
+   "objectives": [
+    "2.8a"
+   ],
+   "prerequisite": false,
+   "pages": [
+    258,
+    268
+   ],
+   "objective_statement": "ASP11 Domain 2, Objective 8a: understand hazards and controls for trenching and excavations (BCSP 2024)"
+  },
+  {
+   "id": "2.10",
+   "domain": 2,
+   "number": 10,
+   "title": "Working at heights",
+   "objectives": [
+    "2.8b"
+   ],
+   "prerequisite": false,
+   "pages": [
+    269,
+    279
+   ],
+   "objective_statement": "ASP11 Domain 2, Objective 8b: understand hazards and controls for working at heights (BCSP 2024)"
+  },
+  {
+   "id": "2.11",
+   "domain": 2,
+   "number": 11,
+   "title": "Slips, trips and falls",
+   "objectives": [
+    "2.8c"
+   ],
+   "prerequisite": false,
+   "pages": [
+    280,
+    288
+   ],
+   "objective_statement": "ASP11 Domain 2, Objective 8c: understand hazards and controls for slips, trips and falls (BCSP 2024)"
+  },
+  {
+   "id": "2.12",
+   "domain": 2,
+   "number": 12,
+   "title": "Machine guarding",
+   "objectives": [
+    "2.8d"
+   ],
+   "prerequisite": false,
+   "pages": [
+    289,
+    297
+   ],
+   "objective_statement": "ASP11 Domain 2, Objective 8d: understand hazards and controls for machine guarding (BCSP 2024)"
+  },
+  {
+   "id": "2.13",
+   "domain": 2,
+   "number": 13,
+   "title": "Powered industrial trucks",
+   "objectives": [
+    "2.8e"
+   ],
+   "prerequisite": false,
+   "pages": [
+    298,
+    310
+   ],
+   "objective_statement": "ASP11 Domain 2, Objective 8e: understand hazards and controls for powered industrial trucks (BCSP 2024)"
+  },
+  {
+   "id": "2.14",
+   "domain": 2,
+   "number": 14,
+   "title": "Hoisting and rigging",
+   "objectives": [
+    "2.8f"
+   ],
+   "prerequisite": false,
+   "pages": [
+    311,
+    323
+   ],
+   "objective_statement": "ASP11 Domain 2, Objective 8f: understand hazards and controls for hoisting and rigging (BCSP 2024)"
+  },
+  {
+   "id": "2.15",
+   "domain": 2,
+   "number": 15,
+   "title": "Scaffolding",
+   "objectives": [
+    "2.8g"
+   ],
+   "prerequisite": false,
+   "pages": [
+    324,
+    332
+   ],
+   "objective_statement": "ASP11 Domain 2, Objective 8g: understand hazards and controls for scaffolding (BCSP 2024)"
+  },
+  {
+   "id": "2.16",
+   "domain": 2,
+   "number": 16,
+   "title": "Process safety",
+   "objectives": [
+    "2.8h"
+   ],
+   "prerequisite": false,
+   "pages": [
+    333,
+    342
+   ],
+   "objective_statement": "ASP11 Domain 2, Objective 8h: understand process safety (BCSP 2024)"
+  },
+  {
+   "id": "2.17",
+   "domain": 2,
+   "number": 17,
+   "title": "Confined spaces",
+   "objectives": [
+    "2.8i"
+   ],
+   "prerequisite": false,
+   "pages": [
+    343,
+    351
+   ],
+   "objective_statement": "ASP11 Domain 2, Objective 8i: understand confined spaces (BCSP 2024)"
+  },
+  {
+   "id": "2.18",
+   "domain": 2,
+   "number": 18,
+   "title": "Fleet and driver safety",
+   "objectives": [
+    "2.8j"
+   ],
+   "prerequisite": false,
+   "pages": [
+    352,
+    360
+   ],
+   "objective_statement": "ASP11 Domain 2, Objective 8j: understand fleet and driver safety (BCSP 2024)"
+  },
+  {
+   "id": "2.19",
+   "domain": 2,
+   "number": 19,
+   "title": "Personal protective equipment",
+   "objectives": [
+    "2.8k"
+   ],
+   "prerequisite": false,
+   "pages": [
+    361,
+    371
+   ],
+   "objective_statement": "ASP11 Domain 2, Objective 8k: understand personal protective equipment (BCSP 2024)"
+  },
+  {
+   "id": "2.20",
+   "domain": 2,
+   "number": 20,
+   "title": "Compressed gases and pressure vessels",
+   "objectives": [
+    "2.8l"
+   ],
+   "prerequisite": false,
+   "pages": [
+    372,
+    383
+   ],
+   "objective_statement": "ASP11 Domain 2, Objective 8l: understand compressed gases and pressure vessels (BCSP 2024)"
+  },
+  {
+   "id": "2.21",
+   "domain": 2,
+   "number": 21,
+   "title": "Incident investigation",
+   "objectives": [
+    "2.9"
+   ],
+   "prerequisite": false,
+   "pages": [
+    384,
+    394
+   ],
+   "objective_statement": "ASP11 Domain 2, Objective 9: facilitate incident investigations (BCSP 2024)"
+  },
+  {
+   "id": "2.22",
+   "domain": 2,
+   "number": 22,
+   "title": "Management of change",
+   "objectives": [
+    "2.10"
+   ],
+   "prerequisite": false,
+   "pages": [
+    395,
+    404
+   ],
+   "objective_statement": "ASP11 Domain 2, Objective 10: understand key concepts of management of change (BCSP 2024)"
+  },
+  {
+   "id": "2.23",
+   "domain": 2,
+   "number": 23,
+   "title": "Leading and lagging indicators",
+   "objectives": [
+    "2.11"
+   ],
+   "prerequisite": false,
+   "pages": [
+    405,
+    414
+   ],
+   "objective_statement": "ASP11 Domain 2, Objective 11: interpret leading and lagging indicators (BCSP 2024)"
+  },
+  {
+   "id": "2.24",
+   "domain": 2,
+   "number": 24,
+   "title": "Emerging technologies",
+   "objectives": [
+    "2.12"
+   ],
+   "prerequisite": false,
+   "pages": [
+    415,
+    424
+   ],
+   "objective_statement": "ASP11 Domain 2, Objective 12: have awareness of emerging technologies, for example data mining, robotics, drones and artificial intelligence (BCSP 2024)"
+  },
+  {
+   "id": "3.1",
+   "domain": 3,
+   "number": 1,
+   "title": "Ergonomics programs",
+   "objectives": [
+    "3.1"
+   ],
+   "prerequisite": false,
+   "pages": [
+    440,
+    449
+   ],
+   "objective_statement": "ASP11 Domain 3, Objective 1: understand the elements of an ergonomics program (BCSP 2024)"
+  },
+  {
+   "id": "3.2",
+   "domain": 3,
+   "number": 2,
+   "title": "Ergonomic risk factors",
+   "objectives": [
+    "3.2a",
+    "3.2b",
+    "3.2c",
+    "3.2d"
+   ],
+   "prerequisite": false,
+   "pages": [
+    450,
+    462
+   ],
+   "objective_statement": "ASP11 Domain 3, Objective 2: identify ergonomic risk factors, namely repetition (3.2a), force (3.2b), awkward and static postures (3.2c), and other stressors such as contact stress, vibration, lighting and temperature (3.2d) (BCSP 2024)"
+  },
+  {
+   "id": "3.3",
+   "domain": 3,
+   "number": 3,
+   "title": "Work-related musculoskeletal disorders",
+   "objectives": [
+    "3.3"
+   ],
+   "prerequisite": false,
+   "pages": [
+    463,
+    474
+   ],
+   "objective_statement": "ASP11 Domain 3, Objective 3: define work-related musculoskeletal disorders (BCSP 2024)"
+  },
+  {
+   "id": "3.4",
+   "domain": 3,
+   "number": 4,
+   "title": "Workspace design and anthropometry",
+   "objectives": [
+    "3.4"
+   ],
+   "prerequisite": false,
+   "pages": [
+    475,
+    486
+   ],
+   "objective_statement": "ASP11 Domain 3, Objective 4: apply ergonomic principles to workspace design (BCSP 2024)"
+  },
+  {
+   "id": "3.5",
+   "domain": 3,
+   "number": 5,
+   "title": "Manual material handling",
+   "objectives": [
+    "3.5"
+   ],
+   "prerequisite": false,
+   "pages": [
+    487,
+    497
+   ],
+   "objective_statement": "ASP11 Domain 3, Objective 5: apply ergonomic principles to manual material handling (BCSP 2024)"
+  },
+  {
+   "id": "3.6",
+   "domain": 3,
+   "number": 6,
+   "title": "Work practice controls",
+   "objectives": [
+    "3.6"
+   ],
+   "prerequisite": false,
+   "pages": [
+    498,
+    508
+   ],
+   "objective_statement": "ASP11 Domain 3, Objective 6: identify ergonomic work practice controls (BCSP 2024)"
+  },
+  {
+   "id": "3.7",
+   "domain": 3,
+   "number": 7,
+   "title": "Ergonomic analysis methods: NIOSH, REBA, RULA",
+   "objectives": [
+    "3.7"
+   ],
+   "prerequisite": false,
+   "pages": [
+    509,
+    519
+   ],
+   "objective_statement": "ASP11 Domain 3, Objective 7: identify qualitative and quantitative ergonomic analysis methods, including the NIOSH lifting equation, anthropometry, REBA and RULA (BCSP 2024)"
+  },
+  {
+   "id": "4.1",
+   "domain": 4,
+   "number": 1,
+   "title": "Fire science",
+   "objectives": [
+    "4.1"
+   ],
+   "prerequisite": false,
+   "pages": [
+    527,
+    536
+   ],
+   "objective_statement": "ASP11 Domain 4, Objective 1: understand the fundamentals of fire science (BCSP 2024)"
+  },
+  {
+   "id": "4.2",
+   "domain": 4,
+   "number": 2,
+   "title": "Flammable and combustible materials",
+   "objectives": [
+    "4.2"
+   ],
+   "prerequisite": false,
+   "pages": [
+    537,
+    546
+   ],
+   "objective_statement": "ASP11 Domain 4, Objective 2: understand flammable and combustible materials (BCSP 2024)"
+  },
+  {
+   "id": "4.3",
+   "domain": 4,
+   "number": 3,
+   "title": "Electrical ignition sources: static, overcurrent, GFCI, grounding and bonding",
+   "objectives": [
+    "4.3a",
+    "4.3b",
+    "4.3d",
+    "4.3e"
+   ],
+   "prerequisite": false,
+   "pages": [
+    547,
+    562
+   ],
+   "objective_statement": "ASP11 Domain 4, Objective 3, parts a, b, d and e: understand electrostatic discharge, overcurrent protection, ground-fault circuit interrupters, and grounding and bonding as electrical ignition sources and their controls (BCSP 2024)"
+  },
+  {
+   "id": "4.4",
+   "domain": 4,
+   "number": 4,
+   "title": "Arc flash",
+   "objectives": [
+    "4.3c"
+   ],
+   "prerequisite": false,
+   "pages": [
+    563,
+    575
+   ],
+   "objective_statement": "ASP11 Domain 4, Objective 3c: understand arc flash (BCSP 2024)"
+  },
+  {
+   "id": "4.5",
+   "domain": 4,
+   "number": 5,
+   "title": "Hazardous (classified) locations",
+   "objectives": [
+    "4.3f"
+   ],
+   "prerequisite": false,
+   "pages": [
+    576,
+    587
+   ],
+   "objective_statement": "ASP11 Domain 4, Objective 3f: understand hazardous area classifications (BCSP 2024)"
+  },
+  {
+   "id": "4.6",
+   "domain": 4,
+   "number": 6,
+   "title": "Hot work",
+   "objectives": [
+    "4.4"
+   ],
+   "prerequisite": false,
+   "pages": [
+    588,
+    599
+   ],
+   "objective_statement": "ASP11 Domain 4, Objective 4: understand hazards during hot work (BCSP 2024)"
+  },
+  {
+   "id": "4.7",
+   "domain": 4,
+   "number": 7,
+   "title": "Combustible dust",
+   "objectives": [
+    "4.5"
+   ],
+   "prerequisite": false,
+   "pages": [
+    600,
+    611
+   ],
+   "objective_statement": "ASP11 Domain 4, Objective 5: identify combustible dust hazards (BCSP 2024)"
+  },
+  {
+   "id": "4.8",
+   "domain": 4,
+   "number": 8,
+   "title": "Fire detection systems",
+   "objectives": [
+    "4.6"
+   ],
+   "prerequisite": false,
+   "pages": [
+    612,
+    623
+   ],
+   "objective_statement": "ASP11 Domain 4, Objective 6: understand fire detection systems (BCSP 2024)"
+  },
+  {
+   "id": "4.9",
+   "domain": 4,
+   "number": 9,
+   "title": "Fire suppression systems",
+   "objectives": [
+    "4.7"
+   ],
+   "prerequisite": false,
+   "pages": [
+    624,
+    637
+   ],
+   "objective_statement": "ASP11 Domain 4, Objective 7: understand fire suppression systems (BCSP 2024)"
+  },
+  {
+   "id": "4.10",
+   "domain": 4,
+   "number": 10,
+   "title": "Portable fire extinguishers",
+   "objectives": [
+    "4.8"
+   ],
+   "prerequisite": false,
+   "pages": [
+    638,
+    649
+   ],
+   "objective_statement": "ASP11 Domain 4, Objective 8: identify fire extinguisher types, use and requirements (BCSP 2024)"
+  },
+  {
+   "id": "4.11",
+   "domain": 4,
+   "number": 11,
+   "title": "Storage, segregation, separation and housekeeping",
+   "objectives": [
+    "4.9",
+    "4.10"
+   ],
+   "prerequisite": false,
+   "pages": [
+    650,
+    660
+   ],
+   "objective_statement": "ASP11 Domain 4, Objectives 9 and 10: understand segregation and separation, and apply effective housekeeping (BCSP 2024)"
+  },
+  {
+   "id": "4.12",
+   "domain": 4,
+   "number": 12,
+   "title": "Fire safety signs and labels",
+   "objectives": [
+    "4.11"
+   ],
+   "prerequisite": false,
+   "pages": [
+    661,
+    671
+   ],
+   "objective_statement": "ASP11 Domain 4, Objective 11: select fire prevention signs and labels (BCSP 2024)"
+  },
+  {
+   "id": "5.1",
+   "domain": 5,
+   "number": 1,
+   "title": "Emergency response plans",
+   "objectives": [
+    "5.1"
+   ],
+   "prerequisite": false,
+   "pages": [
+    684,
+    695
+   ],
+   "objective_statement": "ASP11 Domain 5, Objective 1: understand the elements of an emergency response plan (BCSP 2024)"
+  },
+  {
+   "id": "5.2",
+   "domain": 5,
+   "number": 2,
+   "title": "Sources of emergencies: natural, human, biological",
+   "objectives": [
+    "5.2a",
+    "5.2b",
+    "5.2c"
+   ],
+   "prerequisite": false,
+   "pages": [
+    696,
+    705
+   ],
+   "objective_statement": "ASP11 Domain 5, Objective 2: identify sources of emergencies, (a) natural, (b) human and (c) biological, including pandemics and bioterrorism (BCSP 2024)"
+  },
+  {
+   "id": "5.3",
+   "domain": 5,
+   "number": 3,
+   "title": "Preparedness: drills, security, evacuation, life safety and first aid",
+   "objectives": [
+    "5.3"
+   ],
+   "prerequisite": false,
+   "pages": [
+    706,
+    717
+   ],
+   "objective_statement": "ASP11 Domain 5, Objective 3: understand preparing for an emergency, including drills, security, evacuation, life safety and first aid (BCSP 2024)"
+  },
+  {
+   "id": "5.4",
+   "domain": 5,
+   "number": 4,
+   "title": "Response and recovery: incident command and business continuity",
+   "objectives": [
+    "5.4"
+   ],
+   "prerequisite": false,
+   "pages": [
+    718,
+    730
+   ],
+   "objective_statement": "ASP11 Domain 5, Objective 4: identify disaster response and recovery methods, including incident command and business continuity (BCSP 2024)"
+  },
+  {
+   "id": "5.5",
+   "domain": 5,
+   "number": 5,
+   "title": "Workplace violence prevention",
+   "objectives": [
+    "5.5"
+   ],
+   "prerequisite": false,
+   "pages": [
+    731,
+    743
+   ],
+   "objective_statement": "ASP11 Domain 5, Objective 5: identify the elements of a workplace violence prevention program (BCSP 2024)"
+  },
+  {
+   "id": "5.6",
+   "domain": 5,
+   "number": 6,
+   "title": "Lone workers",
+   "objectives": [
+    "5.6"
+   ],
+   "prerequisite": false,
+   "pages": [
+    744,
+    754
+   ],
+   "objective_statement": "ASP11 Domain 5, Objective 6: understand lone worker safety (BCSP 2024)"
+  },
+  {
+   "id": "6.1",
+   "domain": 6,
+   "number": 1,
+   "title": "Industrial hygiene programs",
+   "objectives": [
+    "6.1"
+   ],
+   "prerequisite": false,
+   "pages": [
+    762,
+    775
+   ],
+   "objective_statement": "ASP11 Domain 6, Objective 1: understand industrial hygiene program requirements, including hearing conservation, respiratory protection and medical surveillance (BCSP 2024)"
+  },
+  {
+   "id": "6.2",
+   "domain": 6,
+   "number": 2,
+   "title": "Chemistry for safety professionals",
+   "objectives": [
+    "6.2"
+   ],
+   "prerequisite": false,
+   "pages": [
+    776,
+    785
+   ],
+   "objective_statement": "ASP11 Domain 6, Objective 2: understand general chemistry, including classification, nomenclature, neutralization, reactions, the ideal gas law and pH (BCSP 2024)"
+  },
+  {
+   "id": "6.3",
+   "domain": 6,
+   "number": 3,
+   "title": "Anatomy, routes of entry, acute and chronic effects",
+   "objectives": [
+    "6.3",
+    "6.6",
+    "6.7"
+   ],
+   "prerequisite": false,
+   "pages": [
+    786,
+    798
+   ],
+   "objective_statement": "ASP11 Domain 6, Objectives 3, 6 and 7: the anatomy and physiology relevant to occupational exposures, the routes of entry, and the difference between acute and chronic exposures (BCSP 2024)"
+  },
+  {
+   "id": "6.4",
+   "domain": 6,
+   "number": 4,
+   "title": "Physical agents I: noise and vibration",
+   "objectives": [
+    "6.4a"
+   ],
+   "prerequisite": false,
+   "pages": [
+    799,
+    810
+   ],
+   "objective_statement": null
+  },
+  {
+   "id": "6.5",
+   "domain": 6,
+   "number": 5,
+   "title": "Physical agents II: ionizing and non-ionizing radiation",
+   "objectives": [
+    "6.4a",
+    "6.9"
+   ],
+   "prerequisite": false,
+   "pages": [
+    811,
+    822
+   ],
+   "objective_statement": null
+  },
+  {
+   "id": "6.6",
+   "domain": 6,
+   "number": 6,
+   "title": "Physical agents III: heat, cold, light, respirable dust and nanoparticles",
+   "objectives": [
+    "6.4a"
+   ],
+   "prerequisite": false,
+   "pages": [
+    823,
+    834
+   ],
+   "objective_statement": null
+  },
+  {
+   "id": "6.7",
+   "domain": 6,
+   "number": 7,
+   "title": "Chemical hazards",
+   "objectives": [
+    "6.4b"
+   ],
+   "prerequisite": false,
+   "pages": [
+    835,
+    846
+   ],
+   "objective_statement": "ASP11 Domain 6, Objective 4b: identifying and assessing the sources, sampling, control strategies, symptoms and target organs of chemical hazards — asphyxiants, corrosives, reactives, irritants, sensitizers, carcinogens, mutagens and teratogens (BCSP 2024)"
+  },
+  {
+   "id": "6.8",
+   "domain": 6,
+   "number": 8,
+   "title": "Biological hazards and universal precautions",
+   "objectives": [
+    "6.4c",
+    "6.8"
+   ],
+   "prerequisite": false,
+   "pages": [
+    847,
+    857
+   ],
+   "objective_statement": "ASP11 Domain 6, Objectives 4c and 8: identifying and assessing biological hazards — viral, bacterial, parasitic, fungal and mould — and applying universal precautions for the control of pathogens (BCSP 2024)"
+  },
+  {
+   "id": "6.9",
+   "domain": 6,
+   "number": 9,
+   "title": "Occupational exposure limits",
+   "objectives": [
+    "6.5"
+   ],
+   "prerequisite": false,
+   "pages": [
+    858,
+    868
+   ],
+   "objective_statement": "ASP11 Domain 6, Objective 5: understanding and differentiating among the types of occupational exposure limit — short-term exposure limits, time-weighted averages, immediately dangerous to life or health values, and ceilings (BCSP 2024)"
+  },
+  {
+   "id": "6.10",
+   "domain": 6,
+   "number": 10,
+   "title": "Fitness for duty and return to work",
+   "objectives": [
+    "6.10"
+   ],
+   "prerequisite": false,
+   "pages": [
+    869,
+    878
+   ],
+   "objective_statement": "ASP11 Domain 6, Objective 10: understanding the requirements for fitness for duty and return to work (BCSP 2024)"
+  },
+  {
+   "id": "6.11",
+   "domain": 6,
+   "number": 11,
+   "title": "Total Worker Health®",
+   "objectives": [
+    "6.11"
+   ],
+   "prerequisite": false,
+   "pages": [
+    879,
+    887
+   ],
+   "objective_statement": "ASP11 Domain 6, Objective 11: defining the key aspects of Total Worker Health® (BCSP 2024)"
+  },
+  {
+   "id": "7.1",
+   "domain": 7,
+   "number": 1,
+   "title": "Environmental hazards",
+   "objectives": [
+    "7.1"
+   ],
+   "prerequisite": false,
+   "pages": [
+    899,
+    912
+   ],
+   "objective_statement": "ASP11 Domain 7, Objective 1: understanding environmental hazards, including biological, chemical, waste and radon hazards (BCSP 2024)"
+  },
+  {
+   "id": "7.2",
+   "domain": 7,
+   "number": 2,
+   "title": "Water",
+   "objectives": [
+    "7.2a"
+   ],
+   "prerequisite": false,
+   "pages": [
+    913,
+    927
+   ],
+   "objective_statement": null
+  },
+  {
+   "id": "7.3",
+   "domain": 7,
+   "number": 3,
+   "title": "Air and carbon footprint",
+   "objectives": [
+    "7.2b"
+   ],
+   "prerequisite": false,
+   "pages": [
+    928,
+    943
+   ],
+   "objective_statement": null
+  },
+  {
+   "id": "7.4",
+   "domain": 7,
+   "number": 4,
+   "title": "Land, solid waste and soil",
+   "objectives": [
+    "7.2c"
+   ],
+   "prerequisite": false,
+   "pages": [
+    944,
+    957
+   ],
+   "objective_statement": null
+  },
+  {
+   "id": "7.5",
+   "domain": 7,
+   "number": 5,
+   "title": "The conservation hierarchy",
+   "objectives": [
+    "7.3"
+   ],
+   "prerequisite": false,
+   "pages": [
+    958,
+    970
+   ],
+   "objective_statement": "ASP11 Domain 7, Objective 3: understanding the hierarchy of conservation (BCSP 2024)"
+  },
+  {
+   "id": "7.6",
+   "domain": 7,
+   "number": 6,
+   "title": "ISO 14001 environmental management systems",
+   "objectives": [
+    "7.4"
+   ],
+   "prerequisite": false,
+   "pages": [
+    971,
+    984
+   ],
+   "objective_statement": "ASP11 Domain 7, Objective 4: understanding environmental management system standards (BCSP 2024)"
+  },
+  {
+   "id": "7.7",
+   "domain": 7,
+   "number": 7,
+   "title": "Waste management",
+   "objectives": [
+    "7.5"
+   ],
+   "prerequisite": false,
+   "pages": [
+    985,
+    1000
+   ],
+   "objective_statement": "ASP11 Domain 7, Objective 5: understanding waste removal, treatment, classification, labelling, certification and disposal (BCSP 2024)"
+  },
+  {
+   "id": "7.8",
+   "domain": 7,
+   "number": 8,
+   "title": "ESG and the EHS professional",
+   "objectives": [
+    "7.6"
+   ],
+   "prerequisite": false,
+   "pages": [
+    1001,
+    1015
+   ],
+   "objective_statement": "ASP11 Domain 7, Objective 6: understanding the role of the safety and health professional in environmental, social and governance performance (BCSP 2024)"
+  },
+  {
+   "id": "8.1",
+   "domain": 8,
+   "number": 1,
+   "title": "Learning theory",
+   "objectives": [
+    "8.1"
+   ],
+   "prerequisite": false,
+   "pages": [
+    1027,
+    1043
+   ],
+   "objective_statement": "ASP11 Domain 8, Objective 1: applying learning theory and techniques (BCSP 2024)"
+  },
+  {
+   "id": "8.2",
+   "domain": 8,
+   "number": 2,
+   "title": "Training methods and tools",
+   "objectives": [
+    "8.2"
+   ],
+   "prerequisite": false,
+   "pages": [
+    1044,
+    1060
+   ],
+   "objective_statement": "ASP11 Domain 8, Objective 2: using appropriate training tools (BCSP 2024)"
+  },
+  {
+   "id": "8.3",
+   "domain": 8,
+   "number": 3,
+   "title": "Safety culture",
+   "objectives": [
+    "8.3"
+   ],
+   "prerequisite": false,
+   "pages": [
+    1061,
+    1076
+   ],
+   "objective_statement": "ASP11 Domain 8, Objective 3: creating a positive safety culture (BCSP 2024)"
+  },
+  {
+   "id": "8.4",
+   "domain": 8,
+   "number": 4,
+   "title": "Needs analysis, gap analysis and baseline competency",
+   "objectives": [
+    "8.4",
+    "8.5"
+   ],
+   "prerequisite": false,
+   "pages": [
+    1077,
+    1092
+   ],
+   "objective_statement": null
+  },
+  {
+   "id": "8.5",
+   "domain": 8,
+   "number": 5,
+   "title": "Evaluating training",
+   "objectives": [
+    "8.6"
+   ],
+   "prerequisite": false,
+   "pages": [
+    1093,
+    1110
+   ],
+   "objective_statement": "ASP11 Domain 8, Objective 6: assessing training effectiveness and retention (BCSP 2024)"
+  },
+  {
+   "id": "8.6",
+   "domain": 8,
+   "number": 6,
+   "title": "Human factors and performance",
+   "objectives": [
+    "8.7"
+   ],
+   "prerequisite": false,
+   "pages": [
+    1111,
+    1129
+   ],
+   "objective_statement": "ASP11 Domain 8, Objective 7: identifying human risk factors that affect performance (BCSP 2024)"
+  },
+  {
+   "id": "8.7",
+   "domain": 8,
+   "number": 7,
+   "title": "Competent and qualified persons",
+   "objectives": [
+    "8.8"
+   ],
+   "prerequisite": false,
+   "pages": [
+    1130,
+    1144
+   ],
+   "objective_statement": "ASP11 Domain 8, Objective 8: differentiating competent and qualified persons (BCSP 2024)"
+  },
+  {
+   "id": "9.1",
+   "domain": 9,
+   "number": 1,
+   "title": "Compliance and professional liability",
+   "objectives": [
+    "9.1"
+   ],
+   "prerequisite": false,
+   "pages": [
+    1153,
+    1170
+   ],
+   "objective_statement": "ASP11 Domain 9, Objective 1: compliance requirements and the legal liability of practice (BCSP 2024)"
+  },
+  {
+   "id": "9.2",
+   "domain": 9,
+   "number": 2,
+   "title": "Contractors and multi-employer worksites",
+   "objectives": [
+    "9.2"
+   ],
+   "prerequisite": false,
+   "pages": [
+    1171,
+    1186
+   ],
+   "objective_statement": "ASP11 Domain 9, Objective 2: contractor management and multi-employer worksites (BCSP 2024)"
+  },
+  {
+   "id": "9.3",
+   "domain": 9,
+   "number": 3,
+   "title": "Contracts and the contract lifecycle",
+   "objectives": [
+    "9.3"
+   ],
+   "prerequisite": false,
+   "pages": [
+    1187,
+    1202
+   ],
+   "objective_statement": "ASP11 Domain 9, Objective 3: contract terminology and the contract management lifecycle (BCSP 2024)"
+  },
+  {
+   "id": "9.4",
+   "domain": 9,
+   "number": 4,
+   "title": "Records control",
+   "objectives": [
+    "9.4"
+   ],
+   "prerequisite": false,
+   "pages": [
+    1203,
+    1216
+   ],
+   "objective_statement": "ASP11 Domain 9, Objective 4: records control, covering retention, chain of custody and privacy (BCSP 2024)"
+  },
+  {
+   "id": "9.5",
+   "domain": 9,
+   "number": 5,
+   "title": "Scope of practice and ethics",
+   "objectives": [
+    "9.5"
+   ],
+   "prerequisite": false,
+   "pages": [
+    1217,
+    1231
+   ],
+   "objective_statement": "ASP11 Domain 9, Objective 5: determining actions based on your knowledge and the limits of your scope of practice (BCSP 2024)"
+  },
+  {
+   "id": "9.6",
+   "domain": 9,
+   "number": 6,
+   "title": "Risk transfer and insurance",
+   "objectives": [
+    "9.6"
+   ],
+   "prerequisite": false,
+   "pages": [
+    1232,
+    1245
+   ],
+   "objective_statement": "ASP11 Domain 9, Objective 6: the principles of risk transfer, including outsourcing and insurance (BCSP 2024)"
+  },
+  {
+   "id": "9.7",
+   "domain": 9,
+   "number": 7,
+   "title": "Worker impairment",
+   "objectives": [
+    "9.7"
+   ],
+   "prerequisite": false,
+   "pages": [
+    1246,
+    1261
+   ],
+   "objective_statement": "ASP11 Domain 9, Objective 7: liabilities relating to worker impairment (BCSP 2024)"
+  }
+ ],
+ "objective_counts": {
+  "mapped_codes_including_lettered": 109,
+  "top_level_objectives": 84
+ },
+ "review_flags": [
+  {
+   "chapter": "1.2",
+   "note": "Prerequisite chapter; no blueprint objective by design (retained as required)."
+  },
+  {
+   "objective": "2.3",
+   "note": "Mapped to two chapters (2.3 and 2.4) in the guide index; intentional split."
+  },
+  {
+   "objective": "6.4a",
+   "note": "Mapped to three chapters (6.4, 6.5, 6.6) in the guide index; intentional split by agent type."
+  }
+ ],
+ "objective_index": [
+  {
+   "objective": "1.1",
+   "chapters": [
+    "1.3"
+   ]
+  },
+  {
+   "objective": "1.2",
+   "chapters": [
+    "1.5"
+   ]
+  },
+  {
+   "objective": "1.3",
+   "chapters": [
+    "1.8"
+   ]
+  },
+  {
+   "objective": "1.4",
+   "chapters": [
+    "1.7"
+   ]
+  },
+  {
+   "objective": "1.5",
+   "chapters": [
+    "1.9"
+   ]
+  },
+  {
+   "objective": "1.6",
+   "chapters": [
+    "1.10"
+   ]
+  },
+  {
+   "objective": "1.7",
+   "chapters": [
+    "1.6"
+   ]
+  },
+  {
+   "objective": "1.8",
+   "chapters": [
+    "1.16"
+   ]
+  },
+  {
+   "objective": "1.9",
+   "chapters": [
+    "1.13"
+   ]
+  },
+  {
+   "objective": "1.10",
+   "chapters": [
+    "1.4"
+   ]
+  },
+  {
+   "objective": "1.11",
+   "chapters": [
+    "1.14"
+   ]
+  },
+  {
+   "objective": "1.12",
+   "chapters": [
+    "1.15"
+   ]
+  },
+  {
+   "objective": "1.13",
+   "chapters": [
+    "1.17"
+   ]
+  },
+  {
+   "objective": "1.14",
+   "chapters": [
+    "1.11"
+   ]
+  },
+  {
+   "objective": "1.15",
+   "chapters": [
+    "1.12"
+   ]
+  },
+  {
+   "objective": "1.16",
+   "chapters": [
+    "1.1"
+   ]
+  },
+  {
+   "objective": "2.1",
+   "chapters": [
+    "2.1"
+   ]
+  },
+  {
+   "objective": "2.2",
+   "chapters": [
+    "2.2"
+   ]
+  },
+  {
+   "objective": "2.3",
+   "chapters": [
+    "2.3",
+    "2.4"
+   ]
+  },
+  {
+   "objective": "2.4",
+   "chapters": [
+    "2.5"
+   ]
+  },
+  {
+   "objective": "2.5",
+   "chapters": [
+    "2.6"
+   ]
+  },
+  {
+   "objective": "2.6",
+   "chapters": [
+    "2.7"
+   ]
+  },
+  {
+   "objective": "2.7",
+   "chapters": [
+    "2.8"
+   ]
+  },
+  {
+   "objective": "2.8a",
+   "chapters": [
+    "2.9"
+   ]
+  },
+  {
+   "objective": "2.8b",
+   "chapters": [
+    "2.10"
+   ]
+  },
+  {
+   "objective": "2.8c",
+   "chapters": [
+    "2.11"
+   ]
+  },
+  {
+   "objective": "2.8d",
+   "chapters": [
+    "2.12"
+   ]
+  },
+  {
+   "objective": "2.8e",
+   "chapters": [
+    "2.13"
+   ]
+  },
+  {
+   "objective": "2.8f",
+   "chapters": [
+    "2.14"
+   ]
+  },
+  {
+   "objective": "2.8g",
+   "chapters": [
+    "2.15"
+   ]
+  },
+  {
+   "objective": "2.8h",
+   "chapters": [
+    "2.16"
+   ]
+  },
+  {
+   "objective": "2.8i",
+   "chapters": [
+    "2.17"
+   ]
+  },
+  {
+   "objective": "2.8j",
+   "chapters": [
+    "2.18"
+   ]
+  },
+  {
+   "objective": "2.8k",
+   "chapters": [
+    "2.19"
+   ]
+  },
+  {
+   "objective": "2.8l",
+   "chapters": [
+    "2.20"
+   ]
+  },
+  {
+   "objective": "2.9",
+   "chapters": [
+    "2.21"
+   ]
+  },
+  {
+   "objective": "2.10",
+   "chapters": [
+    "2.22"
+   ]
+  },
+  {
+   "objective": "2.11",
+   "chapters": [
+    "2.23"
+   ]
+  },
+  {
+   "objective": "2.12",
+   "chapters": [
+    "2.24"
+   ]
+  },
+  {
+   "objective": "3.1",
+   "chapters": [
+    "3.1"
+   ]
+  },
+  {
+   "objective": "3.2a",
+   "chapters": [
+    "3.2"
+   ]
+  },
+  {
+   "objective": "3.2b",
+   "chapters": [
+    "3.2"
+   ]
+  },
+  {
+   "objective": "3.2c",
+   "chapters": [
+    "3.2"
+   ]
+  },
+  {
+   "objective": "3.2d",
+   "chapters": [
+    "3.2"
+   ]
+  },
+  {
+   "objective": "3.3",
+   "chapters": [
+    "3.3"
+   ]
+  },
+  {
+   "objective": "3.4",
+   "chapters": [
+    "3.4"
+   ]
+  },
+  {
+   "objective": "3.5",
+   "chapters": [
+    "3.5"
+   ]
+  },
+  {
+   "objective": "3.6",
+   "chapters": [
+    "3.6"
+   ]
+  },
+  {
+   "objective": "3.7",
+   "chapters": [
+    "3.7"
+   ]
+  },
+  {
+   "objective": "4.1",
+   "chapters": [
+    "4.1"
+   ]
+  },
+  {
+   "objective": "4.2",
+   "chapters": [
+    "4.2"
+   ]
+  },
+  {
+   "objective": "4.3a",
+   "chapters": [
+    "4.3"
+   ]
+  },
+  {
+   "objective": "4.3b",
+   "chapters": [
+    "4.3"
+   ]
+  },
+  {
+   "objective": "4.3c",
+   "chapters": [
+    "4.4"
+   ]
+  },
+  {
+   "objective": "4.3d",
+   "chapters": [
+    "4.3"
+   ]
+  },
+  {
+   "objective": "4.3e",
+   "chapters": [
+    "4.3"
+   ]
+  },
+  {
+   "objective": "4.3f",
+   "chapters": [
+    "4.5"
+   ]
+  },
+  {
+   "objective": "4.4",
+   "chapters": [
+    "4.6"
+   ]
+  },
+  {
+   "objective": "4.5",
+   "chapters": [
+    "4.7"
+   ]
+  },
+  {
+   "objective": "4.6",
+   "chapters": [
+    "4.8"
+   ]
+  },
+  {
+   "objective": "4.7",
+   "chapters": [
+    "4.9"
+   ]
+  },
+  {
+   "objective": "4.8",
+   "chapters": [
+    "4.10"
+   ]
+  },
+  {
+   "objective": "4.9",
+   "chapters": [
+    "4.11"
+   ]
+  },
+  {
+   "objective": "4.10",
+   "chapters": [
+    "4.11"
+   ]
+  },
+  {
+   "objective": "4.11",
+   "chapters": [
+    "4.12"
+   ]
+  },
+  {
+   "objective": "5.1",
+   "chapters": [
+    "5.1"
+   ]
+  },
+  {
+   "objective": "5.2a",
+   "chapters": [
+    "5.2"
+   ]
+  },
+  {
+   "objective": "5.2b",
+   "chapters": [
+    "5.2"
+   ]
+  },
+  {
+   "objective": "5.2c",
+   "chapters": [
+    "5.2"
+   ]
+  },
+  {
+   "objective": "5.3",
+   "chapters": [
+    "5.3"
+   ]
+  },
+  {
+   "objective": "5.4",
+   "chapters": [
+    "5.4"
+   ]
+  },
+  {
+   "objective": "5.5",
+   "chapters": [
+    "5.5"
+   ]
+  },
+  {
+   "objective": "5.6",
+   "chapters": [
+    "5.6"
+   ]
+  },
+  {
+   "objective": "6.1",
+   "chapters": [
+    "6.1"
+   ]
+  },
+  {
+   "objective": "6.2",
+   "chapters": [
+    "6.2"
+   ]
+  },
+  {
+   "objective": "6.3",
+   "chapters": [
+    "6.3"
+   ]
+  },
+  {
+   "objective": "6.4a",
+   "chapters": [
+    "6.4",
+    "6.5",
+    "6.6"
+   ]
+  },
+  {
+   "objective": "6.4b",
+   "chapters": [
+    "6.7"
+   ]
+  },
+  {
+   "objective": "6.4c",
+   "chapters": [
+    "6.8"
+   ]
+  },
+  {
+   "objective": "6.5",
+   "chapters": [
+    "6.9"
+   ]
+  },
+  {
+   "objective": "6.6",
+   "chapters": [
+    "6.3"
+   ]
+  },
+  {
+   "objective": "6.7",
+   "chapters": [
+    "6.3"
+   ]
+  },
+  {
+   "objective": "6.8",
+   "chapters": [
+    "6.8"
+   ]
+  },
+  {
+   "objective": "6.9",
+   "chapters": [
+    "6.5"
+   ]
+  },
+  {
+   "objective": "6.10",
+   "chapters": [
+    "6.10"
+   ]
+  },
+  {
+   "objective": "6.11",
+   "chapters": [
+    "6.11"
+   ]
+  },
+  {
+   "objective": "7.1",
+   "chapters": [
+    "7.1"
+   ]
+  },
+  {
+   "objective": "7.2a",
+   "chapters": [
+    "7.2"
+   ]
+  },
+  {
+   "objective": "7.2b",
+   "chapters": [
+    "7.3"
+   ]
+  },
+  {
+   "objective": "7.2c",
+   "chapters": [
+    "7.4"
+   ]
+  },
+  {
+   "objective": "7.3",
+   "chapters": [
+    "7.5"
+   ]
+  },
+  {
+   "objective": "7.4",
+   "chapters": [
+    "7.6"
+   ]
+  },
+  {
+   "objective": "7.5",
+   "chapters": [
+    "7.7"
+   ]
+  },
+  {
+   "objective": "7.6",
+   "chapters": [
+    "7.8"
+   ]
+  },
+  {
+   "objective": "8.1",
+   "chapters": [
+    "8.1"
+   ]
+  },
+  {
+   "objective": "8.2",
+   "chapters": [
+    "8.2"
+   ]
+  },
+  {
+   "objective": "8.3",
+   "chapters": [
+    "8.3"
+   ]
+  },
+  {
+   "objective": "8.4",
+   "chapters": [
+    "8.4"
+   ]
+  },
+  {
+   "objective": "8.5",
+   "chapters": [
+    "8.4"
+   ]
+  },
+  {
+   "objective": "8.6",
+   "chapters": [
+    "8.5"
+   ]
+  },
+  {
+   "objective": "8.7",
+   "chapters": [
+    "8.6"
+   ]
+  },
+  {
+   "objective": "8.8",
+   "chapters": [
+    "8.7"
+   ]
+  },
+  {
+   "objective": "9.1",
+   "chapters": [
+    "9.1"
+   ]
+  },
+  {
+   "objective": "9.2",
+   "chapters": [
+    "9.2"
+   ]
+  },
+  {
+   "objective": "9.3",
+   "chapters": [
+    "9.3"
+   ]
+  },
+  {
+   "objective": "9.4",
+   "chapters": [
+    "9.4"
+   ]
+  },
+  {
+   "objective": "9.5",
+   "chapters": [
+    "9.5"
+   ]
+  },
+  {
+   "objective": "9.6",
+   "chapters": [
+    "9.6"
+   ]
+  },
+  {
+   "objective": "9.7",
+   "chapters": [
+    "9.7"
+   ]
+  }
+ ]
+}
