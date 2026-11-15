@@ -1,3 +1,4 @@
+import { courseProfile } from "@/lib/study/courseProfile";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
@@ -35,7 +36,7 @@ export default async function DomainPage({ params }: { params: Promise<{ course:
           <p className="text-subheading text-graphite">Domain {d.number} · {d.weight}% of the exam (as stated by the guide)</p>
           <h1 className="mt-3 text-[40px] font-semibold leading-[1.1] tracking-[-1.2px]">{d.title}</h1>
           {d.intro && <p className="lead mt-3">{d.intro}</p>}
-          {d.number === 1 && <p className="lead mt-3">Start with chapters 1.1 and 1.2. Every later calculation chapter assumes the unit habits and maths tools they teach.</p>}
+          {d.number === 1 && courseProfile(course).domainOneLead && <p className="lead mt-3">{courseProfile(course).domainOneLead}</p>}
         </div>
         <div className="card"><ProgressMeter done={done} total={d.chapters.length} label="Chapters completed in this domain" />
           <p className="mt-3 text-body-sm text-graphite">{done === d.chapters.length ? "Domain complete." : "The domain completes when every chapter in it is finished."}</p>

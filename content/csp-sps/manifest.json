@@ -1,0 +1,2230 @@
+{
+ "schema": "iparkar.course-manifest/1",
+ "course": {
+  "code": "CSP-SPS",
+  "title": "CSP Self Paced Study Course",
+  "product": "iParkar Learning",
+  "version": "1.0.0-draft",
+  "completion_policy": "all_required_chapters"
+ },
+ "source": {
+  "title": "iParkar CSP® Exam Study Guide — Reader edition",
+  "file": "iParkar CSP Exam Study Guide - Reader edition.pdf",
+  "author": "Imran Parkar",
+  "edition": "Reader edition",
+  "edition_date": "2026-11-09",
+  "pdf_pages": 1203,
+  "outline_pages": [
+   4,
+   6
+  ],
+  "stated_blueprint": "CSP11 V.2024.04.24",
+  "blueprint_note": "The guide's stated alignment, matched against the supplied BCSP CSP11 Examination Blueprint V.2024.04.24 (47 objectives). Whether this is BCSP's current blueprint has not been verified for this course version.",
+  "cover_claims": {
+   "objectives": 47,
+   "chapters": 60,
+   "domains": 7,
+   "practice_questions": 591
+  },
+  "study_plan_note": "The guide's 150-hour plan weighted by exam share is an optional planning estimate, not a course requirement.",
+  "back_matter": {
+   "glossary": [
+    1117,
+    1177
+   ],
+   "bibliography": [
+    1178,
+    1203
+   ]
+  },
+  "extraction": "pdftotext + pdfplumber layout on the single 1,203-page Reader edition PDF. Page numbers are PDF page indices (they equal the printed folios)."
+ },
+ "domains": [
+  {
+   "domain": 1,
+   "title": "Advanced Application of Safety Principles",
+   "weight": 25,
+   "chapter_count": 11,
+   "study_hours_150": 37.5,
+   "approx_items_of_200": 50,
+   "pages": {
+    "divider": [
+     7
+    ],
+    "opener_and_map": [
+     8,
+     9
+    ],
+    "chapters": [
+     10,
+     180
+    ]
+   }
+  },
+  {
+   "domain": 2,
+   "title": "Program Management",
+   "weight": 25,
+   "chapter_count": 14,
+   "study_hours_150": 37.5,
+   "approx_items_of_200": 50,
+   "pages": {
+    "divider": [
+     181
+    ],
+    "opener_and_map": [
+     182,
+     183
+    ],
+    "chapters": [
+     184,
+     403
+    ]
+   }
+  },
+  {
+   "domain": 3,
+   "title": "Risk Management",
+   "weight": 15,
+   "chapter_count": 5,
+   "study_hours_150": 22.5,
+   "approx_items_of_200": 30,
+   "pages": {
+    "divider": [
+     404
+    ],
+    "opener_and_map": [
+     405,
+     406
+    ],
+    "chapters": [
+     407,
+     486
+    ]
+   }
+  },
+  {
+   "domain": 4,
+   "title": "Emergency Management",
+   "weight": 9,
+   "chapter_count": 5,
+   "study_hours_150": 13.5,
+   "approx_items_of_200": 18,
+   "pages": {
+    "divider": [
+     487
+    ],
+    "opener_and_map": [
+     488,
+     489
+    ],
+    "chapters": [
+     490,
+     591
+    ]
+   }
+  },
+  {
+   "domain": 5,
+   "title": "Environmental Management",
+   "weight": 6,
+   "chapter_count": 5,
+   "study_hours_150": 9.0,
+   "approx_items_of_200": 12,
+   "pages": {
+    "divider": [
+     592
+    ],
+    "opener_and_map": [
+     593,
+     594
+    ],
+    "chapters": [
+     595,
+     692
+    ]
+   }
+  },
+  {
+   "domain": 6,
+   "title": "Occupational Health and Applied Science",
+   "weight": 10,
+   "chapter_count": 14,
+   "study_hours_150": 15.0,
+   "approx_items_of_200": 20,
+   "pages": {
+    "divider": [
+     693,
+     694
+    ],
+    "opener_and_map": [
+     695,
+     696
+    ],
+    "chapters": [
+     697,
+     991
+    ]
+   }
+  },
+  {
+   "domain": 7,
+   "title": "Training",
+   "weight": 10,
+   "chapter_count": 6,
+   "study_hours_150": 15.0,
+   "approx_items_of_200": 20,
+   "pages": {
+    "divider": [
+     992,
+     993
+    ],
+    "opener_and_map": [
+     994,
+     995
+    ],
+    "chapters": [
+     996,
+     1115
+    ]
+   }
+  }
+ ],
+ "chapters": [
+  {
+   "id": "1.1",
+   "domain": 1,
+   "title": "Prevention through Design: avoidance, elimination, substitution and safety design criteria",
+   "heading_title": "Prevention through Design",
+   "objectives": [
+    "1.1"
+   ],
+   "objective_verbs": {
+    "1.1": "Describe"
+   },
+   "primary_topic": true,
+   "primary_teaching_location": "the design hierarchy of controls",
+   "outline_note": null,
+   "cross_links": [
+    "1.11",
+    "2.6",
+    "2.7",
+    "3.1",
+    "3.3",
+    "6.12",
+    "6.13"
+   ],
+   "builds_on": [],
+   "leads_into": [],
+   "subtitle": "Part 1 · Advanced Application of Safety Principles · Obj 1.1 (Describe) · Primary teaching location for the design hierarchy of controls",
+   "prerequisite": false,
+   "pages": [
+    10,
+    20
+   ]
+  },
+  {
+   "id": "1.2",
+   "domain": 1,
+   "title": "Process safety: pressure relief, chemical compatibility, materials of construction, management of change, process flow diagrams",
+   "heading_title": "Process safety",
+   "objectives": [
+    "1.2"
+   ],
+   "objective_verbs": {
+    "1.2": "Apply"
+   },
+   "primary_topic": false,
+   "primary_teaching_location": "PSM applicability, process safety information and PSM management of change",
+   "outline_note": null,
+   "cross_links": [
+    "1.1",
+    "2.6",
+    "2.7",
+    "3.3",
+    "4.1",
+    "6.13"
+   ],
+   "builds_on": [],
+   "leads_into": [],
+   "subtitle": "Part 1 · Advanced Application of Safety Principles · Obj 1.2 (Apply) · Primary teaching location for PSM applicability, process safety information and PSM management of change",
+   "prerequisite": false,
+   "pages": [
+    21,
+    34
+   ]
+  },
+  {
+   "id": "1.3",
+   "domain": 1,
+   "title": "Electrical safety",
+   "heading_title": "Electrical safety",
+   "objectives": [
+    "1.3"
+   ],
+   "objective_verbs": {
+    "1.3": "Evaluate"
+   },
+   "primary_topic": false,
+   "primary_teaching_location": "electrical hazards; lockout/tagout is taught in Ch 1.6",
+   "outline_note": null,
+   "cross_links": [
+    "1.1",
+    "1.6",
+    "1.10",
+    "3.1",
+    "4.3"
+   ],
+   "builds_on": [],
+   "leads_into": [],
+   "subtitle": "Part 1 · Advanced Application of Safety Principles · Obj 1.3 (Evaluate) · Primary teaching location for electrical hazards; lockout/tagout is taught in Ch 1.6",
+   "prerequisite": false,
+   "pages": [
+    35,
+    52
+   ]
+  },
+  {
+   "id": "1.4",
+   "domain": 1,
+   "title": "Fall protection",
+   "heading_title": "Fall protection",
+   "objectives": [
+    "1.3"
+   ],
+   "objective_verbs": {
+    "1.3": "Evaluate"
+   },
+   "primary_topic": false,
+   "primary_teaching_location": "fall hazards, walking-working surfaces and personal fall protection; rescue planning links to Part 4",
+   "outline_note": null,
+   "cross_links": [
+    "1.1",
+    "1.2",
+    "1.5"
+   ],
+   "builds_on": [],
+   "leads_into": [],
+   "subtitle": "Part 1 · Advanced Application of Safety Principles · Obj 1.3 (Evaluate) · Primary teaching location for fall hazards, walking-working surfaces and personal fall protection; rescue planning links to Part 4",
+   "prerequisite": false,
+   "pages": [
+    53,
+    70
+   ]
+  },
+  {
+   "id": "1.5",
+   "domain": 1,
+   "title": "Confined spaces",
+   "heading_title": "Confined spaces",
+   "objectives": [
+    "1.3"
+   ],
+   "objective_verbs": {
+    "1.3": "Evaluate"
+   },
+   "primary_topic": false,
+   "primary_teaching_location": "permit-required confined spaces; energy isolation is taught in Ch 1.6, air monitoring instruments in Part 6, and rescue organization in Part 4",
+   "outline_note": null,
+   "cross_links": [
+    "1.2",
+    "1.4",
+    "1.6"
+   ],
+   "builds_on": [],
+   "leads_into": [],
+   "subtitle": "Part 1 · Advanced Application of Safety Principles · Obj 1.3 (Evaluate) · Primary teaching location for permit-required confined spaces; energy isolation is taught in Ch 1.6, air monitoring instruments in Part 6, and rescue organization in Part 4",
+   "prerequisite": false,
+   "pages": [
+    71,
+    86
+   ]
+  },
+  {
+   "id": "1.6",
+   "domain": 1,
+   "title": "Lockout/tagout and caught-in hazards",
+   "heading_title": "Lockout/tagout and caught-in hazards",
+   "objectives": [
+    "1.3"
+   ],
+   "objective_verbs": {
+    "1.3": "Evaluate"
+   },
+   "primary_topic": false,
+   "primary_teaching_location": "control of hazardous energy and caught-in/between hazards; electrical work practices are taught in Ch 1.3, confined space isolation in Ch 1.5, and machine guarding in Ch 1.11",
+   "outline_note": null,
+   "cross_links": [
+    "1.3",
+    "1.5",
+    "1.7",
+    "1.10",
+    "1.11"
+   ],
+   "builds_on": [],
+   "leads_into": [],
+   "subtitle": "Part 1 · Advanced Application of Safety Principles · Obj 1.3 (Evaluate) · Primary teaching location for control of hazardous energy and caught-in/between hazards; electrical work practices are taught in Ch 1.3, confined space isolation in Ch 1.5, and machine guarding in Ch 1.11",
+   "prerequisite": false,
+   "pages": [
+    87,
+    100
+   ]
+  },
+  {
+   "id": "1.7",
+   "domain": 1,
+   "title": "Excavation, struck-by hazards and working around water",
+   "heading_title": "Excavation, struck-by hazards and working around water",
+   "objectives": [
+    "1.3"
+   ],
+   "objective_verbs": {
+    "1.3": "Evaluate"
+   },
+   "primary_topic": false,
+   "primary_teaching_location": "excavation and trenching, struck-by hazards and work over or near water; vehicle operations are taught in Ch 1.9, cranes and rigging in Ch 1.10, and engulfment in confined spaces in Ch 1.5",
+   "outline_note": null,
+   "cross_links": [
+    "1.4",
+    "1.5",
+    "1.6",
+    "1.9",
+    "1.10"
+   ],
+   "builds_on": [],
+   "leads_into": [],
+   "subtitle": "Part 1 · Advanced Application of Safety Principles · Obj 1.3 (Evaluate) · Primary teaching location for excavation and trenching, struck-by hazards and work over or near water; vehicle operations are taught in Ch 1.9, cranes and rigging in Ch 1.10, and engulfment in confined spaces in Ch 1.5",
+   "prerequisite": false,
+   "pages": [
+    101,
+    114
+   ]
+  },
+  {
+   "id": "1.8",
+   "domain": 1,
+   "title": "Facility life safety: public space safety, floor loading and occupancy loads",
+   "heading_title": "Facility life safety: public space safety, floor loading and occupancy loads",
+   "objectives": [
+    "1.4"
+   ],
+   "objective_verbs": {
+    "1.4": "Evaluate"
+   },
+   "primary_topic": false,
+   "primary_teaching_location": "means of egress, occupant load, floor loading and public space safety; fire protection systems and emergency action plans are taught in Part 4",
+   "outline_note": null,
+   "cross_links": [
+    "1.1",
+    "1.4",
+    "3.1"
+   ],
+   "builds_on": [],
+   "leads_into": [],
+   "subtitle": "Part 1 · Advanced Application of Safety Principles · Obj 1.4 (Evaluate) · Primary teaching location for means of egress, occupant load, floor loading and public space safety; fire protection systems and emergency action plans are taught in Part 4",
+   "prerequisite": false,
+   "pages": [
+    115,
+    128
+   ]
+  },
+  {
+   "id": "1.9",
+   "domain": 1,
+   "title": "Fleet safety: drivers, maintenance, surveillance, GPS and telematics, hybrid vehicles, fuel systems, impairment and fatigue",
+   "heading_title": "Fleet safety: drivers, vehicles, monitoring technology, alternative fuels, impairment and fatigue",
+   "objectives": [
+    "1.5"
+   ],
+   "objective_verbs": {
+    "1.5": "Describe"
+   },
+   "primary_topic": false,
+   "primary_teaching_location": "fleet and motor vehicle safety programs; powered industrial trucks and off-road haulage are taught in Ch 1.10, drug and alcohol program policy in Part 2, and fatigue physiology in Part 6",
+   "outline_note": null,
+   "cross_links": [
+    "1.6",
+    "1.7",
+    "1.10"
+   ],
+   "builds_on": [],
+   "leads_into": [],
+   "subtitle": "Part 1 · Advanced Application of Safety Principles · Obj 1.5 (Describe) · Primary teaching location for fleet and motor vehicle safety programs; powered industrial trucks and off-road haulage are taught in Ch 1.10, drug and alcohol program policy in Part 2, and fatigue physiology in Part 6",
+   "prerequisite": false,
+   "pages": [
+    129,
+    146
+   ]
+  },
+  {
+   "id": "1.10",
+   "domain": 1,
+   "title": "Materials handling: forklifts, aerial lifts, cranes, hoists, rigging, hand trucks, manual handling and drones",
+   "heading_title": "Materials handling: forklifts, aerial lifts, cranes, hoists, rigging, hand trucks, manual handling and drones",
+   "objectives": [
+    "1.6"
+   ],
+   "objective_verbs": {
+    "1.6": "Evaluate"
+   },
+   "primary_topic": false,
+   "primary_teaching_location": "materials handling equipment and the NIOSH lifting equation; fall protection in aerial lifts is taught in Ch 1.4, power line contact in Ch 1.3, and ergonomics beyond lifting in Part 6",
+   "outline_note": null,
+   "cross_links": [
+    "1.3",
+    "1.4",
+    "1.6",
+    "1.7",
+    "1.9"
+   ],
+   "builds_on": [],
+   "leads_into": [],
+   "subtitle": "Part 1 · Advanced Application of Safety Principles · Obj 1.6 (Evaluate) · Primary teaching location for materials handling equipment and the NIOSH lifting equation; fall protection in aerial lifts is taught in Ch 1.4, power line contact in Ch 1.3, and ergonomics beyond lifting in Part 6",
+   "prerequisite": false,
+   "pages": [
+    147,
+    163
+   ]
+  },
+  {
+   "id": "1.11",
+   "domain": 1,
+   "title": "Tools, machines and equipment: hand and power tools, ladders, grinders, hydraulics and robotics",
+   "heading_title": "Tools, machines and equipment: hand and power tools, machine guarding, grinders, ladders, hydraulics and robotics",
+   "objectives": [
+    "1.7"
+   ],
+   "objective_verbs": {
+    "1.7": "Evaluate"
+   },
+   "primary_topic": false,
+   "primary_teaching_location": "machine safeguarding, hand and power tools, abrasive wheels, portable ladders, high-pressure fluid equipment and industrial robots; energy control during servicing is taught in Ch 1.6, fall protection and fixed ladders in Ch 1.4, and vibration and hand-arm disorders in Part 6",
+   "outline_note": null,
+   "cross_links": [
+    "1.1",
+    "1.3",
+    "1.4",
+    "1.6",
+    "1.10"
+   ],
+   "builds_on": [],
+   "leads_into": [],
+   "subtitle": "Part 1 · Advanced Application of Safety Principles · Obj 1.7 (Evaluate) · Primary teaching location for machine safeguarding, hand and power tools, abrasive wheels, portable ladders, high-pressure fluid equipment and industrial robots; energy control during servicing is taught in Ch 1.6, fall protection and fixed ladders in Ch 1.4, and vibration and hand-arm disorders in Part 6",
+   "prerequisite": false,
+   "pages": [
+    164,
+    180
+   ]
+  },
+  {
+   "id": "2.1",
+   "domain": 2,
+   "title": "Management and audit systems: ISO 14000 series, ISO 45001, ISO 19011 and ANSI Z10",
+   "heading_title": "Management and audit systems",
+   "objectives": [
+    "2.8"
+   ],
+   "objective_verbs": {
+    "2.8": "Recognize"
+   },
+   "primary_topic": true,
+   "primary_teaching_location": "management system standards, PDCA and management system auditing",
+   "outline_note": null,
+   "cross_links": [
+    "1.1",
+    "2.2",
+    "2.4",
+    "2.5",
+    "2.6",
+    "2.8",
+    "2.9",
+    "2.10",
+    "3.1"
+   ],
+   "builds_on": [],
+   "leads_into": [],
+   "subtitle": "Part 2 · Program Management · Obj 2.8 (Recognize) · Primary teaching location for management system standards, PDCA and management system auditing",
+   "prerequisite": false,
+   "pages": [
+    184,
+    201
+   ]
+  },
+  {
+   "id": "2.2",
+   "domain": 2,
+   "title": "Benchmarking, gap analysis and performance standards",
+   "heading_title": "Benchmarking, gap analysis and performance standards",
+   "objectives": [
+    "2.1",
+    "2.2"
+   ],
+   "objective_verbs": {
+    "2.1": "Compare",
+    "2.2": "Analyze"
+   },
+   "primary_topic": false,
+   "primary_teaching_location": "incidence-rate formulas used in benchmarking; leading and lagging indicators are taught in Ch 2.4, and the statistics behind \"real or chance?\" in Ch 2.13–2.14",
+   "outline_note": null,
+   "cross_links": [
+    "2.1",
+    "2.3",
+    "2.4",
+    "2.5",
+    "2.10"
+   ],
+   "builds_on": [],
+   "leads_into": [],
+   "subtitle": "Part 2 · Program Management · Obj 2.1 (Compare), Obj 2.2 (Analyze) · Primary teaching location for incidence-rate formulas used in benchmarking; leading and lagging indicators are taught in Ch 2.4, and the statistics behind \"real or chance?\" in Ch 2.13–2.14",
+   "prerequisite": false,
+   "pages": [
+    202,
+    216
+   ]
+  },
+  {
+   "id": "2.3",
+   "domain": 2,
+   "title": "Measuring, analyzing and improving EHS culture",
+   "heading_title": "Measuring, analyzing and improving EHS culture",
+   "objectives": [
+    "2.3"
+   ],
+   "objective_verbs": {
+    "2.3": "Determine"
+   },
+   "primary_topic": false,
+   "primary_teaching_location": "safety culture, safety climate and perception surveys; indicators are taught in Ch 2.4, leadership and motivation in Ch 2.11",
+   "outline_note": null,
+   "cross_links": [
+    "2.1",
+    "2.2",
+    "2.4"
+   ],
+   "builds_on": [],
+   "leads_into": [],
+   "subtitle": "Part 2 · Program Management · Obj 2.3 (Determine) · Primary teaching location for safety culture, safety climate and perception surveys; indicators are taught in Ch 2.4, leadership and motivation in Ch 2.11",
+   "prerequisite": false,
+   "pages": [
+    217,
+    230
+   ]
+  },
+  {
+   "id": "2.4",
+   "domain": 2,
+   "title": "Leading and lagging indicators",
+   "heading_title": "Leading and lagging indicators",
+   "objectives": [
+    "2.7"
+   ],
+   "objective_verbs": {
+    "2.7": "Evaluate"
+   },
+   "primary_topic": false,
+   "primary_teaching_location": "leading, current and lagging indicators, SIF precursors, process safety indicator tiers and control charts for safety metrics; incidence-rate formulas are in Ch 2.2",
+   "outline_note": null,
+   "cross_links": [
+    "1.2",
+    "2.2",
+    "2.3",
+    "2.5"
+   ],
+   "builds_on": [],
+   "leads_into": [],
+   "subtitle": "Part 2 · Program Management · Obj 2.7 (Evaluate) · Primary teaching location for leading, current and lagging indicators, SIF precursors, process safety indicator tiers and control charts for safety metrics; incidence-rate formulas are in Ch 2.2",
+   "prerequisite": false,
+   "pages": [
+    231,
+    243
+   ]
+  },
+  {
+   "id": "2.5",
+   "domain": 2,
+   "title": "Incident investigation, root causes and corrective action",
+   "heading_title": "Incident investigation, root causes and corrective action",
+   "objectives": [
+    "2.4"
+   ],
+   "objective_verbs": {
+    "2.4": "Determine, apply"
+   },
+   "primary_topic": false,
+   "primary_teaching_location": "the investigation process, causation models, root cause techniques and corrective action selection; fault tree and FMEA as system safety tools are taught in Ch 2.7, management of change in Ch 2.6, and the hierarchy of controls in Ch 1.1",
+   "outline_note": null,
+   "cross_links": [
+    "1.1",
+    "1.2",
+    "1.6",
+    "2.3",
+    "2.4",
+    "2.6",
+    "2.7",
+    "3.1"
+   ],
+   "builds_on": [],
+   "leads_into": [],
+   "subtitle": "Part 2 · Program Management · Obj 2.4 (Determine, apply) · Primary teaching location for the investigation process, causation models, root cause techniques and corrective action selection; fault tree and FMEA as system safety tools are taught in Ch 2.7, management of change in Ch 2.6, and the hierarchy of controls in Ch 1.1",
+   "prerequisite": false,
+   "pages": [
+    244,
+    261
+   ]
+  },
+  {
+   "id": "2.6",
+   "domain": 2,
+   "title": "Management of change: before, during and after",
+   "heading_title": "Management of change: before, during and after",
+   "objectives": [
+    "2.5"
+   ],
+   "objective_verbs": {
+    "2.5": "Describe"
+   },
+   "primary_topic": false,
+   "primary_teaching_location": "the management of change (MOC) process; process safety information and mechanical integrity are in Ch 1.2, design review and prevention through design in Ch 1.1, and change analysis as an investigation technique in Ch 2.5",
+   "outline_note": null,
+   "cross_links": [
+    "1.1",
+    "1.2",
+    "1.6",
+    "1.10",
+    "2.1",
+    "2.4",
+    "2.5",
+    "2.7"
+   ],
+   "builds_on": [],
+   "leads_into": [],
+   "subtitle": "Part 2 · Program Management · Obj 2.5 (Describe) · Primary teaching location for the management of change (MOC) process; process safety information and mechanical integrity are in Ch 1.2, design review and prevention through design in Ch 1.1, and change analysis as an investigation technique in Ch 2.5",
+   "prerequisite": false,
+   "pages": [
+    262,
+    276
+   ]
+  },
+  {
+   "id": "2.7",
+   "domain": 2,
+   "title": "System safety analysis: fault tree, FMEA, Safety Case and risk summation",
+   "heading_title": "System safety analysis: fault tree, FMEA, Safety Case and risk summation",
+   "objectives": [
+    "2.6"
+   ],
+   "objective_verbs": {
+    "2.6": "Describe"
+   },
+   "primary_topic": true,
+   "primary_teaching_location": "system safety, failure mode and effects analysis, fault tree analysis and its probability arithmetic, the Safety Case approach and risk summation; what-if, HAZOP, bow-tie and risk matrices are taught in Part 3, and process hazard analysis under PSM in Ch 1.2",
+   "outline_note": null,
+   "cross_links": [
+    "1.1",
+    "1.2",
+    "2.5",
+    "2.6",
+    "2.10"
+   ],
+   "builds_on": [],
+   "leads_into": [],
+   "subtitle": "Part 2 · Program Management · Obj 2.6 (Describe) · Primary teaching location for system safety, failure mode and effects analysis, fault tree analysis and its probability arithmetic, the Safety Case approach and risk summation; what-if, HAZOP, bow-tie and risk matrices are taught in Part 3, and process hazard analysis under PSM in Ch 1.2",
+   "prerequisite": false,
+   "pages": [
+    277,
+    293
+   ]
+  },
+  {
+   "id": "2.8",
+   "domain": 2,
+   "title": "Required components of plans, systems and policies",
+   "heading_title": "Required components of plans, systems and policies",
+   "objectives": [
+    "2.9"
+   ],
+   "objective_verbs": {
+    "2.9": "Describe"
+   },
+   "primary_topic": false,
+   "primary_teaching_location": "the document hierarchy (policy, program, plan, procedure, record), the components that SH&E regulations and standards require in written programs, and the OSHA and EPA triggers for the common written plans; management-system structure is taught in Ch 2.1, records retention in Ch 2.9, emergency plans in Part 4 and environmental plans in Part 5",
+   "outline_note": null,
+   "cross_links": [
+    "1.2",
+    "1.5",
+    "1.6",
+    "2.1",
+    "2.6",
+    "2.9"
+   ],
+   "builds_on": [],
+   "leads_into": [],
+   "subtitle": "Part 2 · Program Management · Obj 2.9 (Describe) · Primary teaching location for the document hierarchy (policy, program, plan, procedure, record), the components that SH&E regulations and standards require in written programs, and the OSHA and EPA triggers for the common written plans; management-system structure is taught in Ch 2.1, records retention in Ch 2.9, emergency plans in Part 4 and environmental plans in Part 5",
+   "prerequisite": false,
+   "pages": [
+    294,
+    309
+   ]
+  },
+  {
+   "id": "2.9",
+   "domain": 2,
+   "title": "Document retention and records management, including privacy and trade secrets",
+   "heading_title": "Document retention and records management, including privacy and trade secrets",
+   "objectives": [
+    "2.10"
+   ],
+   "objective_verbs": {
+    "2.10": "Utilize"
+   },
+   "primary_topic": false,
+   "primary_teaching_location": "records management, retention periods for injury, incident investigation, training, exposure, medical, maintenance, EMS and audit records, rights of access, protection of personal and medical information, and trade secret rules; injury and illness rates are taught in Ch 2.2, written programs in Ch 2.8, and exposure assessment in Part 6",
+   "outline_note": null,
+   "cross_links": [
+    "1.2",
+    "2.1",
+    "2.2",
+    "2.5",
+    "2.8"
+   ],
+   "builds_on": [],
+   "leads_into": [],
+   "subtitle": "Part 2 · Program Management · Obj 2.10 (Utilize) · Primary teaching location for records management, retention periods for injury, incident investigation, training, exposure, medical, maintenance, EMS and audit records, rights of access, protection of personal and medical information, and trade secret rules; injury and illness rates are taught in Ch 2.2, written programs in Ch 2.8, and exposure assessment in Part 6",
+   "prerequisite": false,
+   "pages": [
+    310,
+    325
+   ]
+  },
+  {
+   "id": "2.10",
+   "domain": 2,
+   "title": "Budgeting, finance and economic analysis: ROI, cost-benefit and procurement",
+   "heading_title": "Budgeting, finance and economic analysis: ROI, cost-benefit and procurement",
+   "objectives": [
+    "2.11"
+   ],
+   "objective_verbs": {
+    "2.11": "Apply"
+   },
+   "primary_topic": false,
+   "primary_teaching_location": "SH&E budgets, project timelines and resourcing, the cost of incidents, time value of money, payback, ROI, net present value, internal rate of return, benefit-cost ratio, life-cycle cost and the safety professional's role in procurement; project scheduling and RACI charts are taught in depth in Ch 2.12, cost data for benchmarking in Ch 2.2, and prevention through design in Part 3",
+   "outline_note": null,
+   "cross_links": [
+    "2.2",
+    "2.6",
+    "2.7",
+    "2.12",
+    "3.1"
+   ],
+   "builds_on": [],
+   "leads_into": [],
+   "subtitle": "Part 2 · Program Management · Obj 2.11 (Apply) · Primary teaching location for SH&E budgets, project timelines and resourcing, the cost of incidents, time value of money, payback, ROI, net present value, internal rate of return, benefit-cost ratio, life-cycle cost and the safety professional's role in procurement; project scheduling and RACI charts are taught in depth in Ch 2.12, cost data for benchmarking in Ch 2.2, and prevention through design in Part 3",
+   "prerequisite": false,
+   "pages": [
+    326,
+    340
+   ]
+  },
+  {
+   "id": "2.11",
+   "domain": 2,
+   "title": "Management and leadership: theories, motivation, discipline, accountability and communication styles",
+   "heading_title": "Management and leadership: theories, motivation, discipline, accountability and communication styles",
+   "objectives": [
+    "2.12"
+   ],
+   "objective_verbs": {
+    "2.12": "Differentiate"
+   },
+   "primary_topic": false,
+   "primary_teaching_location": "management and leadership theories, sources of power, authority, responsibility and accountability, motivation theories, discipline, and communication and decision styles; safety culture is taught in Ch 2.3, management systems in Ch 2.1, and adult learning in Part 7",
+   "outline_note": null,
+   "cross_links": [
+    "2.1",
+    "2.3",
+    "2.4",
+    "2.5",
+    "2.12"
+   ],
+   "builds_on": [],
+   "leads_into": [],
+   "subtitle": "Part 2 · Program Management · Obj 2.12 (Differentiate) · Primary teaching location for management and leadership theories, sources of power, authority, responsibility and accountability, motivation theories, discipline, and communication and decision styles; safety culture is taught in Ch 2.3, management systems in Ch 2.1, and adult learning in Part 7",
+   "prerequisite": false,
+   "pages": [
+    341,
+    356
+   ]
+  },
+  {
+   "id": "2.12",
+   "domain": 2,
+   "title": "Project management: RACI charts and project timelines",
+   "heading_title": "Project management: RACI charts and project timelines",
+   "objectives": [
+    "2.13"
+   ],
+   "objective_verbs": {
+    "2.13": "Apply"
+   },
+   "primary_topic": false,
+   "primary_teaching_location": "project planning, responsibility assignment (RACI) charts, Gantt charts, network scheduling (PERT and CPM), float and the critical path. Project budgets and economic analysis are taught in Ch 2.10; authority, responsibility and accountability in Ch 2.11; management of change in Ch 2.6.",
+   "outline_note": null,
+   "cross_links": [
+    "2.6",
+    "2.9",
+    "2.10",
+    "2.11"
+   ],
+   "builds_on": [],
+   "leads_into": [],
+   "subtitle": "Part 2 · Program Management · Obj 2.13 (Apply) · Primary teaching location for project planning, responsibility assignment (RACI) charts, Gantt charts, network scheduling (PERT and CPM), float and the critical path. Project budgets and economic analysis are taught in Ch 2.10; authority, responsibility and accountability in Ch 2.11; management of change in Ch 2.6.",
+   "prerequisite": false,
+   "pages": [
+    357,
+    372
+   ]
+  },
+  {
+   "id": "2.13",
+   "domain": 2,
+   "title": "Data analysis I: mean, median, mode and probability",
+   "heading_title": "Data analysis I: mean, median, mode and probability",
+   "objectives": [
+    "2.14"
+   ],
+   "objective_verbs": {
+    "2.14": "Analyze, interpret"
+   },
+   "primary_topic": true,
+   "primary_teaching_location": "data types, measures of central tendency and variability, the normal distribution and zscores, and the rules of probability, including binomial and Poisson probabilities. Confidence intervals, Pareto analysis and exposure, release and sampling data are taught in Ch 2.14; incidence rates in Ch 2.2; fault-tree probabilities in Ch 2.7.",
+   "outline_note": null,
+   "cross_links": [
+    "2.2",
+    "2.7",
+    "2.14"
+   ],
+   "builds_on": [],
+   "leads_into": [],
+   "subtitle": "Part 2 · Program Management · Obj 2.14 (Analyze, interpret), first of two chapters · Primary teaching location for data types, measures of central tendency and variability, the normal distribution and zscores, and the rules of probability, including binomial and Poisson probabilities. Confidence intervals, Pareto analysis and exposure, release and sampling data are taught in Ch 2.14; incidence rates in Ch 2.2; fault-tree probabilities in Ch 2.7.",
+   "prerequisite": false,
+   "pages": [
+    373,
+    388
+   ]
+  },
+  {
+   "id": "2.14",
+   "domain": 2,
+   "title": "Data analysis II: confidence intervals, Pareto analysis, and exposure, release and sampling data",
+   "heading_title": "Data analysis II: confidence intervals, Pareto analysis, and exposure, release and sampling data",
+   "objectives": [
+    "2.14"
+   ],
+   "objective_verbs": {
+    "2.14": "Analyze, interpret"
+   },
+   "primary_topic": false,
+   "primary_teaching_location": "confidence intervals, Pareto analysis, and the interpretation of exposure, sampling and release data. Mean, median, mode, z-scores and probability are taught in Ch 2.13; incidence rates in Ch 2.2; exposure assessment strategy, sampling methods and exposure limits in Ch 6.1.",
+   "outline_note": null,
+   "cross_links": [
+    "2.5",
+    "2.13",
+    "4.3",
+    "6.1"
+   ],
+   "builds_on": [],
+   "leads_into": [],
+   "subtitle": "Part 2 · Program Management · Obj 2.14 (Analyze, interpret), second of two chapters · Primary teaching location for confidence intervals, Pareto analysis, and the interpretation of exposure, sampling and release data. Mean, median, mode, z-scores and probability are taught in Ch 2.13; incidence rates in Ch 2.2; exposure assessment strategy, sampling methods and exposure limits in Ch 6.1.",
+   "prerequisite": false,
+   "pages": [
+    389,
+    403
+   ]
+  },
+  {
+   "id": "3.1",
+   "domain": 3,
+   "title": "The risk assessment process: identify, analyze, evaluate",
+   "heading_title": "The risk assessment process: identify, analyze, evaluate",
+   "objectives": [
+    "3.1"
+   ],
+   "objective_verbs": {},
+   "primary_topic": true,
+   "primary_teaching_location": "risk assessment terms and scoring",
+   "outline_note": "pilot chapter, drafted below",
+   "cross_links": [
+    "1.1",
+    "2.7",
+    "3.2",
+    "3.3",
+    "3.4"
+   ],
+   "builds_on": [],
+   "leads_into": [],
+   "subtitle": "Part 3 · Risk Management · 15% of the exam · Primary teaching location for risk assessment terms and scoring",
+   "prerequisite": false,
+   "pages": [
+    407,
+    417
+   ]
+  },
+  {
+   "id": "3.2",
+   "domain": 3,
+   "title": "Monitoring and communicating risk",
+   "heading_title": "Monitoring and communicating risk",
+   "objectives": [
+    "3.1"
+   ],
+   "objective_verbs": {
+    "3.1": "second half"
+   },
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "1.2",
+    "2.4",
+    "2.6",
+    "2.13",
+    "3.1",
+    "4.1"
+   ],
+   "builds_on": [
+    "3.1",
+    "2.4",
+    "2.6"
+   ],
+   "leads_into": [],
+   "subtitle": "Part 3 · Risk Management · Obj 3.1 (second half) · Builds on Ch 3.1, Ch 2.4 and Ch 2.6",
+   "prerequisite": false,
+   "pages": [
+    418,
+    436
+   ]
+  },
+  {
+   "id": "3.3",
+   "domain": 3,
+   "title": "Risk tools: risk analysis, JHA, PHA and the hierarchy of controls",
+   "heading_title": "Risk tools: risk analysis, JHA, PHA and the hierarchy of controls",
+   "objectives": [
+    "3.2"
+   ],
+   "objective_verbs": {},
+   "primary_topic": true,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "1.1",
+    "1.2",
+    "2.6",
+    "2.7",
+    "3.1",
+    "3.2",
+    "3.4"
+   ],
+   "builds_on": [
+    "3.1",
+    "3.2"
+   ],
+   "leads_into": [],
+   "subtitle": "Part 3 · Risk Management · Obj 3.2 · Builds on Ch 3.1 and Ch 3.2",
+   "prerequisite": false,
+   "pages": [
+    437,
+    453
+   ]
+  },
+  {
+   "id": "3.4",
+   "domain": 3,
+   "title": "Financial risk mitigation: avoidance, retention, sharing, transfer, and loss prevention and reduction",
+   "heading_title": "Financial risk mitigation: avoidance, retention, sharing, transfer, loss prevention and reduction",
+   "objectives": [
+    "3.3"
+   ],
+   "objective_verbs": {},
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "2.10",
+    "3.1",
+    "3.3",
+    "3.5"
+   ],
+   "builds_on": [
+    "3.1",
+    "3.3",
+    "2.10"
+   ],
+   "leads_into": [],
+   "subtitle": "Part 3 · Risk Management · Obj 3.3 · Builds on Ch 3.1, Ch 3.3 and Ch 2.10",
+   "prerequisite": false,
+   "pages": [
+    454,
+    469
+   ]
+  },
+  {
+   "id": "3.5",
+   "domain": 3,
+   "title": "Identifying, ranking and monitoring risk across emergency, fire, health and environmental programs",
+   "heading_title": "Identifying, ranking and monitoring risk across emergency, fire, health, hazardous materials and environmental programs",
+   "objectives": [
+    "3.4"
+   ],
+   "objective_verbs": {},
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "1.2",
+    "1.8",
+    "3.1",
+    "3.2",
+    "3.3",
+    "3.4"
+   ],
+   "builds_on": [
+    "3.1",
+    "3.2",
+    "3.3",
+    "3.4"
+   ],
+   "leads_into": [],
+   "subtitle": "Part 3 · Risk Management · Obj 3.4 · Builds on Ch 3.1–3.4; leads into Parts 4–6",
+   "prerequisite": false,
+   "pages": [
+    470,
+    486
+   ]
+  },
+  {
+   "id": "4.1",
+   "domain": 4,
+   "title": "Emergency response plans: fire, weather, nuclear, natural disasters, terrorism, chemical spills, utilities and cyber security",
+   "heading_title": "Emergency response plans: fire, severe weather, nuclear incidents, natural disasters, terrorism, chemical spills, utilities and cyber security",
+   "objectives": [
+    "4.1"
+   ],
+   "objective_verbs": {},
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "1.8",
+    "2.8",
+    "4.2",
+    "4.3",
+    "4.4",
+    "4.5"
+   ],
+   "builds_on": [
+    "3.5",
+    "2.8"
+   ],
+   "leads_into": [
+    "4.2"
+   ],
+   "subtitle": "Part 4 · Emergency Management · Obj 4.1 · Builds on Ch 3.5 and Ch 2.8; leads into Ch 4.2",
+   "prerequisite": false,
+   "pages": [
+    490,
+    506
+   ]
+  },
+  {
+   "id": "4.2",
+   "domain": 4,
+   "title": "Disaster response and recovery: incident command, business continuity and contingency plans",
+   "heading_title": "Disaster response and recovery: incident command, business continuity and contingency plans",
+   "objectives": [
+    "4.2"
+   ],
+   "objective_verbs": {},
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "2.12",
+    "3.5",
+    "4.1",
+    "4.3",
+    "4.4"
+   ],
+   "builds_on": [
+    "4.1",
+    "3.5"
+   ],
+   "leads_into": [
+    "4.3"
+   ],
+   "subtitle": "Part 4 · Emergency Management · Obj 4.2 · Builds on Ch 4.1 and Ch 3.5; leads into Ch 4.3",
+   "prerequisite": false,
+   "pages": [
+    507,
+    527
+   ]
+  },
+  {
+   "id": "4.3",
+   "domain": 4,
+   "title": "Fire prevention, protection and suppression systems",
+   "heading_title": "Fire prevention, protection and suppression systems",
+   "objectives": [
+    "4.3"
+   ],
+   "objective_verbs": {},
+   "primary_topic": true,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "1.8",
+    "2.8",
+    "3.5",
+    "4.1",
+    "4.2",
+    "4.4"
+   ],
+   "builds_on": [
+    "1.8",
+    "4.1"
+   ],
+   "leads_into": [
+    "4.4"
+   ],
+   "subtitle": "Part 4 · Emergency Management · Obj 4.3 · Builds on Ch 1.8 and Ch 4.1; leads into Ch 4.4",
+   "prerequisite": false,
+   "pages": [
+    528,
+    549
+   ]
+  },
+  {
+   "id": "4.4",
+   "domain": 4,
+   "title": "Hazardous materials transport and security",
+   "heading_title": "Hazardous materials transportation and security",
+   "objectives": [
+    "4.4"
+   ],
+   "objective_verbs": {},
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "3.5",
+    "4.1",
+    "4.3",
+    "4.5",
+    "5.2"
+   ],
+   "builds_on": [
+    "3.5",
+    "4.1"
+   ],
+   "leads_into": [
+    "4.5",
+    "5.2"
+   ],
+   "subtitle": "Part 4 · Emergency Management · Obj 4.4 · Builds on Ch 3.5 and Ch 4.1; leads into Ch 4.5 and Ch 5.2",
+   "prerequisite": false,
+   "pages": [
+    550,
+    569
+   ]
+  },
+  {
+   "id": "4.5",
+   "domain": 4,
+   "title": "Workplace violence prevention",
+   "heading_title": "Workplace violence prevention programs",
+   "objectives": [
+    "4.5"
+   ],
+   "objective_verbs": {},
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "2.2",
+    "2.5",
+    "2.8",
+    "3.1",
+    "4.1",
+    "4.4"
+   ],
+   "builds_on": [
+    "2.5",
+    "4.1",
+    "4.4"
+   ],
+   "leads_into": [],
+   "subtitle": "Part 4 · Emergency Management · Obj 4.5 · Builds on Ch 2.5, Ch 4.1 and Ch 4.4; leads into Part 7 (training)",
+   "prerequisite": false,
+   "pages": [
+    570,
+    591
+   ]
+  },
+  {
+   "id": "5.1",
+   "domain": 5,
+   "title": "Environmental protection and pollution prevention: spill containment and abatement",
+   "heading_title": "Environmental protection and pollution prevention: spill containment, abatement and best practices",
+   "objectives": [
+    "5.1"
+   ],
+   "objective_verbs": {},
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "2.5",
+    "2.8",
+    "4.1",
+    "4.2",
+    "5.2",
+    "5.3",
+    "5.4"
+   ],
+   "builds_on": [
+    "2.8",
+    "4.1"
+   ],
+   "leads_into": [
+    "5.2",
+    "5.3"
+   ],
+   "subtitle": "Part 5 · Environmental Management · Obj 5.1 · Builds on Ch 2.8 and Ch 4.1; leads into Ch 5.2 and Ch 5.3",
+   "prerequisite": false,
+   "pages": [
+    595,
+    614
+   ]
+  },
+  {
+   "id": "5.2",
+   "domain": 5,
+   "title": "Hazardous materials management: GHS, storage, handling, security and hazardous waste",
+   "heading_title": "Hazardous materials management: classification and labeling, storage, handling, security and hazardous waste",
+   "objectives": [
+    "5.2"
+   ],
+   "objective_verbs": {},
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "2.8",
+    "4.1",
+    "4.4",
+    "5.1",
+    "5.3",
+    "5.4"
+   ],
+   "builds_on": [
+    "2.8",
+    "5.1"
+   ],
+   "leads_into": [
+    "5.3",
+    "4.4"
+   ],
+   "subtitle": "Part 5 · Environmental Management · Obj 5.2 · Builds on Ch 2.8 and Ch 5.1; leads into Ch 5.3; Ch 4.4 covers transport incidents",
+   "prerequisite": false,
+   "pages": [
+    615,
+    639
+   ]
+  },
+  {
+   "id": "5.3",
+   "domain": 5,
+   "title": "Waste management: universal waste, recycling, spill clean-up, labeling and remediation",
+   "heading_title": "Waste management: universal waste, recycling, spill clean-up, labeling and remediation",
+   "objectives": [
+    "5.3"
+   ],
+   "objective_verbs": {},
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "2.5",
+    "4.1",
+    "4.4",
+    "5.1",
+    "5.2",
+    "5.4",
+    "5.5"
+   ],
+   "builds_on": [
+    "5.1",
+    "5.2"
+   ],
+   "leads_into": [
+    "5.4",
+    "4.1"
+   ],
+   "subtitle": "Part 5 · Environmental Management · Obj 5.3 · Builds on Ch 5.1 and Ch 5.2; leads into Ch 5.4; Ch 4.1 covers emergency response",
+   "prerequisite": false,
+   "pages": [
+    640,
+    658
+   ]
+  },
+  {
+   "id": "5.4",
+   "domain": 5,
+   "title": "Sustainability: supply chain; reduce, reuse, recycle",
+   "heading_title": "Sustainability: supply chain and reduce, reuse, recycle",
+   "objectives": [
+    "5.4"
+   ],
+   "objective_verbs": {},
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "2.1",
+    "2.6",
+    "2.10",
+    "5.1",
+    "5.3",
+    "5.5"
+   ],
+   "builds_on": [
+    "5.1",
+    "5.3"
+   ],
+   "leads_into": [
+    "5.5",
+    "2.1"
+   ],
+   "subtitle": "Part 5 · Environmental Management · Obj 5.4 · Builds on Ch 5.1 (pollution prevention) and Ch 5.3 (recycling); leads into Ch 5.5 (climate change and ESG); Ch 2.1 covers management systems",
+   "prerequisite": false,
+   "pages": [
+    659,
+    674
+   ]
+  },
+  {
+   "id": "5.5",
+   "domain": 5,
+   "title": "Environmental issues: aging infrastructure, asbestos, air pollution, climate change and ESG",
+   "heading_title": "Environmental issues: aging infrastructure, asbestos, air pollution, climate change and ESG",
+   "objectives": [
+    "5.5"
+   ],
+   "objective_verbs": {},
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "1.2",
+    "2.2",
+    "4.1",
+    "5.1",
+    "5.3",
+    "5.4"
+   ],
+   "builds_on": [
+    "5.1",
+    "5.2",
+    "5.3",
+    "5.4",
+    "4.1",
+    "2.6"
+   ],
+   "leads_into": [],
+   "subtitle": "Part 5 · Environmental Management · Obj 5.5 · Builds on Ch 5.1–5.4; links to Ch 4.1 (emergency planning), Part 6 (exposure assessment and heat stress) and Ch 2.6 (management of change)",
+   "prerequisite": false,
+   "pages": [
+    675,
+    692
+   ]
+  },
+  {
+   "id": "6.1",
+   "domain": 6,
+   "title": "Exposure assessment: anticipate, recognize, evaluate, control; hazardous chemicals and SDS",
+   "heading_title": "Exposure assessment: anticipate, recognize, evaluate, control; hazardous chemicals and SDS",
+   "objectives": [
+    "6.1"
+   ],
+   "objective_verbs": {},
+   "primary_topic": true,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "2.6",
+    "2.14",
+    "3.5",
+    "5.2",
+    "6.2",
+    "6.6",
+    "6.10"
+   ],
+   "builds_on": [
+    "2.14",
+    "3.5",
+    "5.2"
+   ],
+   "leads_into": [
+    "6.2",
+    "6.3",
+    "6.4",
+    "6.5",
+    "6.6",
+    "6.7",
+    "6.8",
+    "6.9",
+    "6.10"
+   ],
+   "subtitle": "Part 6 · Occupational Health and Applied Science · Obj 6.1 · Builds on Ch 2.14 (TWA, conversions, compliance test), Ch 3.5 (health risk rating) and Ch 5.2 (HCS and SDS); leads into Ch 6.2–6.10",
+   "prerequisite": false,
+   "pages": [
+    697,
+    710
+   ]
+  },
+  {
+   "id": "6.2",
+   "domain": 6,
+   "title": "Measurement, sampling and analysis; TWA calculations",
+   "heading_title": "Measurement, sampling and analysis; TWA calculations",
+   "objectives": [
+    "6.1"
+   ],
+   "objective_verbs": {},
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "1.5",
+    "2.14",
+    "6.1",
+    "6.6",
+    "6.7",
+    "6.10"
+   ],
+   "builds_on": [
+    "2.14",
+    "6.1"
+   ],
+   "leads_into": [
+    "6.3",
+    "6.4",
+    "6.5",
+    "6.6",
+    "6.7",
+    "6.8",
+    "6.9"
+   ],
+   "subtitle": "Part 6 · Occupational Health and Applied Science · Obj 6.1 · Builds on Ch 2.14 (TWA, ppm and mg/m³, compliance test) and Ch 6.1 (SEGs, exposure statistics); leads into Ch 6.3–6.9, which apply these methods to noise, heat, radiation, ventilation and particulates",
+   "prerequisite": false,
+   "pages": [
+    711,
+    727
+   ]
+  },
+  {
+   "id": "6.3",
+   "domain": 6,
+   "title": "Noise",
+   "heading_title": "Noise",
+   "objectives": [
+    "6.1"
+   ],
+   "objective_verbs": {},
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "2.2",
+    "6.1",
+    "6.10",
+    "6.12",
+    "6.14"
+   ],
+   "builds_on": [
+    "6.1",
+    "6.2",
+    "2.9",
+    "6.10",
+    "6.12"
+   ],
+   "leads_into": [],
+   "subtitle": "Part 6 · Occupational Health and Applied Science · Obj 6.1 · Builds on Ch 6.1 (exposure assessment) and Ch 6.2 (measurement); links to Ch 2.9 (records), Ch 6.10 (ototoxins) and Ch 6.12 (vibration)",
+   "prerequisite": false,
+   "pages": [
+    728,
+    743
+   ]
+  },
+  {
+   "id": "6.4",
+   "domain": 6,
+   "title": "Heat and cold stress",
+   "heading_title": "Heat and Cold Stress",
+   "objectives": [
+    "6.1"
+   ],
+   "objective_verbs": {},
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "2.5",
+    "2.8",
+    "4.1",
+    "6.1",
+    "6.2",
+    "6.6",
+    "6.12"
+   ],
+   "builds_on": [
+    "6.1",
+    "6.2",
+    "2.8",
+    "4.1",
+    "6.6",
+    "6.12"
+   ],
+   "leads_into": [],
+   "subtitle": "Part 6 · Occupational Health and Applied Science · Obj 6.1 · Builds on Ch 6.1 (exposure assessment) and Ch 6.2 (measurement); links to Ch 2.8 (written programs), Ch 4.1 (emergency response), Ch 6.6 (ventilation) and Ch 6.12 (ergonomics)",
+   "prerequisite": false,
+   "pages": [
+    744,
+    765
+   ]
+  },
+  {
+   "id": "6.5",
+   "domain": 6,
+   "title": "Ionizing radiation, non-ionizing radiation and lasers",
+   "heading_title": "Ionizing Radiation, Nonionizing Radiation and Lasers",
+   "objectives": [
+    "6.1"
+   ],
+   "objective_verbs": {},
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "4.1",
+    "4.4",
+    "6.1",
+    "6.2",
+    "6.3",
+    "6.4"
+   ],
+   "builds_on": [
+    "6.1",
+    "6.2",
+    "4.1",
+    "4.4",
+    "6.3",
+    "6.4"
+   ],
+   "leads_into": [],
+   "subtitle": "Part 6 · Occupational Health and Applied Science · Obj 6.1 · Builds on Ch 6.1 (exposure assessment) and Ch 6.2 (measurement); links to Ch 4.1 (emergency response), Ch 4.4 (Class 7 transport), Ch 6.3 (inverse square law for sound) and Ch 6.4 (infrared and hot surfaces)",
+   "prerequisite": false,
+   "pages": [
+    766,
+    791
+   ]
+  },
+  {
+   "id": "6.6",
+   "domain": 6,
+   "title": "Ventilation and indoor air quality",
+   "heading_title": "Ventilation and Indoor Air Quality",
+   "objectives": [
+    "6.1"
+   ],
+   "objective_verbs": {},
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "1.1",
+    "4.3",
+    "5.2",
+    "5.5",
+    "6.1",
+    "6.2",
+    "6.4"
+   ],
+   "builds_on": [
+    "6.1",
+    "6.2",
+    "1.1",
+    "4.3",
+    "5.2",
+    "5.5",
+    "6.4"
+   ],
+   "leads_into": [],
+   "subtitle": "Part 6 · Occupational Health and Applied Science · Obj 6.1 · Builds on Ch 6.1 (exposure assessment) and Ch 6.2 (measurement); links to Ch 1.1 (hierarchy of controls), Ch 4.3 (fire protection), Ch 5.2 (chemical safety), Ch 5.5 (air pollution) and Ch 6.4 (heat stress and comfort)",
+   "prerequisite": false,
+   "pages": [
+    792,
+    812
+   ]
+  },
+  {
+   "id": "6.7",
+   "domain": 6,
+   "title": "Particulates: silica, combustible dust, nanoparticles, blasting, powder and spray applications",
+   "heading_title": "Particulates: Dusts, Fibers, Silica and Nanomaterials",
+   "objectives": [
+    "6.1"
+   ],
+   "objective_verbs": {},
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "1.1",
+    "4.3",
+    "5.5",
+    "6.1",
+    "6.2",
+    "6.6",
+    "6.10"
+   ],
+   "builds_on": [
+    "6.1",
+    "6.2",
+    "6.6",
+    "1.1",
+    "5.5",
+    "6.10"
+   ],
+   "leads_into": [],
+   "subtitle": "Part 6 · Occupational Health and Applied Science · Obj 6.1 · Builds on Ch 6.1 (exposure assessment), Ch 6.2 (sampling and calibration) and Ch 6.6 (local exhaust ventilation); links to Ch 1.1 (hierarchy of controls), Ch 5.5 (asbestos NESHAP) and Ch 6.10 (toxicology)",
+   "prerequisite": false,
+   "pages": [
+    813,
+    831
+   ]
+  },
+  {
+   "id": "6.8",
+   "domain": 6,
+   "title": "Biological hazards",
+   "heading_title": "Biological Hazards: Infectious Agents, Bloodborne Pathogens, Legionella and Bioaerosols",
+   "objectives": [
+    "6.1"
+   ],
+   "objective_verbs": {},
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "1.1",
+    "2.2",
+    "6.1",
+    "6.2",
+    "6.6"
+   ],
+   "builds_on": [
+    "6.1",
+    "6.2",
+    "6.6",
+    "1.1",
+    "2.2",
+    "6.10"
+   ],
+   "leads_into": [],
+   "subtitle": "Part 6 · Occupational Health and Applied Science · Obj 6.1 · Builds on Ch 6.1 (exposure assessment), Ch 6.2 (sampling and calibration) and Ch 6.6 (ventilation and indoor air quality); links to Ch 1.1 (hierarchy of controls), Ch 2.2 (incidence rates) and Ch 6.10 (toxicology)",
+   "prerequisite": false,
+   "pages": [
+    832,
+    855
+   ]
+  },
+  {
+   "id": "6.9",
+   "domain": 6,
+   "title": "Hot work, molten metals, combustible dust, heat systems and high pressure",
+   "heading_title": "Hot Work, Molten Metals, Combustible Dust, Heat Systems and High Pressure",
+   "objectives": [
+    "6.1"
+   ],
+   "objective_verbs": {},
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "1.5",
+    "1.6",
+    "2.5",
+    "4.3",
+    "6.4",
+    "6.5",
+    "6.6",
+    "6.7",
+    "6.14"
+   ],
+   "builds_on": [
+    "4.3",
+    "6.4",
+    "6.5",
+    "6.6",
+    "6.7",
+    "1.6",
+    "1.5",
+    "6.14"
+   ],
+   "leads_into": [],
+   "subtitle": "Part 6 · Occupational Health and Applied Science · Obj 6.1 (part 9 of 9) · Builds on Ch 4.3 (fire protection), Ch 6.4 (heat stress), Ch 6.5 (infrared and ultraviolet radiation), Ch 6.6 (local exhaust ventilation and dilution for fire safety) and Ch 6.7 (particulates and silica); links to Ch 1.6 (lockout/tagout), Ch 1.5 (confined spaces) and Ch 6.14 (applied physics)",
+   "prerequisite": false,
+   "pages": [
+    856,
+    880
+   ]
+  },
+  {
+   "id": "6.10",
+   "domain": 6,
+   "title": "Toxicology: LD50, LC50, mutagens, carcinogens, teratogens, ototoxins and exposure control plans",
+   "heading_title": "Toxicology: LD50, LC50, Mutagens, Carcinogens, Teratogens, Ototoxins and Exposure Control Plans",
+   "objectives": [
+    "6.3"
+   ],
+   "objective_verbs": {},
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "2.14",
+    "4.1",
+    "5.2",
+    "6.1",
+    "6.2",
+    "6.3",
+    "6.6",
+    "6.7",
+    "6.11",
+    "6.13"
+   ],
+   "builds_on": [
+    "5.2",
+    "6.1",
+    "6.2",
+    "6.3",
+    "2.14",
+    "6.11",
+    "6.13"
+   ],
+   "leads_into": [],
+   "subtitle": "Part 6 · Occupational Health and Applied Science · Obj 6.3 · Builds on Ch 5.2 (hazard communication and GHS classification), Ch 6.1 (exposure assessment), Ch 6.2 (sampling and analysis) and Ch 6.3 (noise); links to Ch 2.14 (mixtures and unit conversions), Ch 6.11 (epidemiology) and Ch 6.13 (applied chemistry)",
+   "prerequisite": false,
+   "pages": [
+    881,
+    907
+   ]
+  },
+  {
+   "id": "6.11",
+   "domain": 6,
+   "title": "Public health: epidemiology, infectious disease, risk factors and statistics",
+   "heading_title": "Public Health: Epidemiology, Infectious Disease, Risk Factors and Statistics",
+   "objectives": [
+    "6.2"
+   ],
+   "objective_verbs": {},
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "2.2",
+    "2.5",
+    "2.9",
+    "2.13",
+    "4.1",
+    "6.1",
+    "6.8",
+    "6.10"
+   ],
+   "builds_on": [
+    "2.13",
+    "6.1",
+    "6.8",
+    "6.10",
+    "2.2",
+    "2.5",
+    "4.1",
+    "4.2"
+   ],
+   "leads_into": [],
+   "subtitle": "Part 6 · Occupational Health and Applied Science · Obj 6.2 · Builds on Ch 2.13 (statistics), Ch 6.1 (exposure assessment and lognormal data), Ch 6.8 (biological hazards) and Ch 6.10 (toxicology); links to Ch 2.2 (injury and illness rates), Ch 2.5 (incident investigation) and Ch 4.1–4.2 (emergency and continuity planning)",
+   "prerequisite": false,
+   "pages": [
+    908,
+    926
+   ]
+  },
+  {
+   "id": "6.12",
+   "domain": 6,
+   "title": "Ergonomics and human factors: visual acuity, body mechanics, lifting, vibration, anthropometrics, fatigue",
+   "heading_title": "Ergonomics and Human Factors: Visual Acuity, Body Mechanics, Lifting, Vibration, Anthropometrics and Fatigue",
+   "objectives": [
+    "6.4"
+   ],
+   "objective_verbs": {},
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "1.1",
+    "1.9",
+    "1.10",
+    "1.11"
+   ],
+   "builds_on": [
+    "1.10",
+    "2.13",
+    "6.3",
+    "6.4",
+    "1.1",
+    "1.9",
+    "2.10",
+    "3.3"
+   ],
+   "leads_into": [],
+   "subtitle": "Part 6 · Occupational Health and Applied Science · Obj 6.4 · Builds on Ch 1.10 (materials handling and the NIOSH lifting equation), Ch 2.13 (the normal distribution), Ch 6.3 (noise) and Ch 6.4 (metabolic rate); links to Ch 1.1 (Prevention through Design), Ch 1.9 (driver fatigue), Ch 2.10 (cost-benefit) and Ch 3.3 (hierarchy of controls)",
+   "prerequisite": false,
+   "pages": [
+    927,
+    951
+   ]
+  },
+  {
+   "id": "6.13",
+   "domain": 6,
+   "title": "Applied chemistry: containment volumes and storage requirements",
+   "heading_title": "Applied Chemistry: Containment Volumes and Hazardous Materials Storage",
+   "objectives": [
+    "6.5"
+   ],
+   "objective_verbs": {},
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "1.5",
+    "4.3",
+    "5.1",
+    "5.2",
+    "6.6",
+    "6.9",
+    "6.10",
+    "6.14"
+   ],
+   "builds_on": [
+    "5.1",
+    "5.2",
+    "6.6",
+    "6.9",
+    "1.5",
+    "4.3",
+    "6.10"
+   ],
+   "leads_into": [],
+   "subtitle": "Part 6 · Occupational Health and Applied Science · Obj 6.5 · Builds on Ch 5.1 (SPCC secondary containment and dike sizing), Ch 5.2 (flammable liquid categories, container limits and segregation), Ch 6.6 (ventilation) and Ch 6.9 (gas laws and pressure); links to Ch 1.5 (confined space atmospheres), Ch 4.3 (fire protection) and Ch 6.10 (toxicology)",
+   "prerequisite": false,
+   "pages": [
+    952,
+    972
+   ]
+  },
+  {
+   "id": "6.14",
+   "domain": 6,
+   "title": "Applied physics: forms of energy, weights, forces and stresses",
+   "heading_title": "Applied Physics: Forms of Energy, Weights, Forces and Stresses",
+   "objectives": [
+    "6.6"
+   ],
+   "objective_verbs": {},
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "1.4",
+    "1.6",
+    "1.7",
+    "1.8",
+    "1.10",
+    "1.11",
+    "6.9",
+    "6.12",
+    "6.13"
+   ],
+   "builds_on": [
+    "1.4",
+    "1.8",
+    "1.10",
+    "1.11",
+    "6.9",
+    "6.13",
+    "1.3",
+    "1.6",
+    "1.7"
+   ],
+   "leads_into": [],
+   "subtitle": "Part 6 · Occupational Health and Applied Science · Obj 6.6 · Builds on Ch 1.4 (fall clearance and arrest force), Ch 1.8 (floor loading), Ch 1.10 (forklifts, hoists and sling angles), Ch 1.11 (grinders and abrasive wheels), Ch 6.9 (gas laws and stored pressure energy) and Ch 6.13 (specific gravity and mass from volume); links to Ch 1.3 (electrical energy), Ch 1.6 (hazardous energy control) and Ch 1.7 (struck-by hazards)",
+   "prerequisite": false,
+   "pages": [
+    973,
+    991
+   ]
+  },
+  {
+   "id": "7.1",
+   "domain": 7,
+   "title": "Needs assessment: training, competencies and qualifications",
+   "heading_title": "Needs Assessment: Training, Competencies and Qualifications",
+   "objectives": [
+    "7.1"
+   ],
+   "objective_verbs": {},
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "1.3",
+    "1.6",
+    "2.4",
+    "2.5",
+    "3.3",
+    "4.1",
+    "7.3",
+    "7.4",
+    "7.6"
+   ],
+   "builds_on": [
+    "1.6",
+    "2.2",
+    "2.5"
+   ],
+   "leads_into": [
+    "7.2",
+    "7.3",
+    "7.4",
+    "7.5",
+    "7.6"
+   ],
+   "subtitle": "Part 7 · Training · Obj 7.1 · Builds on Ch 1.6 (hazardous energy control), Ch 2.2 (gap analysis) and Ch 2.5 (root cause analysis); leads into Ch 7.2–7.6",
+   "prerequisite": false,
+   "pages": [
+    996,
+    1018
+   ]
+  },
+  {
+   "id": "7.2",
+   "domain": 7,
+   "title": "Adult learning principles: visual, auditory, reading/writing and kinesthetic",
+   "heading_title": "Adult Learning Principles: Visual, Auditory, Reading/Writing and Kinesthetic Learners",
+   "objectives": [
+    "7.6"
+   ],
+   "objective_verbs": {},
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "2.11",
+    "7.1",
+    "7.3",
+    "7.4",
+    "7.6"
+   ],
+   "builds_on": [
+    "7.1",
+    "2.11"
+   ],
+   "leads_into": [
+    "7.3",
+    "7.4"
+   ],
+   "subtitle": "Part 7 · Training · Obj 7.6 · Builds on Ch 7.1 (needs assessment and readiness for training) and Ch 2.11 (motivation theories); leads into Ch 7.3 (program development) and Ch 7.4 (training methods)",
+   "prerequisite": false,
+   "pages": [
+    1019,
+    1036
+   ]
+  },
+  {
+   "id": "7.3",
+   "domain": 7,
+   "title": "Developing programs and materials for different learning styles",
+   "heading_title": "Developing Training Programs and Materials: Presentation Methods and Tools",
+   "objectives": [
+    "7.2"
+   ],
+   "objective_verbs": {},
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "2.8",
+    "7.1",
+    "7.2",
+    "7.4",
+    "7.5",
+    "7.6"
+   ],
+   "builds_on": [
+    "7.1",
+    "7.2"
+   ],
+   "leads_into": [
+    "7.4",
+    "7.5",
+    "7.6"
+   ],
+   "subtitle": "Part 7 · Training · Obj 7.2 · Builds on Ch 7.1 (needs assessment) and Ch 7.2 (adult learning and VARK); leads into Ch 7.4 (training methods), Ch 7.5 (implementation) and Ch 7.6 (evaluation)",
+   "prerequisite": false,
+   "pages": [
+    1037,
+    1058
+   ]
+  },
+  {
+   "id": "7.4",
+   "domain": 7,
+   "title": "Training methods: classroom, online, simulation, computer-based, AI, coaching and onthe-job",
+   "heading_title": "Training Methods: Classroom, Online, Simulation, Computer-Based, AI, Coaching and On-the-Job",
+   "objectives": [
+    "7.5"
+   ],
+   "objective_verbs": {},
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "2.10",
+    "2.11",
+    "7.1",
+    "7.2",
+    "7.3",
+    "7.5",
+    "7.6"
+   ],
+   "builds_on": [
+    "7.2",
+    "7.3"
+   ],
+   "leads_into": [
+    "7.5",
+    "7.6"
+   ],
+   "subtitle": "Part 7 · Training · Obj 7.5 · Builds on Ch 7.2 (adult learning) and Ch 7.3 (program and materials development); leads into Ch 7.5 (implementation) and Ch 7.6 (evaluation)",
+   "prerequisite": false,
+   "pages": [
+    1059,
+    1078
+   ]
+  },
+  {
+   "id": "7.5",
+   "domain": 7,
+   "title": "Implementing training through the Continuous Improvement model",
+   "heading_title": "Implementing Training Through the Continuous Improvement Model",
+   "objectives": [
+    "7.3"
+   ],
+   "objective_verbs": {},
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "1.4",
+    "2.1",
+    "2.4",
+    "2.10",
+    "2.14",
+    "3.3",
+    "7.1",
+    "7.2",
+    "7.4",
+    "7.6"
+   ],
+   "builds_on": [
+    "7.1",
+    "7.3",
+    "7.4"
+   ],
+   "leads_into": [
+    "7.6",
+    "2.1",
+    "2.4",
+    "2.14",
+    "1.4"
+   ],
+   "subtitle": "Part 7 · Training · Obj 7.3 · Builds on Ch 7.1 (needs assessment), Ch 7.3 (program development) and Ch 7.4 (training methods); leads into Ch 7.6 (evaluation). See also Ch 2.1 (management systems and PDCA), Ch 2.4 (p charts), Ch 2.14 (Pareto analysis) and Ch 1.4 (fall protection)",
+   "prerequisite": false,
+   "pages": [
+    1079,
+    1095
+   ]
+  },
+  {
+   "id": "7.6",
+   "domain": 7,
+   "title": "Evaluating training effectiveness",
+   "heading_title": "Evaluating Training Effectiveness: Surveys, Quizzes, Demonstrations and On-the-Job Compliance",
+   "objectives": [
+    "7.4"
+   ],
+   "objective_verbs": {},
+   "primary_topic": false,
+   "primary_teaching_location": null,
+   "outline_note": null,
+   "cross_links": [
+    "1.5",
+    "2.4",
+    "2.10",
+    "2.13",
+    "7.1",
+    "7.2",
+    "7.3",
+    "7.4",
+    "7.5"
+   ],
+   "builds_on": [
+    "7.1",
+    "7.3",
+    "7.4",
+    "7.5",
+    "2.4",
+    "2.10",
+    "2.13",
+    "2.14",
+    "1.5"
+   ],
+   "leads_into": [],
+   "subtitle": "Part 7 · Training · Obj 7.4 · Builds on Ch 7.1 (needs assessment), Ch 7.3 (objectives and lesson plans), Ch 7.4 (training methods) and Ch 7.5 (implementation and continuous improvement). See also Ch 2.4 (leading and lagging indicators), Ch 2.10 (economic analysis), Ch 2.13–2.14 (data analysis) and Ch 1.5 (confined spaces)",
+   "prerequisite": false,
+   "pages": [
+    1096,
+    1115
+   ]
+  }
+ ],
+ "validation": {
+  "ok": true,
+  "errors": []
+ }
+}

@@ -1,3 +1,4 @@
+import { courseProfile, independenceStatement } from "@/lib/study/courseProfile";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
@@ -48,7 +49,7 @@ export default async function CompletionPage({ params }: { params: Promise<{ cou
             <div><dt className="text-caption text-slate">Record ID</dt><dd className="font-mono text-body font-semibold">{c.record_code}</dd></div>
           </dl>
           <p className="border-t border-hairline pt-6 text-body-sm text-graphite">
-            This record confirms completion of a self-paced study course from verified course records. It is not a certification, licence or professional authorization, and it does not predict or guarantee an examination result. It is not accredited or approved for continuing-education credit. ASP® is a registered mark of the Board of Certified Safety Professionals (BCSP); BCSP has not reviewed or endorsed this course and does not issue this record.
+            This record confirms completion of a self-paced study course from verified course records. It is not a certification, licence or professional authorization, and it does not predict or guarantee an examination result. It is not accredited or approved for continuing-education credit. {independenceStatement(courseProfile(course))} BCSP does not issue this record.
           </p>
         </div>
       </article>

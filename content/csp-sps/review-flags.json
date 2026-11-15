@@ -1,0 +1,1512 @@
+{
+ "1.1": {
+  "flags": [
+   "p12: table caption taken from its header row",
+   "p13: table caption taken from its header row",
+   "p16: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "1.2": {
+  "flags": [
+   "p23: table caption taken from its header row",
+   "p23: table caption taken from its header row",
+   "p28: table caption taken from its header row",
+   "p29: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "1.3": {
+  "flags": [
+   "p37: table caption taken from its header row",
+   "p37: table caption taken from its header row",
+   "p38: table caption taken from its header row",
+   "p43: table caption taken from its header row",
+   "p44: table caption taken from its header row",
+   "p46: table caption taken from its header row",
+   "p46: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "1.4": {
+  "flags": [
+   "p54: table caption taken from its header row",
+   "p56: table caption taken from its header row",
+   "p64: table caption taken from its header row",
+   "p65: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "1.5": {
+  "flags": [
+   "p79: table caption taken from its header row",
+   "p80: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "1.6": {
+  "flags": [
+   "p89: table caption taken from its header row",
+   "p94: table caption taken from its header row",
+   "p94: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "1.7": {
+  "flags": [
+   "p102: table caption taken from its header row",
+   "p109: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "1.8": {
+  "flags": [
+   "p122: table caption taken from its header row",
+   "p123: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "1.9": {
+  "flags": [
+   "p134: table caption taken from its header row",
+   "p135: table caption taken from its header row",
+   "p136: table caption taken from its header row",
+   "p139: table caption taken from its header row",
+   "p141: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "1.10": {
+  "flags": [
+   "p152: table caption taken from its header row",
+   "p157: table caption taken from its header row",
+   "p158: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "1.11": {
+  "flags": [
+   "p166: table caption taken from its header row",
+   "p169: table caption taken from its header row",
+   "p173: table caption taken from its header row",
+   "p175: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "2.1": {
+  "flags": [
+   "p189: table caption taken from its header row",
+   "p190: table caption taken from its header row",
+   "p191: table caption taken from its header row",
+   "p194: table caption taken from its header row",
+   "p194: table caption taken from its header row",
+   "p195: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "2.2": {
+  "flags": [
+   "p204: table caption taken from its header row",
+   "p208: table caption taken from its header row",
+   "p210: table caption taken from its header row",
+   "p211: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "2.3": {
+  "flags": [
+   "p220: table caption taken from its header row",
+   "p223: table caption taken from its header row",
+   "p223: table caption taken from its header row",
+   "p224: table caption taken from its header row",
+   "p225: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "2.4": {
+  "flags": [
+   "p237: table caption taken from its header row",
+   "p237: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "2.5": {
+  "flags": [
+   "p249: table caption taken from its header row",
+   "p253: table caption taken from its header row",
+   "p255: table caption taken from its header row",
+   "p255: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "2.6": {
+  "flags": [
+   "p263: table caption taken from its header row",
+   "p268: table caption taken from its header row",
+   "p269: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "2.7": {
+  "flags": [
+   "p278: table caption taken from its header row",
+   "p280: table caption taken from its header row",
+   "p283: table caption taken from its header row",
+   "p286: table caption taken from its header row",
+   "p287: table caption taken from its header row",
+   "p288: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "2.8": {
+  "flags": [
+   "p295: table caption taken from its header row",
+   "p297: table caption taken from its header row",
+   "p302: table caption taken from its header row",
+   "p303: table caption taken from its header row",
+   "p303: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "2.9": {
+  "flags": [
+   "p312: table caption taken from its header row",
+   "p314: table caption taken from its header row",
+   "p318: table caption taken from its header row",
+   "p320: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "2.10": {
+  "flags": [
+   "p330 eq-p330-143: stretched delimiters",
+   "p330: table caption taken from its header row",
+   "p330 eq-p330-705: stretched delimiters",
+   "p333: table caption taken from its header row",
+   "p333: table caption taken from its header row",
+   "p335: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": [
+   {
+    "label": "Equation 2.10.2",
+    "key": "eq-p330-143",
+    "page": 330,
+    "top": 140.2,
+    "bottom": 174.1,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 2.10.3",
+    "key": "eq-p330-705",
+    "page": 330,
+    "top": 701.9,
+    "bottom": 743.1,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   }
+  ]
+ },
+ "2.11": {
+  "flags": [
+   "p342: table caption taken from its header row",
+   "p344: table caption taken from its header row",
+   "p345: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "2.12": {
+  "flags": [
+   "p359: table caption taken from its header row",
+   "p365: table caption taken from its header row",
+   "p366: table caption taken from its header row",
+   "p367: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "2.13": {
+  "flags": [
+   "p382: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "2.14": {
+  "flags": [
+   "p398: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "3.1": {
+  "flags": [
+   "p412: table caption taken from its header row",
+   "p413: table caption taken from its header row",
+   "p413: table caption taken from its header row",
+   "p414: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "3.2": {
+  "flags": [
+   "scenario decision taken from its closing question",
+   "p423: table caption taken from its header row",
+   "p424: table caption taken from its header row",
+   "p427: table caption taken from its header row",
+   "p428: table caption taken from its header row",
+   "p429: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "3.3": {
+  "flags": [
+   "scenario has no stated decision; editorial prompt used",
+   "p441: table caption taken from its header row",
+   "p446: table caption taken from its header row",
+   "p448: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "3.4": {
+  "flags": [
+   "scenario decision taken from its closing question",
+   "p457: table caption taken from its header row",
+   "p459: table caption taken from its header row",
+   "p462: table caption taken from its header row",
+   "p463: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "3.5": {
+  "flags": [
+   "p471: table caption taken from its header row",
+   "p478: table caption taken from its header row",
+   "p479: table caption taken from its header row",
+   "p480: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "4.1": {
+  "flags": [
+   "p493 eq-p493-153: stretched delimiters",
+   "p494: table caption taken from its header row",
+   "p498: table caption taken from its header row",
+   "p499 eq-p499-74: stretched delimiters",
+   "p499: table caption taken from its header row",
+   "p500: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": [
+   {
+    "label": "Equation 4.1.1",
+    "key": "eq-p493-153",
+    "page": 493,
+    "top": 149.5,
+    "bottom": 183.0,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 4.1.3",
+    "key": "eq-p499-74",
+    "page": 499,
+    "top": 70.7,
+    "bottom": 102.8,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   }
+  ]
+ },
+ "4.2": {
+  "flags": [
+   "p508: table caption taken from its header row",
+   "p510 eq-p510-552: stretched delimiters",
+   "p513: table caption taken from its header row",
+   "p518: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": [
+   {
+    "label": "Equation 4.2.1",
+    "key": "eq-p510-552",
+    "page": 510,
+    "top": 548.5,
+    "bottom": 582.0,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   }
+  ]
+ },
+ "4.3": {
+  "flags": [
+   "p529: table caption taken from its header row",
+   "p533: table caption taken from its header row",
+   "p533 eq-p533-385: 1 radical(s) rebuilt from drawn paths",
+   "p536 eq-p536-116: stretched delimiters",
+   "p539: table caption taken from its header row",
+   "p540 eq-p540-144: stretched delimiters",
+   "p540 eq-p540-227: stretched delimiters",
+   "p541 eq-p541-151: stretched delimiters",
+   "p541 eq-p541-255: 1 radical(s) rebuilt from drawn paths"
+  ],
+  "review_notes": [],
+  "equations_with_notes": [
+   {
+    "label": "Equation 4.3.1",
+    "key": "eq-p533-385",
+    "page": 533,
+    "top": 382.0,
+    "bottom": 399.8,
+    "mode": "katex-rebuild",
+    "notes": [
+     "1 radical(s) rebuilt from drawn paths"
+    ]
+   },
+   {
+    "label": "Equation 4.3.2",
+    "key": "eq-p536-116",
+    "page": 536,
+    "top": 112.8,
+    "bottom": 149.7,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 4.3.3",
+    "key": "eq-p540-144",
+    "page": 540,
+    "top": 141.2,
+    "bottom": 173.3,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 4.3.4",
+    "key": "eq-p540-227",
+    "page": 540,
+    "top": 224.4,
+    "bottom": 256.6,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 4.3.5",
+    "key": "eq-p541-151",
+    "page": 541,
+    "top": 148.1,
+    "bottom": 183.8,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 4.3.6",
+    "key": "eq-p541-255",
+    "page": 541,
+    "top": 252.3,
+    "bottom": 270.2,
+    "mode": "katex-rebuild",
+    "notes": [
+     "1 radical(s) rebuilt from drawn paths"
+    ]
+   }
+  ]
+ },
+ "4.4": {
+  "flags": [
+   "p552: table caption taken from its header row",
+   "p556: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "4.5": {
+  "flags": [
+   "p572: table caption taken from its header row",
+   "p574: table caption taken from its header row",
+   "p582: table caption taken from its header row",
+   "p583: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "5.1": {
+  "flags": [
+   "p596: table caption taken from its header row",
+   "p597 eq-p597-655: stretched delimiters",
+   "p600 eq-p600-76: stretched delimiters",
+   "p600: table caption taken from its header row",
+   "p605: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": [
+   {
+    "label": "Equation 5.1.1",
+    "key": "eq-p597-655",
+    "page": 597,
+    "top": 652.0,
+    "bottom": 683.0,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 5.1.2",
+    "key": "eq-p600-76",
+    "page": 600,
+    "top": 73.0,
+    "bottom": 110.4,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   }
+  ]
+ },
+ "5.2": {
+  "flags": [
+   "p618: table caption taken from its header row",
+   "p619 eq-p619-286: stretched delimiters",
+   "p623: table caption taken from its header row",
+   "p626 eq-p626-226: stretched delimiters"
+  ],
+  "review_notes": [],
+  "equations_with_notes": [
+   {
+    "label": "Equation 5.2.1",
+    "key": "eq-p619-286",
+    "page": 619,
+    "top": 283.4,
+    "bottom": 324.6,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 5.2.2",
+    "key": "eq-p626-226",
+    "page": 626,
+    "top": 223.1,
+    "bottom": 253.0,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   }
+  ]
+ },
+ "5.3": {
+  "flags": [
+   "p641: table caption taken from its header row",
+   "p642 eq-p642-234: stretched delimiters",
+   "p644 eq-p644-165: 1 radical(s) rebuilt from drawn paths",
+   "p651: table caption taken from its header row",
+   "p652: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": [
+   {
+    "label": "Equation 5.3.1",
+    "key": "eq-p642-234",
+    "page": 642,
+    "top": 230.6,
+    "bottom": 259.7,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 5.3.2",
+    "key": "eq-p644-165",
+    "page": 644,
+    "top": 161.5,
+    "bottom": 195.2,
+    "mode": "katex-rebuild",
+    "notes": [
+     "1 radical(s) rebuilt from drawn paths"
+    ]
+   }
+  ]
+ },
+ "5.4": {
+  "flags": [
+   "p667: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "5.5": {
+  "flags": [
+   "p677: table caption taken from its header row",
+   "p678 eq-p678-494: stretched delimiters",
+   "p680 eq-p680-225: stretched delimiters",
+   "p681 eq-p681-606: stretched delimiters",
+   "p684 eq-p684-730: stretched delimiters",
+   "p686: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": [
+   {
+    "label": "Equation 5.5.2",
+    "key": "eq-p678-494",
+    "page": 678,
+    "top": 490.9,
+    "bottom": 517.4,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 5.5.3",
+    "key": "eq-p680-225",
+    "page": 680,
+    "top": 222.3,
+    "bottom": 251.5,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 5.5.4",
+    "key": "eq-p681-606",
+    "page": 681,
+    "top": 603.3,
+    "bottom": 633.2,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 5.5.7",
+    "key": "eq-p684-730",
+    "page": 684,
+    "top": 727.0,
+    "bottom": 746.7,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   }
+  ]
+ },
+ "6.1": {
+  "flags": [
+   "p700 eq-p700-658: stretched delimiters",
+   "p700 eq-p700-720: stretched delimiters",
+   "p705: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": [
+   {
+    "label": "Equation 6.1.1",
+    "key": "eq-p700-658",
+    "page": 700,
+    "top": 655.0,
+    "bottom": 673.6,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 6.1.4",
+    "key": "eq-p700-720",
+    "page": 700,
+    "top": 717.3,
+    "bottom": 740.1,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   }
+  ]
+ },
+ "6.2": {
+  "flags": [
+   "p712: table caption taken from its header row",
+   "p715 eq-p715-507: 1 radical(s) rebuilt from drawn paths",
+   "p717: table caption taken from its header row",
+   "p718 eq-p718-182: stretched delimiters",
+   "p721 eq-p721-72: 2 stacked rows",
+   "p721: table caption taken from its header row",
+   "p722: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": [
+   {
+    "label": "Equation 6.2.2",
+    "key": "eq-p715-507",
+    "page": 715,
+    "top": 503.5,
+    "bottom": 537.2,
+    "mode": "katex-rebuild",
+    "notes": [
+     "1 radical(s) rebuilt from drawn paths"
+    ]
+   },
+   {
+    "label": "Equation 6.2.4",
+    "key": "eq-p718-182",
+    "page": 718,
+    "top": 179.4,
+    "bottom": 213.9,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 6.2.7",
+    "key": "eq-p721-72",
+    "page": 721,
+    "top": 69.2,
+    "bottom": 127.5,
+    "mode": "katex-rebuild",
+    "notes": [
+     "2 stacked rows"
+    ]
+   }
+  ]
+ },
+ "6.3": {
+  "flags": [
+   "p729 eq-p729-408: stretched delimiters",
+   "p729 eq-p729-435: 2 stacked rows",
+   "p730: table caption taken from its header row",
+   "p731 eq-p731-257: stretched delimiters",
+   "p731 eq-p731-678: stretched delimiters",
+   "p732: table caption taken from its header row",
+   "p736 eq-p736-286: stretched delimiters",
+   "p737 eq-p737-144: stretched delimiters",
+   "p738 eq-p738-206: stretched delimiters"
+  ],
+  "review_notes": [
+   "p. 734 (F-6.3d): the printed equation is clipped at the right edge of its box, so the derated term is cut off after \"N\". The course completes it as (NRR − 7)/2 from the 50% derating example on p. 737. Confirm against the guide source and fix the PDF."
+  ],
+  "equations_with_notes": [
+   {
+    "label": "Equation 6.3.2",
+    "key": "eq-p729-408",
+    "page": 729,
+    "top": 404.9,
+    "bottom": 436.7,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 6.3.3",
+    "key": "eq-p729-435",
+    "page": 729,
+    "top": 432.3,
+    "bottom": 494.1,
+    "mode": "katex-rebuild",
+    "notes": [
+     "2 stacked rows"
+    ]
+   },
+   {
+    "label": "Equation 6.3.4",
+    "key": "eq-p731-257",
+    "page": 731,
+    "top": 253.8,
+    "bottom": 290.5,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 6.3.5",
+    "key": "eq-p731-678",
+    "page": 731,
+    "top": 675.3,
+    "bottom": 711.9,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 6.3.8",
+    "key": "eq-p736-286",
+    "page": 736,
+    "top": 283.1,
+    "bottom": 304.4,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 6.3.10",
+    "key": "eq-p737-144",
+    "page": 737,
+    "top": 141.1,
+    "bottom": 173.3,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 6.3.14",
+    "key": "eq-p738-206",
+    "page": 738,
+    "top": 202.8,
+    "bottom": 224.1,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   }
+  ]
+ },
+ "6.4": {
+  "flags": [
+   "p746: table caption taken from its header row",
+   "p747 eq-p747-183: stretched delimiters",
+   "p747 eq-p747-396: stretched delimiters",
+   "p747: table caption taken from its header row",
+   "p750: table caption taken from its header row",
+   "p752: table caption taken from its header row",
+   "p756: table caption taken from its header row",
+   "p757 eq-p757-221: 2 stacked rows",
+   "p757 eq-p757-659: 3 stacked rows",
+   "p758 eq-p758-254: 2 stacked rows",
+   "p759 eq-p759-392: 2 stacked rows"
+  ],
+  "review_notes": [],
+  "equations_with_notes": [
+   {
+    "label": "Equation 6.4.2",
+    "key": "eq-p747-183",
+    "page": 747,
+    "top": 180.3,
+    "bottom": 213.9,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 6.4.3",
+    "key": "eq-p747-396",
+    "page": 747,
+    "top": 393.3,
+    "bottom": 426.9,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 6.4.15",
+    "key": "eq-p757-221",
+    "page": 757,
+    "top": 218.4,
+    "bottom": 278.3,
+    "mode": "katex-rebuild",
+    "notes": [
+     "2 stacked rows"
+    ]
+   },
+   {
+    "label": "Equation 6.4.18",
+    "key": "eq-p757-659",
+    "page": 757,
+    "top": 656.4,
+    "bottom": 729.8,
+    "mode": "katex-rebuild",
+    "notes": [
+     "3 stacked rows"
+    ]
+   },
+   {
+    "label": "Equation 6.4.19",
+    "key": "eq-p758-254",
+    "page": 758,
+    "top": 250.6,
+    "bottom": 311.3,
+    "mode": "katex-rebuild",
+    "notes": [
+     "2 stacked rows"
+    ]
+   },
+   {
+    "label": "Equation 6.4.21",
+    "key": "eq-p759-392",
+    "page": 759,
+    "top": 389.4,
+    "bottom": 435.9,
+    "mode": "katex-rebuild",
+    "notes": [
+     "2 stacked rows"
+    ]
+   }
+  ]
+ },
+ "6.5": {
+  "flags": [
+   "p768: table caption taken from its header row",
+   "p768: table caption taken from its header row",
+   "p769 eq-p769-540: stretched delimiters",
+   "p770: table caption taken from its header row",
+   "p772 eq-p772-699: stretched delimiters",
+   "p774: table caption taken from its header row",
+   "p775 eq-p775-312: stretched delimiters",
+   "p777: table caption taken from its header row",
+   "p778: table caption taken from its header row",
+   "p779 eq-p779-653: 1 radical(s) rebuilt from drawn paths",
+   "p783 eq-p783-143: stretched delimiters",
+   "p783 eq-p783-573: stretched delimiters",
+   "p784 eq-p784-426: stretched delimiters",
+   "p785 eq-p785-248: 2 radical(s) rebuilt from drawn paths",
+   "p786: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": [
+   {
+    "label": "Equation 6.5.3",
+    "key": "eq-p769-540",
+    "page": 769,
+    "top": 536.9,
+    "bottom": 561.6,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 6.5.4",
+    "key": "eq-p772-699",
+    "page": 772,
+    "top": 696.3,
+    "bottom": 733.3,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 6.5.6",
+    "key": "eq-p775-312",
+    "page": 775,
+    "top": 308.6,
+    "bottom": 345.9,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 6.5.10",
+    "key": "eq-p779-653",
+    "page": 779,
+    "top": 649.8,
+    "bottom": 681.9,
+    "mode": "katex-rebuild",
+    "notes": [
+     "1 radical(s) rebuilt from drawn paths"
+    ]
+   },
+   {
+    "label": "Equation 6.5.13",
+    "key": "eq-p783-143",
+    "page": 783,
+    "top": 139.8,
+    "bottom": 175.5,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 6.5.14",
+    "key": "eq-p783-573",
+    "page": 783,
+    "top": 570.3,
+    "bottom": 606.0,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 6.5.15",
+    "key": "eq-p784-426",
+    "page": 784,
+    "top": 423.3,
+    "bottom": 447.6,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 6.5.18",
+    "key": "eq-p785-248",
+    "page": 785,
+    "top": 245.4,
+    "bottom": 278.3,
+    "mode": "katex-rebuild",
+    "notes": [
+     "2 radical(s) rebuilt from drawn paths"
+    ]
+   }
+  ]
+ },
+ "6.6": {
+  "flags": [
+   "p794 eq-p794-350: 1 radical(s) rebuilt from drawn paths",
+   "p794: table caption taken from its header row",
+   "p795: table caption taken from its header row",
+   "p796: table caption taken from its header row",
+   "p796 eq-p796-538: 2 radical(s) rebuilt from drawn paths",
+   "p797 eq-p797-387: stretched delimiters",
+   "p797: table caption taken from its header row",
+   "p799 eq-p799-102: stretched delimiters; 2 stacked rows",
+   "p804 eq-p804-489: stretched delimiters",
+   "p804 eq-p804-578: 1 radical(s) rebuilt from drawn paths",
+   "p804 eq-p804-700: 1 radical(s) rebuilt from drawn paths"
+  ],
+  "review_notes": [],
+  "equations_with_notes": [
+   {
+    "label": "Equation 6.6.2",
+    "key": "eq-p794-350",
+    "page": 794,
+    "top": 346.8,
+    "bottom": 364.5,
+    "mode": "katex-rebuild",
+    "notes": [
+     "1 radical(s) rebuilt from drawn paths"
+    ]
+   },
+   {
+    "label": "Equation 6.6.4",
+    "key": "eq-p796-538",
+    "page": 796,
+    "top": 535.0,
+    "bottom": 567.9,
+    "mode": "katex-rebuild",
+    "notes": [
+     "2 radical(s) rebuilt from drawn paths"
+    ]
+   },
+   {
+    "label": "Equation 6.6.6",
+    "key": "eq-p797-387",
+    "page": 797,
+    "top": 383.5,
+    "bottom": 419.8,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 6.6.9",
+    "key": "eq-p799-102",
+    "page": 799,
+    "top": 98.7,
+    "bottom": 143.9,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters",
+     "2 stacked rows"
+    ]
+   },
+   {
+    "label": "Equation 6.6.15",
+    "key": "eq-p804-489",
+    "page": 804,
+    "top": 485.6,
+    "bottom": 521.3,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 6.6.16",
+    "key": "eq-p804-578",
+    "page": 804,
+    "top": 574.7,
+    "bottom": 606.8,
+    "mode": "katex-rebuild",
+    "notes": [
+     "1 radical(s) rebuilt from drawn paths"
+    ]
+   },
+   {
+    "label": "Equation 6.6.17",
+    "key": "eq-p804-700",
+    "page": 804,
+    "top": 697.1,
+    "bottom": 714.8,
+    "mode": "katex-rebuild",
+    "notes": [
+     "1 radical(s) rebuilt from drawn paths"
+    ]
+   }
+  ]
+ },
+ "6.7": {
+  "flags": [
+   "p814: table caption taken from its header row",
+   "p815 eq-p815-423: 1 radical(s) rebuilt from drawn paths",
+   "p817: table caption taken from its header row",
+   "p818: table caption taken from its header row",
+   "p820: table caption taken from its header row",
+   "p821: table caption taken from its header row",
+   "p821 eq-p821-598: stretched delimiters",
+   "p824 eq-p824-395: 1 radical(s) rebuilt from drawn paths",
+   "p825 eq-p825-72: 3 stacked rows"
+  ],
+  "review_notes": [],
+  "equations_with_notes": [
+   {
+    "label": "Equation 6.7.1",
+    "key": "eq-p815-423",
+    "page": 815,
+    "top": 419.5,
+    "bottom": 451.7,
+    "mode": "katex-rebuild",
+    "notes": [
+     "1 radical(s) rebuilt from drawn paths"
+    ]
+   },
+   {
+    "label": "Equation 6.7.5",
+    "key": "eq-p821-598",
+    "page": 821,
+    "top": 595.0,
+    "bottom": 628.5,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 6.7.6",
+    "key": "eq-p824-395",
+    "page": 824,
+    "top": 391.8,
+    "bottom": 411.9,
+    "mode": "katex-rebuild",
+    "notes": [
+     "1 radical(s) rebuilt from drawn paths"
+    ]
+   },
+   {
+    "label": "Equation 6.7.8",
+    "key": "eq-p825-72",
+    "page": 825,
+    "top": 68.6,
+    "bottom": 154.6,
+    "mode": "katex-rebuild",
+    "notes": [
+     "3 stacked rows"
+    ]
+   }
+  ]
+ },
+ "6.8": {
+  "flags": [
+   "p834: table caption taken from its header row",
+   "p834: table caption taken from its header row",
+   "p835: table caption taken from its header row",
+   "p837: table caption taken from its header row",
+   "p840: table caption taken from its header row",
+   "p842 eq-p842-422: 1 radical(s) rebuilt from drawn paths",
+   "p844: table caption taken from its header row",
+   "p846: table caption taken from its header row",
+   "p847: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": [
+   {
+    "label": "Equation 6.8.3",
+    "key": "eq-p842-422",
+    "page": 842,
+    "top": 418.8,
+    "bottom": 452.3,
+    "mode": "katex-rebuild",
+    "notes": [
+     "1 radical(s) rebuilt from drawn paths"
+    ]
+   }
+  ]
+ },
+ "6.9": {
+  "flags": [
+   "p858: table caption taken from its header row",
+   "p860: table caption taken from its header row",
+   "p861 eq-p861-300: stretched delimiters",
+   "p861: table caption taken from its header row",
+   "p868: table caption taken from its header row",
+   "p868 eq-p868-672: stretched delimiters",
+   "p871: table caption taken from its header row",
+   "p873 eq-p873-153: stretched delimiters",
+   "p873 eq-p873-215: stretched delimiters",
+   "p874: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": [
+   {
+    "label": "Equation 6.9.1",
+    "key": "eq-p861-300",
+    "page": 861,
+    "top": 296.6,
+    "bottom": 331.7,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 6.9.6",
+    "key": "eq-p868-672",
+    "page": 868,
+    "top": 668.9,
+    "bottom": 708.4,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 6.9.11",
+    "key": "eq-p873-153",
+    "page": 873,
+    "top": 149.6,
+    "bottom": 185.3,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 6.9.12",
+    "key": "eq-p873-215",
+    "page": 873,
+    "top": 211.8,
+    "bottom": 250.9,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   }
+  ]
+ },
+ "6.10": {
+  "flags": [
+   "p883: table caption taken from its header row",
+   "p885: table caption taken from its header row",
+   "p885: table caption taken from its header row",
+   "p889: table caption taken from its header row",
+   "p892: table caption taken from its header row",
+   "p892: table caption taken from its header row",
+   "p896: table caption taken from its header row",
+   "p899: table caption taken from its header row",
+   "p901: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "6.11": {
+  "flags": [
+   "p910: table caption taken from its header row",
+   "p911: table caption taken from its header row",
+   "p915: table caption taken from its header row",
+   "p918: table caption taken from its header row",
+   "p920: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "6.12": {
+  "flags": [
+   "p928: table caption taken from its header row",
+   "p930: table caption taken from its header row",
+   "p932: table caption taken from its header row",
+   "p933: table caption taken from its header row",
+   "p935 eq-p935-506: stretched delimiters; 3 radical(s) rebuilt from drawn paths",
+   "p936 eq-p936-143: 3 radical(s) rebuilt from drawn paths",
+   "p937: table caption taken from its header row",
+   "p938: table caption taken from its header row",
+   "p941: table caption taken from its header row",
+   "p942: table caption taken from its header row",
+   "p945: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": [
+   {
+    "label": "Equation 6.12.8",
+    "key": "eq-p935-506",
+    "page": 935,
+    "top": 502.8,
+    "bottom": 538.5,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters",
+     "3 radical(s) rebuilt from drawn paths"
+    ]
+   },
+   {
+    "label": "Equation 6.12.9",
+    "key": "eq-p936-143",
+    "page": 936,
+    "top": 140.4,
+    "bottom": 173.4,
+    "mode": "katex-rebuild",
+    "notes": [
+     "3 radical(s) rebuilt from drawn paths"
+    ]
+   }
+  ]
+ },
+ "6.13": {
+  "flags": [
+   "p953: table caption taken from its header row",
+   "p955: table caption taken from its header row",
+   "p956 eq-p956-77: stretched delimiters",
+   "p956 eq-p956-313: stretched delimiters",
+   "p958: table caption taken from its header row",
+   "p959 eq-p959-112: stretched delimiters",
+   "p959 eq-p959-681: 1 radical(s) rebuilt from drawn paths",
+   "p960: table caption taken from its header row",
+   "p961 eq-p961-640: stretched delimiters",
+   "p963: table caption taken from its header row",
+   "p966: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": [
+   {
+    "label": "Equation 6.13.3",
+    "key": "eq-p956-77",
+    "page": 956,
+    "top": 73.8,
+    "bottom": 98.1,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 6.13.4",
+    "key": "eq-p956-313",
+    "page": 956,
+    "top": 310.0,
+    "bottom": 343.6,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 6.13.7",
+    "key": "eq-p959-112",
+    "page": 959,
+    "top": 108.9,
+    "bottom": 142.0,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   },
+   {
+    "label": "Equation 6.13.9",
+    "key": "eq-p959-681",
+    "page": 959,
+    "top": 678.3,
+    "bottom": 711.9,
+    "mode": "katex-rebuild",
+    "notes": [
+     "1 radical(s) rebuilt from drawn paths"
+    ]
+   },
+   {
+    "label": "Equation 6.13.11",
+    "key": "eq-p961-640",
+    "page": 961,
+    "top": 637.0,
+    "bottom": 669.9,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   }
+  ]
+ },
+ "6.14": {
+  "flags": [
+   "p974: table caption taken from its header row",
+   "p975: table caption taken from its header row",
+   "p976 eq-p976-376: 1 radical(s) rebuilt from drawn paths",
+   "p978 eq-p978-269: stretched delimiters",
+   "p979: table caption taken from its header row",
+   "p980: table caption taken from its header row",
+   "p983: table caption taken from its header row",
+   "p985: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": [
+   {
+    "label": "Equation 6.14.3",
+    "key": "eq-p976-376",
+    "page": 976,
+    "top": 373.0,
+    "bottom": 405.2,
+    "mode": "katex-rebuild",
+    "notes": [
+     "1 radical(s) rebuilt from drawn paths"
+    ]
+   },
+   {
+    "label": "Equation 6.14.7",
+    "key": "eq-p978-269",
+    "page": 978,
+    "top": 265.8,
+    "bottom": 299.5,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   }
+  ]
+ },
+ "7.1": {
+  "flags": [
+   "p998: table caption taken from its header row",
+   "p999: table caption taken from its header row",
+   "p1004 eq-p1004-70: stretched delimiters",
+   "p1004: table caption taken from its header row",
+   "p1006: table caption taken from its header row",
+   "p1010: table caption taken from its header row",
+   "p1011: table caption taken from its header row",
+   "p1012: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": [
+   {
+    "label": "Equation 7.1.1",
+    "key": "eq-p1004-70",
+    "page": 1004,
+    "top": 67.4,
+    "bottom": 102.9,
+    "mode": "katex-rebuild",
+    "notes": [
+     "stretched delimiters"
+    ]
+   }
+  ]
+ },
+ "7.2": {
+  "flags": [
+   "p1021: table caption taken from its header row",
+   "p1022: table caption taken from its header row",
+   "p1028: table caption taken from its header row",
+   "p1028: table caption taken from its header row",
+   "p1029: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "7.3": {
+  "flags": [
+   "p1041: table caption taken from its header row",
+   "p1042: table caption taken from its header row",
+   "p1045: table caption taken from its header row",
+   "p1049: table caption taken from its header row",
+   "p1050: table caption taken from its header row",
+   "p1051: table caption taken from its header row",
+   "p1052: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "7.4": {
+  "flags": [
+   "p1065: table caption taken from its header row",
+   "p1069: table caption taken from its header row",
+   "p1070: table caption taken from its header row",
+   "p1070: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "7.5": {
+  "flags": [
+   "p1080: table caption taken from its header row",
+   "p1088: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ },
+ "7.6": {
+  "flags": [
+   "p1098: table caption taken from its header row",
+   "p1100: table caption taken from its header row",
+   "p1104: table caption taken from its header row",
+   "p1106: table caption taken from its header row",
+   "p1107: table caption taken from its header row",
+   "p1108: table caption taken from its header row"
+  ],
+  "review_notes": [],
+  "equations_with_notes": []
+ }
+}

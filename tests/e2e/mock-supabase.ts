@@ -15,7 +15,7 @@
  *   trial@example.test   — free access, 7 days left
  *   expired@example.test — free access that ended yesterday (paywall)
  *   new@example.test     — signed in, not started (sees "Start 7-day free access")
- * the asp-sps manifest, authored chapters in imports/asp-sps/chapters, the formula sheets in
+ * the asp-sps (or MOCK_COURSE) manifest, authored chapters in imports/asp-sps/chapters, the formula sheets in
  * imports/asp-sps/resources.json and content/asp-sps/access.json. So that the trial journey can be
  * previewed, the mock marks the chapters approved and publishes the version (MOCK_PUBLISH=0 to
  * keep it a draft). Tokens are unsigned; auth is simulated, RLS and RPCs are real.
@@ -35,8 +35,9 @@ for (const u of ["admin", "learner", "other", "trial", "expired", "new"]) {
 await db.query(`update profiles set full_name = 'Heena Parkar' where username = 'learner'`);
 
 const root = join(import.meta.dirname, "../..");
-const manifest = JSON.parse(readFileSync(join(root, "content/asp-sps/manifest.json"), "utf8"));
-const dir = join(root, "imports/asp-sps/chapters");
+const COURSE = process.env.MOCK_COURSE ?? "asp-sps"; // MOCK_COURSE=csp-sps serves the CSP course
+const manifest = JSON.parse(readFileSync(join(root, `content/${COURSE}/manifest.json`), "utf8"));
+const dir = join(root, `imports/${COURSE}/chapters`);
 const raw = existsSync(dir) ? Object.fromEntries(readdirSync(dir).filter((f) => f.endsWith(".json")).map((f) => [f, JSON.parse(readFileSync(join(dir, f), "utf8"))])) : {};
 const { pkg, issues } = buildPackage(manifest, raw);
 if (issues.length) throw new Error(JSON.stringify(issues));
@@ -45,19 +46,19 @@ for (const u of ["learner@example.test", "other@example.test"]) {
   await rpc(db, users["admin@example.test"], "admin_study_enroll", [users[u], imp.version_id, true], ["uuid", "uuid", "boolean"]);
 }
 const adminId = users["admin@example.test"];
-const resFile = join(root, "imports/asp-sps/resources.json");
+const resFile = join(root, `imports/${COURSE}/resources.json`);
 if (existsSync(resFile)) {
   const resources = JSON.parse(readFileSync(resFile, "utf8")).resources;
   console.log("resources", (await rpc(db, adminId, "admin_study_import_resources", [JSON.stringify({ course: pkg.course.code, version: pkg.course.version, resources })], ["jsonb"])));
 }
-const access = JSON.parse(readFileSync(join(root, "content/asp-sps/access.json"), "utf8"));
+const access = JSON.parse(readFileSync(join(root, `content/${COURSE}/access.json`), "utf8"));
 await rpc(db, adminId, "admin_study_set_course_access", [pkg.course.code, access.enrollment_policy, access.trial_days, access.access_days, access.price_label],
           ["text", "text", "int", "int", "text"]);
 if (process.env.MOCK_PUBLISH !== "0") {
   await db.query(`update study_chapters set review_status = 'approved' where version_id = $1`, [imp.version_id]); // [mock] preview only
   console.log("publish", await rpc(db, adminId, "admin_study_set_version_status", [imp.version_id, "published", true], ["uuid", "text", "boolean"]));
   for (const [u, sql] of [["trial", "now() + interval '7 days' - interval '1 minute'"], ["expired", "now() - interval '1 day'"]]) {
-    await rpc(db, users[`${u}@example.test`], "study_self_enroll", ["ASP-SPS"], ["text"]);
+    await rpc(db, users[`${u}@example.test`], "study_self_enroll", [pkg.course.code], ["text"]);
     await db.query(`update study_enrollments set access_expires_at = ${sql}, trial_started_at = ${sql} - interval '7 days' where user_id = $1`, [users[`${u}@example.test`]]);
   }
 }

@@ -20,6 +20,8 @@ export function checkoutUrl(courseCode: string): string | null {
     CIT: process.env.NEXT_PUBLIC_CHECKOUT_URL_CIT,
     // ASP Self Paced Study Course — a separate product from the ASP practice-exam package.
     "ASP-SPS": process.env.NEXT_PUBLIC_CHECKOUT_URL_ASP_SPS,
+    // CSP Self Paced Study Course — separate from the CSP practice-exam package.
+    "CSP-SPS": process.env.NEXT_PUBLIC_CHECKOUT_URL_CSP_SPS,
   };
   return map[courseCode] || null;
 }

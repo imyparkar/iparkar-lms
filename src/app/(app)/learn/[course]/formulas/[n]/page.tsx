@@ -1,3 +1,4 @@
+import { courseProfile } from "@/lib/study/courseProfile";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
@@ -27,11 +28,13 @@ export default async function FormulaSheet({ params }: { params: Promise<{ cours
   if (!data?.ok) {
     if (data?.error === "not_found") notFound();
     if (data?.error === "access_expired") {
-      return <Paywall access={data.access} buyHref={studyBuyUrl(courseCode(course), user)} courseTitle="ASP Self Paced Study Course" slug={course} />;
+      return <Paywall access={data.access} buyHref={studyBuyUrl(courseCode(course), user)} courseTitle={courseProfile(course).code ? `${courseProfile(course).code.replace("-SPS", "")} Self Paced Study Course` : "Self Paced Study Course"} slug={course} />;
     }
     return <NotEnrolled offer={data?.offer} />;
   }
   const r = data as Resource;
+  const first = r.resource.blocks[0] as { type: string; title?: string } | undefined;
+  const compiled = first?.type === "callout" && first.title === "Compiled for this course";
 
   return (
     <div className="space-y-8">
@@ -43,7 +46,7 @@ export default async function FormulaSheet({ params }: { params: Promise<{ cours
         <div className="max-w-reading">
           <p className="text-subheading text-graphite">Domain {n}{r.domain ? ` · ${r.domain.title}` : ""}</p>
           <h1 className="mt-2 text-[36px] font-semibold leading-tight tracking-[-1px]">Formula sheet</h1>
-          {r.resource.source_pages && <p className="mt-2 text-body-sm text-graphite">Follows the guide&apos;s formula sheet, pp. {r.resource.source_pages[0]}–{r.resource.source_pages[1]}.</p>}
+          {r.resource.source_pages && <p className="mt-2 text-body-sm text-graphite">{compiled ? "Compiled from this domain's chapters" : "Follows the guide's formula sheet"}, pp. {r.resource.source_pages[0]}–{r.resource.source_pages[1]}.</p>}
         </div>
         <div className="print:hidden"><PrintButton /></div>
       </header>

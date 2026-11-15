@@ -77,6 +77,8 @@ const Feedback = z.object({
   options: z.record(z.string(), z.string()).optional(),
   review_section: z.string().optional(),
 });
+/** Where a guide question came from, shown to learners, e.g. "question 3, p. 18". */
+const SourceRef = z.string().max(120).optional();
 const ActivityBase = z.object({
   code: z.string().regex(/^[a-z0-9-]{1,40}$/),
   sort_order: z.number().int().optional(),
@@ -88,7 +90,7 @@ const ActivityBase = z.object({
 export const ActivitySchema = z.discriminatedUnion("kind", [
   ActivityBase.extend({
     kind: z.literal("single_choice"),
-    spec: z.object({ prompt: md, options: z.array(Option).min(2) }),
+    spec: z.object({ prompt: md, options: z.array(Option).min(2), source_ref: SourceRef }),
     answer_key: z.object({ correct: z.string() }),
     sample_response: z.object({ choice: z.string() }),
   }),
@@ -109,7 +111,7 @@ export const ActivitySchema = z.discriminatedUnion("kind", [
   }),
   ActivityBase.extend({
     kind: z.literal("self_check"),
-    spec: z.object({ prompt: md }),
+    spec: z.object({ prompt: md, source_ref: SourceRef }),
     answer_key: z.object({}),
     sample_response: z.object({ text: z.string().min(1) }),
   }),
@@ -169,7 +171,7 @@ export type ChapterContent = z.infer<typeof ChapterContentSchema>;
 export const ManifestSchema = z.object({
   course: z.object({ code: z.string(), title: z.string(), product: z.string(), version: z.string() }).passthrough(),
   source: z.object({ title: z.string(), edition: z.string(), stated_blueprint: z.string(), blueprint_note: z.string() }).passthrough(),
-  domains: z.array(z.object({ domain: z.number(), title: z.string(), weight: z.number(), chapter_count: z.number() }).passthrough()).length(9),
+  domains: z.array(z.object({ domain: z.number(), title: z.string(), weight: z.number(), chapter_count: z.number() }).passthrough()).min(1).max(12),
   chapters: z.array(z.object({
     id: z.string(), domain: z.number(), title: z.string(), objectives: z.array(z.string()),
     prerequisite: z.boolean(), pages: z.tuple([z.number(), z.number()]),

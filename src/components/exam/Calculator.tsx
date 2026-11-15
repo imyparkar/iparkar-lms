@@ -505,10 +505,10 @@ export function Calculator({ open, onClose }: { open: boolean; onClose: () => vo
             {ROWS[0].map(keyButton)}
             <div className="relative col-span-2 row-span-2">
               <div className="absolute inset-[4px] rounded-full bg-[#15161a] shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]">
-                {arrow("up", "▲", "left-[calc(50%-19px)] top-[3px] h-[22px] w-[38px] rounded-t-[14px] rounded-b-[4px]", "up")}
-                {arrow("down", "▼", "bottom-[3px] left-[calc(50%-19px)] h-[22px] w-[38px] rounded-b-[14px] rounded-t-[4px]", "down")}
-                {arrow("left", "◀", "left-[4px] top-[calc(50%-15px)] h-[30px] w-[34px] rounded-l-[14px] rounded-r-[4px]", "left")}
-                {arrow("right", "▶", "right-[4px] top-[calc(50%-15px)] h-[30px] w-[34px] rounded-r-[14px] rounded-l-[4px]", "right")}
+                {arrow("up", "▲", "left-[calc(50%-13px)] top-[2px] h-[24px] w-[26px] rounded-t-[14px] rounded-b-[4px]", "up")}
+                {arrow("down", "▼", "bottom-[2px] left-[calc(50%-13px)] h-[24px] w-[26px] rounded-b-[14px] rounded-t-[4px]", "down")}
+                {arrow("left", "◀", "left-[4px] top-[calc(50%-15px)] h-[30px] w-[30px] rounded-l-[14px] rounded-r-[4px]", "left")}
+                {arrow("right", "▶", "right-[4px] top-[calc(50%-15px)] h-[30px] w-[30px] rounded-r-[14px] rounded-l-[4px]", "right")}
               </div>
             </div>
             {ROWS.slice(1).flatMap((r) => r.map(keyButton))}

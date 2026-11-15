@@ -17,7 +17,7 @@ export type StudyOffer = {
   code: string; title: string; description: string | null; self_enroll: boolean;
   trial_days: number | null; access_days: number | null; price_label: string | null;
 };
-export type StudyResourceRef = { code: string; kind: "formula_sheet"; domain: number | null; title: string };
+export type StudyResourceRef = { code: string; kind: "formula_sheet" | "glossary" | "bibliography"; domain: number | null; title: string };
 
 export type MyStudyCourse = {
   code: string; title: string; version: string; version_status: string; is_pilot: boolean;
@@ -53,7 +53,7 @@ export type ActivityLast = {
 };
 export type ActivitySpec = {
   prompt: string; options?: { id: string; text: string }[]; items?: { id: string; text: string }[];
-  unit?: string; hint?: string | null; tolerance_note?: string;
+  unit?: string; hint?: string | null; tolerance_note?: string; source_ref?: string;
 };
 export type StudyActivity = {
   id: string; code: string; kind: "single_choice" | "multi_choice" | "numeric" | "ordering" | "self_check"; is_required: boolean;

@@ -1,3 +1,4 @@
+import { courseProfile } from "@/lib/study/courseProfile";
 import Link from "next/link";
 import { fmtDate } from "@/lib/format";
 import { startStudyCourse } from "@/lib/study/accessActions";
@@ -50,7 +51,7 @@ export function Paywall({ access, buyHref, courseTitle, done, total, slug }: {
         Access ended on {fmtDate(access.expires_at)}. Your progress, notes and bookmarks are saved
         {typeof done === "number" && typeof total === "number" ? ` (${done} of ${total} chapters completed)` : ""} and will be waiting when you continue.
       </p>
-      <p className="mt-2 text-body-sm text-graphite">The study course is sold separately from the ASP practice exams; buying one does not include the other.</p>
+      <p className="mt-2 text-body-sm text-graphite">The study course is sold separately from {courseProfile(slug).separateFrom}; buying one does not include the other.</p>
       <div className="mt-5 flex flex-wrap items-center gap-3">
         <BuyButton access={access} buyHref={buyHref} />
         <Link href={`/learn/${slug}`} className="btn-outline">Course overview</Link>
@@ -71,7 +72,7 @@ export function StartOffer({ offer, compact = false }: { offer: StudyOffer; comp
       <p className="mt-2 text-body text-charcoal">
         {offer.trial_days ? `Start with ${offer.trial_days} days of free access to every chapter${guide ? ` and the ${guide.code} study guide PDF` : ""}. ` : ""}
         {offer.access_days ? `After that, ${period(offer.access_days)} of access${offer.price_label ? ` is ${offer.price_label}` : " can be bought"}. ` : ""}
-        Sold separately from the ASP practice exams.
+        Sold separately from {courseProfile(offer.code).separateFrom}.
       </p>
       {offer.self_enroll ? (
         <form action={startStudyCourse} className="mt-4">

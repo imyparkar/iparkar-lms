@@ -1,3 +1,4 @@
+import { courseProfile, independenceStatement } from "@/lib/study/courseProfile";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
@@ -11,6 +12,8 @@ import { BetaNotice, isBeta } from "@/components/study/BetaNotice";
 import { guideForStudyCourse } from "@/lib/studyGuides";
 
 export const metadata = { title: "Course overview" };
+const NUMBER_WORDS: Record<number, string> = { 5: "Five", 6: "Six", 7: "Seven", 8: "Eight", 9: "Nine", 10: "Ten" };
+
 export const dynamic = "force-dynamic";
 
 const PANELS = ["bg-marigold", "bg-sky-wash", "bg-coral", "bg-moss-green", "bg-saffron", "bg-mocha"];
@@ -23,6 +26,7 @@ export default async function CourseOverview({ params }: { params: Promise<{ cou
   if (!data?.ok) return <NotEnrolled offer={data?.offer} />;
   const c = data as StudyCourse;
   const buy = studyBuyUrl(c.course.code, user);
+  const profile = courseProfile(c.course.code);
   const guide = guideForStudyCourse(c.course.code);
   const sheets = new Map(c.resources.filter((r) => r.kind === "formula_sheet").map((r) => [r.domain, r]));
   const p = c.progress;
@@ -39,7 +43,7 @@ export default async function CourseOverview({ params }: { params: Promise<{ cou
         <div>
           <p className="text-subheading text-graphite">{c.course.product}</p>
           <h1 className="mt-3 text-[40px] font-semibold leading-[1.1] tracking-[-1.2px] sm:text-display-sm">{c.course.title}</h1>
-          <p className="lead mt-4 max-w-[640px]">Ninety-nine chapters across the nine ASP11 domains, taught from the {c.course.source_title ?? "study guide"} (Edition {c.course.source_edition}). Work through them in any order; we recommend the guide&apos;s order, starting with chapters 1.1 and 1.2.</p>
+          <p className="lead mt-4 max-w-[640px]">{profile.overview(c.course.source_title, c.course.source_edition)}</p>
           <div className="mt-6 flex flex-wrap gap-2">
             {c.access.has_access && <Link href={resume} className="btn-primary">{c.resume ? `Continue: chapter ${c.resume.chapter}` : "Start with chapter 1.1"}</Link>}
             {c.access.has_access && guide && <a href={`/api/study-guides/${guide.code.toLowerCase()}`} className="btn-outline">↓ Download the {guide.code} study guide (PDF)</a>}
@@ -63,9 +67,17 @@ export default async function CourseOverview({ params }: { params: Promise<{ cou
 
       <section aria-labelledby="domains" className="space-y-5">
         <div>
-          <h2 id="domains" className="text-[32px] font-semibold tracking-[-0.8px]">Nine domains</h2>
+          <h2 id="domains" className="text-[32px] font-semibold tracking-[-0.8px]">{NUMBER_WORDS[c.domains.length] ?? c.domains.length} domains</h2>
           <p className="lead mt-2">Weights are the exam distribution the guide states for blueprint {c.course.stated_blueprint}. Every chapter counts equally towards completion.</p>
         </div>
+        {c.access.has_access && c.resources.some((r) => r.kind === "glossary" || r.kind === "bibliography") && (
+          <p className="text-body text-graphite">
+            Reference:{" "}
+            {c.resources.filter((r) => r.kind === "glossary" || r.kind === "bibliography").map((r, i) => (
+              <span key={r.code}>{i > 0 && " · "}<Link className="font-medium text-ink underline underline-offset-2 hover:text-action" href={`/learn/${course}/resources/${r.code}`}>{r.title}</Link></span>
+            ))}
+          </p>
+        )}
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {c.domains.map((d, i) => {
             const done = d.chapters.filter((ch) => ch.status === "completed").length;
@@ -94,7 +106,7 @@ export default async function CourseOverview({ params }: { params: Promise<{ cou
 
       <section className="card space-y-2 text-body-sm text-graphite" aria-label="About this course">
         <p><span className="font-semibold text-ink">About completion.</span> A chapter is complete when you have opened and marked every section as studied, answered every required activity and read its feedback, then pressed Finish chapter. Opening or scrolling never completes a chapter. Completion records your participation; it isn&apos;t a predicted score or a certification.</p>
-        <p><span className="font-semibold text-ink">Independence.</span> ASP® is a registered mark of the Board of Certified Safety Professionals (BCSP), which has not reviewed or endorsed this course. Check exam policies at bcsp.org. This study course is separate from iParkar&apos;s practice exams.</p>
+        <p><span className="font-semibold text-ink">Independence.</span> {independenceStatement(profile)} Check exam policies at bcsp.org. This study course is separate from {profile.separateFrom}.</p>
       </section>
     </div>
   );

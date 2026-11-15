@@ -1,0 +1,7 @@
+{
+  "_note": "Commercial settings applied by `npm run import:study -- --course csp-sps`. Mirrors the owner's decision for the Resources card (7-day free trial, US$120 / 365 days). Self enrollment opens only once a version is published and marked as the enrollment default. Map a Paddle price to CSP-SPS in study_products (separate from the CSP practice-exam course_products).",
+  "enrollment_policy": "self",
+  "trial_days": 7,
+  "access_days": 365,
+  "price_label": "US$120"
+}

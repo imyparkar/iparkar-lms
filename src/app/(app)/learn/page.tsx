@@ -1,3 +1,4 @@
+import { courseProfile } from "@/lib/study/courseProfile";
 import Link from "next/link";
 import { requireUser } from "@/lib/auth/session";
 import { fmtDate, fmtDateTime } from "@/lib/format";
@@ -54,7 +55,7 @@ export default async function MyLearning({ searchParams }: { searchParams: Promi
                 <p className="text-caption text-marigold">iParkar Learning · Version {c.version}{c.is_pilot ? " · Pilot (unpublished)" : ""}</p>
                 <h2 id={`c-${c.code}`} className="mt-2 text-[30px] font-semibold leading-tight tracking-[-0.6px]">{c.title}</h2>
                 <p className="mt-2 font-serif text-lead text-white">
-                  {c.completed_at ? `Completed on ${fmtDate(c.completed_at)}.` : c.resume ? `Pick up at chapter ${c.resume.chapter}: ${c.resume.chapter_title}.` : "Start with chapters 1.1 and 1.2; every calculation chapter relies on them."}
+                  {c.completed_at ? `Completed on ${fmtDate(c.completed_at)}.` : c.resume ? `Pick up at chapter ${c.resume.chapter}: ${c.resume.chapter_title}.` : courseProfile(c.code).startHint}
                 </p>
                 <div className="mt-6"><ProgressMeter dark done={p.completed_chapters} total={p.required_chapters} label="Chapters completed" /></div>
                 <p className="mt-3 text-body-sm text-white">{p.domains_completed} of {p.domains_total} domains complete · Last activity {fmtDateTime(c.last_activity_at)}</p>
@@ -120,7 +121,7 @@ export default async function MyLearning({ searchParams }: { searchParams: Promi
       })}
 
       <p className="max-w-[720px] text-body-sm text-graphite">
-        Study progress records participation and formative practice. It isn&apos;t a predicted exam score and completing a course isn&apos;t a certification. This study course is separate from the ASP, CSP and CIH practice exams.
+        Study progress records participation and formative practice. It isn&apos;t a predicted exam score and completing a course isn&apos;t a certification. Study courses are separate from the ASP, CSP and CIH practice exams.
       </p>
     </div>
   );

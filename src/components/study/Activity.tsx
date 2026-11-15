@@ -87,7 +87,7 @@ export function ActivityCard({ activity, sectionOpen, onSubmit, onFeedbackRead, 
   return (
     <section className="rounded-card border border-hairline bg-white" aria-labelledby={`${uid}-q`}>
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-hairline px-5 py-3">
-        <p className="text-caption text-slate">{KIND_LABEL[a.kind]} · {a.spec.prompt.startsWith("Try it") ? "Practice from the guide" : "Original practice"} {a.is_required ? "· Required activity" : "· Optional"}</p>
+        <p className="text-caption text-slate">{KIND_LABEL[a.kind]} · {a.spec.source_ref ? `Practice from the guide · ${a.spec.source_ref}` : a.spec.prompt.startsWith("Try it") ? "Practice from the guide" : "Original practice"} {a.is_required ? "· Required activity" : "· Optional"}</p>
         {result && <span className={`pill ${viewed ? "bg-midnight text-white" : "bg-marigold text-ink"}`}>{viewed ? "Feedback read" : "Read the feedback"}</span>}
       </div>
       <div className="space-y-4 px-5 py-4">

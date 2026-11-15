@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { courseProfile } from "@/lib/study/courseProfile";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Missing, ProgressSummary, StudyActivity, StudyChapter, StudySection } from "@/lib/study/types";
 import { STATUS_LABEL, pct } from "@/lib/study/types";
@@ -31,6 +32,7 @@ export function Player({ userId, courseSlug, courseTitle, data, outline, startSe
   userId: string; courseSlug: string; courseTitle: string; data: StudyChapter; outline: Outline; startSection: string | null;
   formulaHref?: string | null; buyHref?: string | null; courseVersion?: string;
 }) {
+  const profile = courseProfile(courseSlug);
   const { chapter } = data;
   const desktop = useIsDesktop();
   const [calcOpen, setCalcOpen] = useState(false);
@@ -269,9 +271,9 @@ export function Player({ userId, courseSlug, courseTitle, data, outline, startSe
             <span>{chapter.code}</span> {chapter.title}
           </h1>
           {chapter.meta.summary && <p className="lead mt-3">{chapter.meta.summary}</p>}
-          {isBeta(courseVersion) && <BetaNotice className="mt-4" />}
+          {isBeta(courseVersion) && <BetaNotice className="mt-4" source={profile.betaSource} />}
           <p className="mt-2 text-body-sm text-graphite">
-            {chapter.objectives.length ? `ASP11 objective ${chapter.objectives.join(", ")}` : "Prerequisite for the calculation objectives"}
+            {chapter.objectives.length ? `${profile.blueprint} objective${chapter.objectives.length > 1 ? "s" : ""} ${chapter.objectives.join(", ")}` : "Prerequisite for the calculation objectives"}
             {chapter.est_minutes ? ` · about ${chapter.est_minutes} min (editorial estimate)` : ""}
             {chapter.source_pages ? ` · guide pp. ${chapter.source_pages[0]}–${chapter.source_pages[1]}` : ""}
           </p>
@@ -304,7 +306,7 @@ export function Player({ userId, courseSlug, courseTitle, data, outline, startSe
               </div>
 
               {provenance(section.blocks) && (
-                <p className="mt-6 text-body-sm text-graphite">Drawn from the iParkar ASP Exam Study Guide, Edition 1.0, {provenance(section.blocks)}. Practice questions are original to this course and are not examination items.</p>
+                <p className="mt-6 text-body-sm text-graphite">Drawn from {profile.guideName}, {provenance(section.blocks)}. {profile.practiceNote}</p>
               )}
 
               <div className="mt-8 rounded-card border border-hairline bg-white p-5">
