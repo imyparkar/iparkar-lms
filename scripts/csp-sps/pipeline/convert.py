@@ -365,6 +365,15 @@ class Chapter:
         b = {'type': 'figure', 'label': label, 'caption': captext, 'description': desc}
         if image:
             b['image'] = image
+        # redrawn vector figure (imports/csp-sps/authoring/figures/fig-<n>.svg, optional .phone.svg)
+        stem = 'fig-' + re.sub(r'[^0-9a-z-]+', '-', label.lower().replace('figure ', ''))
+        fdir = os.environ.get('CSP_FIGURES', f'{ROOT}/imports/csp-sps/authoring/figures')
+        if os.path.exists(f'{fdir}/{stem}.svg'):
+            b['svg'] = open(f'{fdir}/{stem}.svg', encoding='utf-8').read().strip()
+            if os.path.exists(f'{fdir}/{stem}.phone.svg'):
+                b['svg_phone'] = open(f'{fdir}/{stem}.phone.svg', encoding='utf-8').read().strip()
+            self.checks['figures_redrawn'] = self.checks.get('figures_redrawn', 0) + 1
+            self.flags.append(f'{label}: redrawn as SVG; compare with the original drawing (p{page}) before approval')
         if not alt:
             self.flags.append(f'p{page}: {label} has no alt text in the guide; caption used as description')
         emit(page, b)

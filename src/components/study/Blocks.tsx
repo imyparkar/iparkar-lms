@@ -1,3 +1,4 @@
+import { isSafeSvg } from "@/lib/study/svg";
 import type { Block } from "@/lib/study/schema";
 import { StudyText, TexBlock } from "./StudyText";
 import { ProtectedImage } from "./ProtectedImage";
@@ -115,12 +116,14 @@ export function StudyBlock({ block, renderActivity, chapterHref = (code) => `./$
     case "figure":
       return (
         <figure className="rounded-card border border-hairline bg-white p-5">
-          {block.image && <ProtectedImage image={block.image} alt={`${block.label}: ${block.caption}`} />}
-          <figcaption className={block.image ? "mt-3" : ""}>
+          {block.svg && isSafeSvg(block.svg) ? (
+            <VectorFigure svg={block.svg} phone={block.svg_phone && isSafeSvg(block.svg_phone) ? block.svg_phone : null} />
+          ) : block.image && <ProtectedImage image={block.image} alt={`${block.label}: ${block.caption}`} />}
+          <figcaption className={block.image || block.svg ? "mt-3" : ""}>
             <span className="text-body-sm font-semibold text-ink">{block.label}</span>{" "}
             <span className="text-body-sm text-graphite"><StudyText md={block.caption} /></span>
           </figcaption>
-          {block.image ? (
+          {block.image || block.svg ? (
             <details className="mt-3 rounded-button bg-paper p-4">
               <summary className="cursor-pointer text-body-sm font-medium text-ink">Figure in words</summary>
               <p className="mt-2 text-body text-charcoal"><StudyText md={block.description} /></p>
@@ -213,4 +216,23 @@ export function provenance(blocks: Block[]) {
   if (!pages.length) return null;
   const lo = Math.min(...pages), hi = Math.max(...pages);
   return lo === hi ? `p. ${lo}` : `pp. ${lo}–${hi}`;
+}
+
+/**
+ * Redrawn figure. The markup has passed the allow-list (schema at import, isSafeSvg here) and arrives
+ * through the access-checked chapter payload, like the lesson text. A phone layout replaces the wide one
+ * below 640 px; wide-only figures keep a readable size and scroll sideways on small screens.
+ * The SVG is role="img" with its own aria-label; "Figure in words" carries the full description.
+ */
+function VectorFigure({ svg, phone }: { svg: string; phone: string | null }) {
+  return (
+    <div onContextMenu={(e) => e.preventDefault()} className="select-none">
+      {phone && <div className="sm:hidden" dangerouslySetInnerHTML={{ __html: phone }} />}
+      <div className={phone ? "hidden sm:block" : "overflow-x-auto rounded-small focus-visible:outline-2 focus-visible:outline-midnight"}
+           {...(phone ? {} : { tabIndex: 0, role: "region", "aria-label": "Figure (scrolls sideways on small screens)" })}>
+        <div className={phone ? "" : "min-w-[600px]"} dangerouslySetInnerHTML={{ __html: svg }} />
+      </div>
+      {!phone && <p className="mt-2 text-caption text-slate sm:hidden">Scroll sideways to see the whole figure.</p>}
+    </div>
+  );
 }

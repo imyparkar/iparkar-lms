@@ -11,6 +11,10 @@
  * rendered as HTML except KaTeX output (which escapes its input).
  */
 import { z } from "zod";
+import { isSafeSvg } from "./svg";
+
+/** Redrawn figure as inline SVG (allow-listed drawing markup only; see svg.ts). */
+const SafeSvg = z.string().max(80000).refine(isSafeSvg, "figure SVG contains markup that is not allowed");
 
 const Origin = z.object({
   /** source = guide content (structured/paraphrased); editorial = course note; original = new teaching item */
@@ -48,6 +52,9 @@ const Blocks = [
   }),
   Origin.extend({
     type: z.literal("figure"), label: z.string(), caption: z.string().min(1), description: z.string().min(1).max(10000),
+    /** Redrawn vector figure (iParkar design), wide layout; svg_phone is an optional narrow layout for small screens. */
+    svg: SafeSvg.optional(),
+    svg_phone: SafeSvg.optional(),
     /** Original drawing served from private storage; never a public URL. */
     image: z.object({
       key: z.string().regex(/^[a-z0-9-]+\/[A-Za-z0-9._-]+\.(webp|png)$/),
