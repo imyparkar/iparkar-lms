@@ -137,7 +137,7 @@ Not yet verified, and required before publication:
 - **Numbers in the guide's own worked examples** (333) are carried as printed. Chapter 1.1's were recomputed; the rest need the same check.
 - **Conversion flags** (63 across all chapters, listed in each chapter's `meta.checks.flags`): tables named from their headers, drawing labels dropped, worked examples whose source has no separate Answer row. Each is a prompt to compare with the PDF page.
 - **Drawings**: 177 crops were checked on contact sheets; a reviewer should still compare each against its page (a few side-by-side layouts were cropped to the drawing's own card).
-- Domain introductions, course-wide search, and BCSP calculator/blueprint policy checks (section 7 of the brief) remain to build. Formula sheets need the same subject review as chapters (`review_status` is `draft`).
+- Course-wide search was added on 16 Nov 2026 (`docs/CSP-STUDY-COURSE.md` §6a; migration `20261116000100_study_search.sql`). Domain introductions and BCSP calculator/blueprint policy checks (section 7 of the brief) remain to build. Formula sheets need the same subject review as chapters (`review_status` is `draft`).
 - Paddle price, `study_products` row and checkout URL for the US$120 product (section 4).
 - Manual screen-reader and keyboard pass; run against the real Supabase staging project.
 

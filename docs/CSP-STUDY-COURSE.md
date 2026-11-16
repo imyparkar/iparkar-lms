@@ -1,6 +1,6 @@
 # CSP Self Paced Study Course — build, policy and handoff
 
-Status on 15 Nov 2026: **all 60 chapters converted and validated as draft content (version `1.0.0-draft`), not imported, not published, 0 subject-reviewed.** The course runs on the same study engine as ASP-SPS (`docs/STUDY-COURSE.md`); this file covers what is specific to CSP.
+Status on 16 Nov 2026 (course-wide search added; see §6a): **all 60 chapters converted and validated as draft content (version `1.0.0-draft`), not imported, not published, 0 subject-reviewed.** The course runs on the same study engine as ASP-SPS (`docs/STUDY-COURSE.md`); this file covers what is specific to CSP.
 
 ## 1. Sources
 
@@ -72,9 +72,20 @@ Identical to ASP-SPS and enforced by the same SQL (`study_finish_chapter`): ever
 - `NEXT_PUBLIC_CHECKOUT_URL_CSP_SPS` added to the checkout map.
 - Migration `20261115000100_study_resource_kinds.sql`: resources may be `glossary` or `bibliography`; new page `/learn/[course]/resources/[code]`, linked from the overview. Formula-sheet page says "Compiled from this domain's chapters" when the sheet is an editorial compilation (CSP has no printed formula sheets).
 - Overview heading counts domains ("Seven domains").
+- **Course-wide search** (16 Nov 2026), section 6a.
 - TI-30XS calculator arrow keys resized (up/down 26×24, left/right 30×30) so they no longer overlap: fixes a WCAG 2.5.8 target-size failure in both the study player and practice exams.
 - `tests/e2e/mock-supabase.ts`: `MOCK_COURSE=csp-sps`.
 - Design: reused existing tokens/components only. Reference links on the overview use `ink` + underline (action-blue on paper fails contrast, as already noted in the design inventory).
+
+## 6a. Course-wide search (both study courses)
+
+Migration `20261116000100_study_search.sql` adds `study_search(course, query)`, page `/learn/[course]/search`, a "Search the course" button on the overview and a "Search" link in the player top bar (md screens and up; the overview button serves phones).
+
+- Searches the learner's **own pinned version**: every section's readable text (paragraphs, lists, tables, worked examples, callouts, figure descriptions, summaries), matching glossary entries (term + definition), and the glossary, bibliography and formula sheets as pages. Activities (prompts, options, keys) are never searched.
+- Same gate as chapters: active enrolment with current access; not enrolled or lapsed learners get nothing. Queries are not stored or logged; max 200 characters; injection-safe.
+- English full-text matching (stemming: "space" finds "spaces") plus exact-phrase matching for codes such as "LD50" or "1910.146"; ranked, top 40 sections, matches highlighted. Results link to the exact section in the player.
+- Searchable text and a GIN index are generated columns on `study_sections` / `study_resources`, so every import keeps them current with no extra step. About 50 ms per query on the full 60-chapter course in the test database (was ~1.5 s computed on the fly).
+- Works for ASP-SPS too (same tables), which closes the "course-wide search" item in `docs/STUDY-COURSE.md`.
 
 ## 7. Verification done (15 Nov 2026)
 
@@ -82,6 +93,7 @@ Identical to ASP-SPS and enforced by the same SQL (`study_finish_chapter`): ever
 - `tsc` clean; ESLint clean for `src`; `next build` succeeds; `import:study --course csp-sps --dry-run` validates all 60 chapters and 9 resources (schema, page ranges, TeX compiles).
 - Equations: all 421 rendered beside their printed crops on contact sheets and compared by eye; 4 hand overrides (6.2 nested script, 6.3 stacked rows, 6.3 clipped source, 4.4 cases). Figures: all 61 crops inspected.
 - Browser (Chrome, production build, mock backend): sign in → overview (7 domains) → 1.1; forced early Finish refused; first call; autosave "All changes saved"; note + bookmark; sign out clears local study keys; second device at 390 px resumes at the same section with the note; wrong answers still complete; "1 of 60 chapters done"; another learner sees no note; glossary, formula sheet 6 (113 equations) and 6.3 render with 0 KaTeX errors.
+- Search (16 Nov): DB test (finds lesson text, glossary entries and resources; never activity prompts; short/odd queries safe; not enrolled → refused; lapsed → refused); real-content queries ("permit-required confined space" → 1.5, "LD50" → 6.10, "RACI" → 2.12, "meshing hypothesis" → 7.2); browser at 1440 and 390 px: results, highlight, click-through to the section, empty state, expired state; axe 0 violations on the results page; full axe pass re-run with the new Search link: 0 violations.
 - axe WCAG 2.0/2.1/2.2 A/AA: **0 violations** on My learning, overview, domain, formula sheet, glossary, four player screens, paywall and not-started states, at 1440 and 390 px.
 
 Not verified: a manual screen-reader and keyboard-only pass; a live Supabase import; numbers in the guide's worked examples (carried as printed; chapter 1.1 has no calculations).
@@ -94,11 +106,11 @@ Not verified: a manual screen-reader and keyboard-only pass; a live Supabase imp
 4. Recompute the guide's worked-example numbers (71 worked examples) — not done.
 5. Confirm the current BCSP blueprint on bcsp.org and record the date.
 6. Chapters 7.2/7.3: the guide already separates stated learning preferences from the unsupported meshing hypothesis (Pashler et al. 2008; Noe 2023); titles kept exactly. Reviewer to confirm.
-7. Not built yet: course-wide search (also outstanding for ASP), domain introduction pages beyond the existing domain view.
+7. Not built yet: domain introduction pages beyond the existing domain view.
 
 ## 9. Setup, release and rollback
 
-1. Apply `supabase/migrations/20261115000100_study_resource_kinds.sql` (additive). The two ASP study migrations must already be applied.
+1. Apply `supabase/migrations/20261115000100_study_resource_kinds.sql` and `20261116000100_study_search.sql` (both additive; the search migration adds generated columns, so existing ASP sections are indexed immediately). The two ASP study migrations must already be applied.
 2. Restore `imports/csp-sps/` from the private zip, then `npm run import:study -- --course csp-sps --dry-run` and, with `ADMIN_EMAIL`/`ADMIN_PASSWORD` (CAPTCHA briefly off, as for ASP), without `--dry-run`. This imports version `1.0.0-draft`, the 9 resources and the access settings.
 3. `scripts/upload-study-assets.sh csp-sps` uploads the 61 drawings to the private R2 bucket.
 4. Pilot-enrol reviewers in `/admin/study`. Learners see nothing until a version is published and marked the enrolment default.

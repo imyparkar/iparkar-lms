@@ -47,6 +47,7 @@ export default async function CourseOverview({ params }: { params: Promise<{ cou
           <div className="mt-6 flex flex-wrap gap-2">
             {c.access.has_access && <Link href={resume} className="btn-primary">{c.resume ? `Continue: chapter ${c.resume.chapter}` : "Start with chapter 1.1"}</Link>}
             {c.access.has_access && guide && <a href={`/api/study-guides/${guide.code.toLowerCase()}`} className="btn-outline">↓ Download the {guide.code} study guide (PDF)</a>}
+            {c.access.has_access && <Link href={`/learn/${course}/search`} className="btn-outline">Search the course</Link>}
           </div>
         </div>
         <div className="card space-y-4">

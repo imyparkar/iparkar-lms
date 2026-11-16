@@ -198,6 +198,7 @@ export function Player({ userId, courseSlug, courseTitle, data, outline, startSe
               Free access: {access.days_left} {access.days_left === 1 ? "day" : "days"} left
             </a>
           )}
+          <a href={`/learn/${courseSlug}/search`} className="btn-text hidden shrink-0 md:inline-flex">Search</a>
           {formulaHref && <a href={formulaHref} target="_blank" rel="noopener" className="btn-text hidden shrink-0 md:inline-flex">Formula sheet<span className="sr-only"> (opens in a new tab)</span></a>}
           {desktop && (
             <button type="button" className="btn-text shrink-0" aria-pressed={calcOpen} onClick={() => setCalcOpen((o) => !o)}>

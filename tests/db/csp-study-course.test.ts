@@ -228,5 +228,47 @@ describe.skipIf(!existsSync(CONTENT_DIR))("authored CSP chapters (local, private
     const done = await rpc(db, dan, "get_study_course", ["CSP-SPS"], ["text"]);
     expect(done.progress.completed_chapters).toBe(authored.length);
     if (authored.length === 60) expect(done.course.completed_at).not.toBeNull();
+    for (const q of ["permit-required confined space", "LD50", "noise dose", "meshing hypothesis", "RACI"]) {
+      const t0 = Date.now();
+      const r = await rpc(db, dan, "study_search", ["CSP-SPS", q], ["text", "text"]);
+      console.log(`search "${q}": ${r.results.length} sections, ${r.resources.length} resources, ${Date.now() - t0} ms; top ${r.results[0]?.chapter} ${r.results[0]?.section_title}`);
+      expect(r.results.length).toBeGreaterThan(0);
+    }
   }, 600_000);
+});
+
+describe("course-wide search", () => {
+  it("finds lesson text in the learner's own version, never activities, and respects enrollment", async () => {
+    const db2 = await createDb();
+    const adm = await createUser(db2, { username: "adm", role: "admin" });
+    const lea = await createUser(db2, { username: "lea" });
+    const out = await createUser(db2, { username: "out" });
+    const pkg = synthetic(manifest, "CSP-SPS", "9.9.8-search");
+    pkg.chapters[0].sections[0].blocks = [{ type: "text", md: "**Prevention through Design** removes hazards on the drawing board." } as any,
+      { type: "activity", code: "check" } as any];
+    pkg.chapters[0].sections[0].activities[0].spec.prompt = "Secretkeyword in a prompt";
+    const imp = await rpc(db2, adm, "admin_study_import", [JSON.stringify(pkg)], ["jsonb"]);
+    expect(imp.ok).toBe(true);
+    await rpc(db2, adm, "admin_study_import_resources", [JSON.stringify({ course: "CSP-SPS", version: "9.9.8-search", resources: [
+      { code: "glossary", kind: "glossary", title: "Glossary", blocks: [{ type: "text", md: "Intro." }, { type: "heading", text: "A" },
+        { type: "glossary", terms: [{ term: "Avoidance", definition: "Keeping a hazard out at the design stage" }] }] }] })], ["jsonb"]);
+    expect((await rpc(db2, adm, "admin_study_enroll", [lea, imp.version_id, true], ["uuid", "uuid", "boolean"])).ok).toBe(true);
+
+    const hit = await rpc(db2, lea, "study_search", ["CSP-SPS", "drawing board"], ["text", "text"]);
+    expect(hit.ok).toBe(true);
+    expect(hit.results).toHaveLength(1);
+    expect(hit.results[0]).toMatchObject({ chapter: "1.1", section: "lesson" });
+    expect(hit.results[0].snippet).toContain("[[");
+    expect(hit.results[0].snippet).not.toContain("**");
+    const g = await rpc(db2, lea, "study_search", ["CSP-SPS", "design stage"], ["text", "text"]);
+    expect(g.ok).toBe(true);
+    expect(g.resources[0].code).toBe("glossary");
+    expect(g.glossary).toEqual([{ term: "Avoidance", definition: "Keeping a hazard out at the design stage" }]);
+    expect((await rpc(db2, lea, "study_search", ["CSP-SPS", "Secretkeyword"], ["text", "text"])).results).toHaveLength(0);
+    expect((await rpc(db2, lea, "study_search", ["CSP-SPS", "x"], ["text", "text"])).results).toEqual([]);
+    expect((await rpc(db2, lea, "study_search", ["CSP-SPS", "100%_'; drop"], ["text", "text"])).ok).toBe(true);
+    expect((await rpc(db2, out, "study_search", ["CSP-SPS", "drawing board"], ["text", "text"])).error).toBe("not_enrolled");
+    await db2.query(`update study_enrollments set access_expires_at = now() - interval '1 day' where user_id = $1`, [lea]);
+    expect((await rpc(db2, lea, "study_search", ["CSP-SPS", "drawing board"], ["text", "text"])).error).toBe("access_expired");
+  }, 120_000);
 });
