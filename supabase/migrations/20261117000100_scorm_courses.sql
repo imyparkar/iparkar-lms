@@ -259,6 +259,9 @@ revoke all on function public.scorm_open_course(text), public.scorm_parse_timesp
   public.scorm_format_timespan(interval), public.scorm_status_rank(text),
   public.scorm_my_courses(), public.scorm_get_course(text), public.scorm_launch(text, text),
   public.scorm_commit(text, text, jsonb, boolean), public.scorm_can_view(text, text) from public, anon;
+-- Internal helpers stay private (Supabase grants new functions to authenticated by default).
+revoke all on function public.scorm_open_course(text), public.scorm_parse_timespan(text),
+  public.scorm_format_timespan(interval), public.scorm_status_rank(text) from authenticated;
 grant execute on function public.scorm_my_courses(), public.scorm_get_course(text), public.scorm_launch(text, text),
   public.scorm_commit(text, text, jsonb, boolean), public.scorm_can_view(text, text) to authenticated;
 
