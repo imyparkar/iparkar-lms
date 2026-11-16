@@ -1,7 +1,7 @@
 /**
  * Validate and load a self-paced study course version.
  *
- *   npm run import:study -- --course asp-sps [--version 1.0.0-draft] [--dry-run] [--out pkg.json] [--batch 5]
+ *   npm run import:study -- --course asp-sps [--version 1.0.0] [--dry-run] [--out pkg.json] [--batch 5]
  *
  * Reads content/<course>/manifest.json (public structure: titles, objectives, page ranges)
  * and imports/<course>/chapters/*.json (lesson content: git-ignored because this repo is public).

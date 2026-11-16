@@ -4,7 +4,7 @@
   "code": "CSP-SPS",
   "title": "CSP Self Paced Study Course",
   "product": "iParkar Learning",
-  "version": "1.0.0-draft",
+  "version": "1.0.0",
   "completion_policy": "all_required_chapters"
  },
  "source": {

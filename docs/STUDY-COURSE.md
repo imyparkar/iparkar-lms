@@ -1,6 +1,6 @@
 # ASP Self Paced Study Course — engine, policy and handoff
 
-Status on 14 Nov 2026: **live as version 1.0.0-beta** (see section 0). 99 of 99 chapters authored (647 sections, 789 activities, 1,268-page source); published by the owner as a beta with a visible notice; **0 subject-reviewed**. Chapter 1.1 was written by hand; chapters 1.2–9.7 were converted from the guide PDF by a layout-aware pipeline, with every equation transcribed to TeX by hand and original knowledge checks added.
+Status on 16 Nov 2026: **published as version 1.0.0** (renamed from 1.0.0-beta; the beta notice no longer shows because it appears only for versions labelled `-beta`). The owner reviewed all 99 chapters and confirmed them correct (audit `study_owner_review`). 99 of 99 chapters authored (647 sections, 789 activities, 1,268-page source); published by the owner as a beta with a visible notice; **0 subject-reviewed**. Chapter 1.1 was written by hand; chapters 1.2–9.7 were converted from the guide PDF by a layout-aware pipeline, with every equation transcribed to TeX by hand and original knowledge checks added.
 
 ## 0. Live status (14 Nov 2026)
 

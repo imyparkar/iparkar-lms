@@ -1,6 +1,6 @@
 # CSP Self Paced Study Course — build, policy and handoff
 
-Status on 16 Nov 2026: **imported to production as draft `1.0.0-draft`, pilot-enrolled (admin `imran` only), 61 drawings in R2, app deployed from `main` (version fb9e872f) with course search.** Still 0 subject-reviewed and unpublished. **all 60 chapters converted and validated as draft content (version `1.0.0-draft`), not imported, not published, 0 subject-reviewed.** The course runs on the same study engine as ASP-SPS (`docs/STUDY-COURSE.md`); this file covers what is specific to CSP.
+Status on 16 Nov 2026 (evening): **published as version `1.0.0` and set as the enrolment default.** The owner reviewed all 60 chapters and the 61 redrawn figures and approved publication without a beta (audit `study_owner_review`); chapters are `approved`. Any signed-in learner can start the 7-day free access; after that the buy button is a Request for Access email until a Paddle price and checkout URL exist. Imports now go in batches of 5 chapters (`--batch`) to stay inside the database request time limit. BCSP still served CSP11 Blueprint V.2024.04.24 when checked on 16 Nov 2026. The course runs on the same study engine as ASP-SPS (`docs/STUDY-COURSE.md`); this file covers what is specific to CSP.
 
 ## 1. Sources
 
