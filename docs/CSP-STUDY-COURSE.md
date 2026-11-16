@@ -1,6 +1,6 @@
 # CSP Self Paced Study Course — build, policy and handoff
 
-Status on 16 Nov 2026 (course-wide search added; see §6a): **all 60 chapters converted and validated as draft content (version `1.0.0-draft`), not imported, not published, 0 subject-reviewed.** The course runs on the same study engine as ASP-SPS (`docs/STUDY-COURSE.md`); this file covers what is specific to CSP.
+Status on 16 Nov 2026: **imported to production as draft `1.0.0-draft`, pilot-enrolled (admin `imran` only), 61 drawings in R2, app deployed from `main` (version fb9e872f) with course search.** Still 0 subject-reviewed and unpublished. **all 60 chapters converted and validated as draft content (version `1.0.0-draft`), not imported, not published, 0 subject-reviewed.** The course runs on the same study engine as ASP-SPS (`docs/STUDY-COURSE.md`); this file covers what is specific to CSP.
 
 ## 1. Sources
 
@@ -113,7 +113,8 @@ Not verified: a manual screen-reader and keyboard-only pass; a live Supabase imp
 1. Apply `supabase/migrations/20261115000100_study_resource_kinds.sql` and `20261116000100_study_search.sql` (both additive; the search migration adds generated columns, so existing ASP sections are indexed immediately). The two ASP study migrations must already be applied.
 2. Restore `imports/csp-sps/` from the private zip, then `npm run import:study -- --course csp-sps --dry-run` and, with `ADMIN_EMAIL`/`ADMIN_PASSWORD` (CAPTCHA briefly off, as for ASP), without `--dry-run`. This imports version `1.0.0-draft`, the 9 resources and the access settings.
 3. `scripts/upload-study-assets.sh csp-sps` uploads the 61 drawings to the private R2 bucket.
-4. Pilot-enrol reviewers in `/admin/study`. Learners see nothing until a version is published and marked the enrolment default.
+4. Pilot-enrol reviewers in `/admin/study`.
+4a. **Deploy only by pushing to `main`.** Cloudflare Workers Builds builds `main` with the production variables stored in Cloudflare (`NEXT_PUBLIC_TURNSTILE_SITE_KEY`, checkout URLs, site URLs). A local `opennextjs-cloudflare build` + `wrangler versions deploy` uses the Mac's `.env.local`, which lacks them: on 16 Nov 2026 this removed the CAPTCHA from the login page for about 15 minutes (sign-ins refused while Supabase CAPTCHA was on) until the `main` build replaced it. Learners see nothing until a version is published and marked the enrolment default.
 5. To open sales: Paddle price + `study_products` row for `CSP-SPS` + `NEXT_PUBLIC_CHECKOUT_URL_CSP_SPS`; on iparkar.com set `open:true` for CSP in `studyCourses` (`build.mjs`). Not done.
 
 Rollback: `delete from study_courses where code = 'CSP-SPS'` (cascades to its versions, chapters and progress — only before learners exist), and revert the migration's check constraint as noted in its header.
