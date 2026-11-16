@@ -1,7 +1,7 @@
 /**
  * Validate and load a self-paced study course version.
  *
- *   npm run import:study -- --course asp-sps [--version 1.0.0-draft] [--dry-run] [--out pkg.json]
+ *   npm run import:study -- --course asp-sps [--version 1.0.0-draft] [--dry-run] [--out pkg.json] [--batch 5]
  *
  * Reads content/<course>/manifest.json (public structure: titles, objectives, page ranges)
  * and imports/<course>/chapters/*.json (lesson content: git-ignored because this repo is public).
@@ -94,9 +94,23 @@ async function main() {
   };
   console.log("Signed in. Importing (this can take a minute) …");
 
-  const data = await rpc("admin_study_import", { p: pkg });
-  console.log("Imported:", JSON.stringify(data));
-  if (data?.ok === false) process.exit(1);
+  // Import lesson content in batches so each call stays inside the database's per-request time limit.
+  // A chapter sent without "sections" keeps its existing content, so every call carries the full
+  // structure but only one batch of chapter bodies.
+  const size = Math.max(1, Number(args.batch ?? 5) || 5);
+  const withContent = pkg.chapters.filter((c: { sections?: unknown }) => c.sections !== undefined).map((c: { id: string }) => c.id);
+  let data: { ok?: boolean } | null = null;
+  for (let i = 0; i < Math.max(1, withContent.length); i += size) {
+    const batch = new Set(withContent.slice(i, i + size));
+    const part = { ...pkg, chapters: pkg.chapters.map((c: { id: string; sections?: unknown }) => {
+      if (batch.has(c.id)) return c;
+      const { sections: _omit, ...rest } = c as Record<string, unknown>;
+      return rest;
+    }) };
+    data = await rpc("admin_study_import", { p: part });
+    console.log(`Imported chapters ${[...batch].join(", ") || "(structure only)"}:`, JSON.stringify(data));
+    if (data?.ok === false) process.exit(1);
+  }
   if (resources.length) {
     console.log("Resources:", JSON.stringify(await rpc("admin_study_import_resources", { p: { course: pkg.course.code, version: pkg.course.version, resources } })));
   }

@@ -272,3 +272,23 @@ describe("course-wide search", () => {
     expect((await rpc(db2, lea, "study_search", ["CSP-SPS", "drawing board"], ["text", "text"])).error).toBe("access_expired");
   }, 120_000);
 });
+
+describe("batched re-import", () => {
+  it("updates only the chapters that carry sections and leaves the rest intact", async () => {
+    const db3 = await createDb();
+    const adm = await createUser(db3, { username: "adm3", role: "admin" });
+    const pkg = synthetic(manifest, "CSP-SPS", "9.9.7-batch");
+    expect((await rpc(db3, adm, "admin_study_import", [JSON.stringify(pkg)], ["jsonb"])).ok).toBe(true);
+    const count = async () => (await db3.query<{ n: number }>(`select count(*)::int n from study_sections s join study_course_versions v on v.id = s.version_id where v.version = '9.9.7-batch'`)).rows[0].n;
+    const before = await count();
+    const part = { ...pkg, chapters: pkg.chapters.map((c: any) => {
+      if (c.id !== "1.2") { const { sections, ...rest } = c; return rest; }
+      return { ...c, sections: c.sections.map((s: any, i: number) => i === 0 ? { ...s, title: "Batch-updated title" } : s) };
+    }) };
+    expect((await rpc(db3, adm, "admin_study_import", [JSON.stringify(part)], ["jsonb"])).ok).toBe(true);
+    expect(await count()).toBe(before);
+    const t = await db3.query<{ title: string }>(`select s.title from study_sections s join study_chapters c on c.id = s.chapter_id
+      join study_course_versions v on v.id = s.version_id where v.version = '9.9.7-batch' and c.code = '1.2' order by s.sort_order limit 1`);
+    expect(t.rows[0].title).toBe("Batch-updated title");
+  }, 120_000);
+});
