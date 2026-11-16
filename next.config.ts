@@ -11,7 +11,19 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    return [
+      // Everything except SCORM package files: never framed.
+      { source: "/((?!api/scorm/).*)", headers: securityHeaders },
+      // SCORM package files load inside the app's own player frame (same origin only).
+      {
+        source: "/api/scorm/:path*",
+        headers: [
+          ...securityHeaders.filter((h) => h.key !== "X-Frame-Options"),
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "Content-Security-Policy", value: "frame-ancestors 'self'" },
+        ],
+      },
+    ];
   },
 };
 

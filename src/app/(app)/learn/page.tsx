@@ -8,6 +8,7 @@ import { BuyButton, StartOffer, accessLine } from "@/components/study/Access";
 import { studyBuyUrl } from "@/lib/study/buy";
 import type { StudyOffer } from "@/lib/study/types";
 import { guideForStudyCourse } from "@/lib/studyGuides";
+import type { ScormCourseSummary } from "@/lib/scorm/types";
 
 export const metadata = { title: "My learning" };
 export const dynamic = "force-dynamic";
@@ -20,7 +21,10 @@ const START_ERRORS: Record<string, string> = {
 export default async function MyLearning({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const sp = await searchParams;
   const { supabase, user } = await requireUser();
-  const [{ data }, { data: offerData }] = await Promise.all([supabase.rpc("get_my_study_courses"), supabase.rpc("get_study_offers")]);
+  const [{ data }, { data: offerData }, { data: freeData }] = await Promise.all([
+    supabase.rpc("get_my_study_courses"), supabase.rpc("get_study_offers"), supabase.rpc("scorm_my_courses"),
+  ]);
+  const free = (Array.isArray(freeData) ? freeData : []) as ScormCourseSummary[];
   const courses = (Array.isArray(data) ? data : []) as MyStudyCourse[];
   const offers = (Array.isArray(offerData) ? offerData : []) as StudyOffer[];
 
@@ -34,6 +38,27 @@ export default async function MyLearning({ searchParams }: { searchParams: Promi
       {sp.error && <p role="alert" className="max-w-[720px] rounded-card bg-coral p-4 text-body text-ink">{START_ERRORS[sp.error] ?? "Something went wrong. Please try again."}</p>}
 
       {offers.map((o) => <StartOffer key={o.code} offer={o} />)}
+
+      {free.length > 0 && (
+        <section aria-labelledby="free-h" className="space-y-4">
+          <h2 id="free-h" className="text-heading-sm">Free courses</h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            {free.map((f) => (
+              <article key={f.code} className="card flex flex-col">
+                <p className="text-caption text-graphite">Free with your account · {f.modules_total} modules</p>
+                <h3 className="mt-1 text-[20px] font-semibold leading-snug">{f.title}</h3>
+                {f.summary && <p className="mt-2 text-body-sm text-graphite">{f.summary}</p>}
+                {f.started && <div className="mt-4"><ProgressMeter size="sm" done={f.modules_done} total={f.modules_total} label="Modules completed" /></div>}
+                <div className="mt-5 flex flex-wrap gap-2">
+                  <Link href={`/free/${f.code}`} className="btn-primary">
+                    {f.modules_done === f.modules_total && f.modules_total > 0 ? "Review the course" : f.started ? "Continue" : "Start free course"}
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
 
       {courses.length === 0 && offers.length === 0 && (
         <section className="card max-w-[720px]">
