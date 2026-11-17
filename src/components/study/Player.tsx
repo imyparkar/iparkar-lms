@@ -392,7 +392,7 @@ export function Player({ userId, courseSlug, courseTitle, data, outline, startSe
     <div className="grid min-h-full lg:grid-cols-[1.05fr_.95fr]">
       <div className="on-dark flex flex-col bg-midnight p-6 text-white sm:p-10 lg:p-12">
         <p className="text-body-sm font-medium text-white/75">Module {chapter.domain.number} of {outline.length} · {chapter.domain.title}</p>
-        <h1 ref={current === INTRO ? headingRef : undefined} tabIndex={-1} className="mt-3 text-[30px] font-semibold leading-[1.08] tracking-[-1px] sm:text-[40px] sm:tracking-[-1.4px]">
+        <h1 ref={current === INTRO ? headingRef : undefined} tabIndex={-1} className="mt-3 focus:outline-none text-[30px] font-semibold leading-[1.08] tracking-[-1px] sm:text-[40px] sm:tracking-[-1.4px]">
           <span className="mb-3 inline-block rounded-pill bg-marigold px-3.5 py-0.5 text-[20px] tracking-[-0.3px] text-ink sm:text-[24px]">Chapter {chapter.code}</span><br />{chapter.title}
         </h1>
         {chapter.meta.summary && <p className="mt-4 font-serif text-lead text-white/85">{chapter.meta.summary}</p>}
@@ -451,7 +451,7 @@ export function Player({ userId, courseSlug, courseTitle, data, outline, startSe
     <article aria-labelledby="section-title" className="mx-auto w-full min-w-0 max-w-reading px-5 py-8 sm:px-10 sm:py-11">
       <p className="text-body-sm font-medium text-graphite">Chapter {chapter.code} · Section {page.n} of {sections.length}{section.est_minutes ? ` · about ${section.est_minutes} min` : ""}</p>
       <div className="mt-2 flex items-start justify-between gap-3">
-        <h2 id="section-title" ref={headingRef} tabIndex={-1} className="text-[28px] font-semibold leading-[1.12] tracking-[-0.8px] text-ink sm:text-[36px] sm:tracking-[-1.1px]">{section.title}</h2>
+        <h2 id="section-title" ref={headingRef} tabIndex={-1} className="text-[28px] focus:outline-none font-semibold leading-[1.12] tracking-[-0.8px] text-ink sm:text-[36px] sm:tracking-[-1.1px]">{section.title}</h2>
         <button type="button" className="btn-text shrink-0" aria-pressed={section.bookmarked}
           onClick={async () => {
             const on = !section.bookmarked;
@@ -486,7 +486,7 @@ export function Player({ userId, courseSlug, courseTitle, data, outline, startSe
     <div className="grid min-h-full lg:grid-cols-2">
       <section aria-labelledby="finish-title" className="flex flex-col justify-center p-6 sm:p-10 lg:p-12">
         <p><StatusPill status={status} /></p>
-        <h2 id="finish-title" ref={current === FINISH ? headingRef : undefined} tabIndex={-1} className="mt-3 text-[34px] font-semibold leading-[1.08] tracking-[-1.2px] text-ink sm:text-[44px] sm:tracking-[-1.5px]">
+        <h2 id="finish-title" ref={current === FINISH ? headingRef : undefined} tabIndex={-1} className="mt-3 focus:outline-none text-[34px] font-semibold leading-[1.08] tracking-[-1.2px] text-ink sm:text-[44px] sm:tracking-[-1.5px]">
           {status === "completed" ? "Chapter complete" : "Finish chapter"}
         </h2>
         {status === "completed" ? (
