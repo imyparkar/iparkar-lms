@@ -25,6 +25,9 @@
   .field-label { @apply block text-body-sm font-medium text-ink-95 mb-1.5; }
   .field-input { @apply w-full rounded-button border border-ink-20 bg-white px-3 py-2.5 text-body text-ink placeholder:text-ink-40 focus:border-midnight focus:outline-none focus-visible:outline-2 focus-visible:outline-midnight; }
   .lead { @apply font-serif text-lead text-graphite; }
+  /* Study player (module-player layout, matching the SAT modules) */
+  .icon-btn { @apply inline-grid h-10 w-10 shrink-0 place-items-center rounded-button text-ink-90 transition-colors duration-200 hover:bg-paper disabled:cursor-not-allowed disabled:text-ink-20; }
+  .topnav { @apply inline-flex items-center rounded-button px-2.5 py-2.5 text-body-sm font-medium text-ink-54 transition-colors duration-200 hover:text-ink aria-pressed:text-ink sm:px-3.5; }
   .link { @apply text-action underline-offset-2 hover:underline; }
   .table-head { @apply text-left text-caption text-slate font-medium px-3 py-2 border-b border-hairline; }
   .table-cell { @apply px-3 py-2.5 text-body-sm border-b border-hairline align-top; }
@@ -41,3 +44,13 @@
 /* TI-30XS calculator cursor */
 @keyframes ti-blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
 .ti-blink { animation: ti-blink 1s steps(1) infinite; }
+
+/* Study player page transition and display settings (Settings dialog). */
+@keyframes study-fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.study-slide { animation: study-fade 300ms ease; }
+.study-calm .study-slide { animation: none; }
+.study-calm *, .study-calm *::before, .study-calm *::after { transition: none !important; animation: none !important; }
+@media (prefers-reduced-motion: reduce) { .study-slide { animation: none; } }
+.study-large #study-stage .text-body { font-size: 18px; }
+.study-large #study-stage .text-body-sm { font-size: 16px; }
+.study-large #study-stage .text-lead, .study-large #study-stage .lead { font-size: 20px; }

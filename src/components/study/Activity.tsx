@@ -97,17 +97,17 @@ export function ActivityCard({ activity, sectionOpen, onSubmit, onFeedbackRead, 
           <form onSubmit={submit} className="space-y-4" noValidate>
             {(a.kind === "single_choice" || a.kind === "multi_choice") && (
               <fieldset>
-                <legend className="sr-only">Answer options</legend>
-                <div className="space-y-2">
-                  {(a.spec.options ?? []).map((o) => {
+                <legend className="mb-2 text-body-sm text-graphite">{a.kind === "multi_choice" ? "Select all answers you believe are correct, then select Check answer. Select a choice again to deselect it." : "Select one answer, then select Check answer."}</legend>
+                <div className="space-y-2.5">
+                  {(a.spec.options ?? []).map((o, i) => {
                     const multi = a.kind === "multi_choice";
                     const checked = multi ? choices.includes(o.id) : choice === o.id;
                     return (
-                      <label key={o.id} className={`flex cursor-pointer items-start gap-3 rounded-button border px-3 py-2.5 transition-colors duration-200 ${checked ? "border-midnight bg-sky-tint" : "border-ink-20 hover:bg-paper"}`}>
-                        <input type={multi ? "checkbox" : "radio"} name={`${uid}-opt`} value={o.id} checked={checked}
-                          className="mt-1 h-4 w-4 accent-[#02093a]"
+                      <label key={o.id} className={`grid min-h-[56px] cursor-pointer grid-cols-[48px_1fr] overflow-hidden rounded-card border transition-colors duration-200 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-midnight ${checked ? "border-midnight bg-midnight" : "border-hairline bg-white hover:border-action"}`}>
+                        <input type={multi ? "checkbox" : "radio"} name={`${uid}-opt`} value={o.id} checked={checked} className="sr-only"
                           onChange={() => multi ? setChoices((c) => c.includes(o.id) ? c.filter((x) => x !== o.id) : [...c, o.id]) : setChoice(o.id)} />
-                        <span className="text-body text-charcoal"><StudyText md={o.text} /></span>
+                        <span aria-hidden="true" className={`grid place-items-center text-[20px] font-semibold transition-colors duration-200 ${checked ? "bg-marigold text-ink" : "bg-sky-tint text-midnight"}`}>{"ABCDEFGHIJ"[i] ?? i + 1}</span>
+                        <span className={`self-center px-4 py-3 text-body ${checked ? "text-white" : "text-charcoal"}`}><StudyText md={o.text} />{checked && <span className="sr-only"> (selected)</span>}</span>
                       </label>
                     );
                   })}
@@ -146,7 +146,7 @@ export function ActivityCard({ activity, sectionOpen, onSubmit, onFeedbackRead, 
               </ol>
             )}
             <div className="flex flex-wrap items-center gap-2">
-              <button type="submit" className="btn-outline" disabled={busy || !sectionOpen}>{busy ? "Saving…" : self ? "Show the model answer" : "Check answer"}</button>
+              <button type="submit" className="btn-primary" disabled={busy || !sectionOpen}>{busy ? "Saving…" : self ? "Show the model answer" : "Check answer"}</button>
               {retrying && <button type="button" className="btn-text" onClick={() => setRetrying(false)}>Cancel</button>}
             </div>
           </form>
@@ -159,7 +159,10 @@ export function ActivityCard({ activity, sectionOpen, onSubmit, onFeedbackRead, 
                   <p className="text-body font-semibold text-ink">Compare your answer <span className="font-normal text-graphite">Attempt {result.attempts}.</span></p>
                   {chosen && typeof chosen.text === "string" && <p className="mt-2 whitespace-pre-wrap rounded-button border border-hairline bg-white p-3 text-body-sm text-charcoal"><span className="font-semibold text-ink">You wrote: </span>{chosen.text}</p>}
                 </>
-              : <p className="text-body font-semibold text-ink">{result.is_correct ? "Correct." : "Not quite."} <span className="font-normal text-graphite">Attempt {result.attempts}.</span></p>}
+              : <p className="flex flex-wrap items-center gap-2 text-body font-semibold text-ink">
+                  <span className={`pill ${result.is_correct ? "bg-forest-green text-white" : "bg-coral text-ink"}`}>{result.is_correct ? "Correct" : "Not quite"}</span>
+                  <span className="font-normal text-graphite">Attempt {result.attempts}.</span>
+                </p>}
             {chosen && a.kind === "numeric" && <p className="mt-1 text-body-sm text-graphite">You answered {String(chosen.value)} {a.spec.unit}.</p>}
             {!self && !result.is_correct && <p className="mt-1 text-body-sm text-ink">Expected answer: <strong>{correctText(a, result.correct)}</strong></p>}
             <p className="mt-2 text-body text-charcoal"><StudyText md={result.feedback.explanation} /></p>
