@@ -26,6 +26,12 @@ Note: the Supabase login has CAPTCHA protection, so `npm run import:study` (whic
 
 **Lesson content is not in git.** This repo is public, so chapter files live in `imports/asp-sps/chapters/*.json` (git-ignored, like the item banks) and reach learners only through `get_study_chapter`, which checks enrolment. Keep the authored JSON in a private location (the Claude project holds a copy of 1.1). Practical limit: anyone enrolled can read and copy what is shown to them; nothing can prevent that.
 
+### 1a. Player layout (module-player style, 17 Nov 2026)
+
+`/study/<course>/<chapter>` uses the same shell as the iParkar SAT modules: a top bar (Home, Search, Glossary, Formulas, Calculator, Notes, Exit), a collapsible **Index** (Module = domain → chapters → the open chapter's pages, with done/started marks and course progress), one page at a time on a "stage", and **Back / Next** controls with page count, display settings (larger text, reduce motion, show index) and full screen. Each chapter has a cover page (`?s=intro`), one page per section (`?s=<section code>`) and a Finish chapter page (`?s=finish`). ← / → move between pages except while typing or choosing an answer. Knowledge-check options are lettered cards (A, B, C…) on native radio/checkbox inputs.
+
+It looks like a SCORM player but is native: no SCORM package or runtime is involved, and the completion rules in §2 are unchanged. Navigation is free (no locks); **Next never marks a section as studied**, and "Mark as studied" and "Finish chapter" stay explicit, server-verified actions. Display settings are kept in the browser (`iparkar-study-player-prefs`); learner state stays in the database. The layout applies to every study course that uses the engine (ASP-SPS and CSP-SPS).
+
 ## 2. Completion policy (completion-based, no score gate)
 
 A required chapter completes only when the **server** verifies, inside `study_finish_chapter`:
