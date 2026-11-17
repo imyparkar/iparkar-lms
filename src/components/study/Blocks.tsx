@@ -191,7 +191,7 @@ export function StudyBlock({ block, renderActivity, chapterHref = (code) => `./$
       return (
         <section aria-label="Chapter sources">
           <h4 className="text-heading-sm text-ink">Chapter sources</h4>
-          <ul className="mt-3 space-y-2 text-body-sm text-graphite">{block.items.map((r, i) => <li key={i}>{r}</li>)}</ul>
+          <ul className="mt-3 space-y-2 text-body-sm text-graphite [overflow-wrap:anywhere]">{block.items.map((r, i) => <li key={i}>{r}</li>)}</ul>
         </section>
       );
     case "activity":
