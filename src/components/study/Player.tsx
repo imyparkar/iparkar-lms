@@ -150,6 +150,7 @@ export function Player({ userId, courseSlug, courseTitle, data, outline, startSe
   const section = page.kind === "section" ? page.section! : null;
   const ackCount = sections.filter((s) => s.acknowledged).length;
   const ready = missing.has_content && missing.sections.length === 0 && missing.activities.length === 0;
+  const reqActs = sections.reduce((n, s) => n + s.activities.filter((a) => a.is_required).length, 0);
   const domainProg = progress.domains.find((d) => d.number === chapter.domain.number);
 
   const patchSection = useCallback((code: string, f: (s: StudySection) => StudySection) =>
@@ -377,9 +378,9 @@ export function Player({ userId, courseSlug, courseTitle, data, outline, startSe
 
   /* ---------------- pages ---------------- */
   const tiles = (
-    <div aria-hidden="true" className="grid w-full max-w-[400px] -rotate-3 grid-cols-2 gap-3">
+    <div aria-hidden="true" className={`grid w-full -rotate-3 gap-3 ${outline.length > 7 ? "max-w-[460px] grid-cols-3" : "max-w-[400px] grid-cols-2"}`}>
       {outline.map((d, i) => (
-        <div key={d.number} className={`flex min-h-[76px] flex-col justify-end rounded-card p-3.5 ${d.number === chapter.domain.number ? `${TILE[i % TILE.length]} shadow-mockup` : "border border-hairline bg-white text-graphite"} ${i === outline.length - 1 && outline.length % 2 ? "col-span-2" : ""}`}>
+        <div key={d.number} className={`flex min-h-[76px] flex-col justify-end rounded-card p-3.5 ${d.number === chapter.domain.number ? `${TILE[i % TILE.length]} shadow-mockup` : "border border-hairline bg-white text-graphite"} ${outline.length <= 7 && i === outline.length - 1 && outline.length % 2 ? "col-span-2" : ""}`}>
           <span className="text-caption">Module {d.number}</span>
           <b className="text-[15px] font-semibold leading-tight tracking-[-0.2px]">{d.title}</b>
         </div>
@@ -397,8 +398,8 @@ export function Player({ userId, courseSlug, courseTitle, data, outline, startSe
         {chapter.meta.summary && <p className="mt-4 font-serif text-lead text-white/85">{chapter.meta.summary}</p>}
         <div className="mt-6 flex flex-wrap gap-2">
           <StatusPill status={status} className="ring-1 ring-white/40" />
-          {sections.length > 0 && <span className="pill bg-white/10 text-white">{sections.length} sections</span>}
-          {sections.length > 0 && <span className="pill bg-white/10 text-white">{sections.reduce((n, s) => n + s.activities.filter((a) => a.is_required).length, 0)} activities</span>}
+          {sections.length > 0 && <span className="pill bg-white/10 text-white">{sections.length} {sections.length === 1 ? "section" : "sections"}</span>}
+          {sections.length > 0 && <span className="pill bg-white/10 text-white">{reqActs} {reqActs === 1 ? "activity" : "activities"}</span>}
           {chapter.est_minutes ? <span className="pill bg-white/10 text-white">About {chapter.est_minutes} min (editorial estimate)</span> : null}
           {chapter.source_pages && <span className="pill bg-white/10 text-white">Guide pp. {chapter.source_pages[0]}–{chapter.source_pages[1]}</span>}
           {chapter.is_prerequisite && <span className="pill bg-white/10 text-white">Prerequisite chapter</span>}
