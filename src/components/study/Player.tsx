@@ -448,7 +448,7 @@ export function Player({ userId, courseSlug, courseTitle, data, outline, startSe
   );
 
   const sectionPage = section && (
-    <article aria-labelledby="section-title" className="mx-auto w-full min-w-0 max-w-reading px-5 py-8 sm:px-10 sm:py-11">
+    <article aria-labelledby="section-title" className="mx-auto w-full min-w-0 max-w-reading break-words px-5 py-8 sm:px-10 sm:py-11">
       <p className="text-body-sm font-medium text-graphite">Chapter {chapter.code} · Section {page.n} of {sections.length}{section.est_minutes ? ` · about ${section.est_minutes} min` : ""}</p>
       <div className="mt-2 flex items-start justify-between gap-3">
         <h2 id="section-title" ref={headingRef} tabIndex={-1} className="text-[28px] focus:outline-none font-semibold leading-[1.12] tracking-[-0.8px] text-ink sm:text-[36px] sm:tracking-[-1.1px]">{section.title}</h2>
