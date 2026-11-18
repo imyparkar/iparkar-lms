@@ -19,11 +19,11 @@ export const STUDY_GUIDES: StudyGuide[] = [
   {
     code: "CSP",
     title: "CSP® Exam Study Guide",
-    edition: "Reader edition · BCSP CSP11 blueprint",
+    edition: "Edition 1 · BCSP CSP11 blueprint",
     summary:
-      "Our main study material for the CSP exam. Work each domain chapter by chapter: an opening scenario, core teaching and figures, a worked application, then practice questions with answer explanations. Back matter includes a formula register, glossary and blueprint-to-chapter index.",
-    stats: [["47", "blueprint objectives"], ["60", "chapters · 7 domains"], ["1,203", "pages"]],
-    file: { downloadName: "iParkar-CSP-Exam-Study-Guide.pdf", label: "PDF · 1,203 pages · 23 MB" },
+      "Our main study material for the CSP exam. Each part opens with its domain's exam weight and the decisions you should be able to make. Work each chapter in order: an opening scenario, core teaching with figures and formula boxes, a worked application step by step, then a review with key formulas and terms. Back matter holds the glossary and the full bibliography.",
+    stats: [["47", "blueprint objectives"], ["60", "chapters · 7 domains"], ["1,173", "pages"]],
+    file: { downloadName: "iParkar-CSP-Exam-Study-Guide-Edition-1.pdf", label: "PDF · Edition 1 · 1,173 pages · 16 MB" },
     studyCourse: "CSP-SPS",
   },
   {
