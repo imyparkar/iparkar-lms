@@ -7,6 +7,7 @@ import type { StudyAccess, StudyOffer } from "@/lib/study/types";
 import { requestAccessUrl, razorpayReady } from "@/lib/study/buy";
 import { formatMoney, priceFor } from "@/lib/payments/catalogue";
 import { RazorpayButton } from "@/components/payments/RazorpayButton";
+import { PayMethods } from "@/components/payments/PayMethods";
 import { guideForStudyCourse } from "@/lib/studyGuides";
 import { accessLine } from "@/components/study/Access";
 import { startStudyCourse } from "@/lib/study/accessActions";
@@ -87,7 +88,7 @@ export default async function BuyStudyCourse({ params, searchParams }: {
           )}
           {enrolled && <Link href={`/learn/${slug}`} className="btn-outline">Course overview</Link>}
         </div>
-        {pay && <p className="mt-4 text-caption text-graphite">Secure payment by Razorpay — cards, UPI, net banking and wallets where available. Access opens as soon as your payment is confirmed. See our <a className="link" href="https://iparkar.com/refunds">refund policy</a>.</p>}
+        {pay && <PayMethods />}
         {request && <p className="mt-4 text-caption text-graphite">This opens an email to support@iparkar.com with your account details. We’ll reply with payment details and switch on your access once payment is received.</p>}
       </section>
     </div>
