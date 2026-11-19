@@ -1,8 +1,9 @@
 import "server-only";
 import { getServiceClient } from "@/lib/supabase/admin";
 import { fetchPayment, type RazorpayConfig } from "@/lib/payments/razorpay";
+import { sendInvoiceEmail } from "@/lib/invoices/send";
 
-export type FulfilResult = { ok: boolean; granted?: boolean; duplicate?: boolean; pending?: boolean; reason?: string };
+export type FulfilResult = { ok: boolean; granted?: boolean; duplicate?: boolean; pending?: boolean; reason?: string; invoice_id?: string | null };
 
 /**
  * Grants access for a Razorpay payment after re-reading it from Razorpay's API
@@ -23,7 +24,10 @@ export async function applyCaptured(orderId: string, paymentId: string, amount: 
     p_order: orderId, p_payment: paymentId, p_amount: amount, p_currency: currency, p_event: event, p_payload: payload ?? {},
   });
   if (error) throw new Error(`fulfil failed: ${error.message}`);
-  return data as FulfilResult;
+  const result = data as FulfilResult;
+  // Email the invoice (once; a later duplicate call retries if an earlier send failed).
+  if (result.ok) await sendInvoiceEmail(result.invoice_id);
+  return result;
 }
 
 export async function applyRefund(paymentId: string, refundId: string, amount: number, payload: unknown) {
@@ -32,5 +36,7 @@ export async function applyRefund(paymentId: string, refundId: string, amount: n
     p_payment: paymentId, p_refund: refundId, p_amount: amount, p_payload: payload ?? {},
   });
   if (error) throw new Error(`refund failed: ${error.message}`);
-  return data as { ok: boolean; revoked?: boolean; duplicate?: boolean; reason?: string };
+  const result = data as { ok: boolean; revoked?: boolean; duplicate?: boolean; reason?: string; credit_note_id?: string | null };
+  if (result.ok) await sendInvoiceEmail(result.credit_note_id);
+  return result;
 }
