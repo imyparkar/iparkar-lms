@@ -16,13 +16,13 @@ const USD = {
   sps: { 90: 0, 180: 0, 365: 120 },
 } as const;
 
-/** Periods sold online (the site shows "Request" by email for the rest). */
+/** Periods sold online (must match `available` in site-config.js). */
 const ON_SALE: Record<string, readonly number[]> = {
-  ASP: [90],
-  CSP: [90],
-  CIH: [90],
-  EPI: [90],
-  QEP: [90],
+  ASP: [90, 180, 365],
+  CSP: [90, 180, 365],
+  CIH: [90, 180, 365],
+  EPI: [90, 180, 365],
+  QEP: [90, 180, 365],
   CIT: [90, 180, 365],
   // Self Paced Study Courses: 365 days (build.mjs on iparkar.com).
   "ASP-SPS": [365],
