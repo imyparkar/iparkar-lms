@@ -36,7 +36,10 @@ describe("price catalogue (mirrors iparkar.com)", () => {
     expect(isOnSale("ASP", 90)).toBe(true);
     expect(priceFor("ASP", 180, "US")).toBeNull();
     expect(priceFor("CIT", 180, "US")).toEqual({ amount: 79, currency: "USD", minor: 7900 });
-    expect(priceFor("ASP-SPS", 365, "US")).toBeNull();
+    expect(priceFor("ASP-SPS", 365, "US")).toEqual({ amount: 120, currency: "USD", minor: 12000 });
+    expect(priceFor("CSP-SPS", 365, "IN")).toEqual({ amount: 9999, currency: "INR", minor: 999900 });
+    expect(priceFor("CSP-SPS", 365, "FR")).toEqual({ amount: 105, currency: "EUR", minor: 10500 });
+    expect(priceFor("ASP-SPS", 90, "US")).toBeNull();
     expect(priceFor("XYZ", 90, "US")).toBeNull();
   });
   it("formats like the website", () => {

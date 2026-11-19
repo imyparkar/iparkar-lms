@@ -4,7 +4,7 @@ Status on 16 Nov 2026: **published as version 1.0.0** (renamed from 1.0.0-beta; 
 
 ## 0. Live status (14 Nov 2026)
 
-Version **1.0.0-beta** is published on app.iparkar.com (production Supabase project `iparkar`): 99 chapters, 647 sections, 789 activities, 9 formula sheets, 177 drawings in R2 (`iparkar-study-guides/lms-assets/asp-sps/`). Every signed-in user can start 7 days of free access; after that the buy button is a **Request for Access** email to support@iparkar.com until a Paddle price, `study_products` row and `NEXT_PUBLIC_CHECKOUT_URL_ASP_SPS` exist. Chapters were marked approved by the owner as a beta decision (audit `study_beta_approval`); every chapter shows "Beta · content under review". Subject-matter review is still outstanding (section 9). To grant paid access by hand: `/admin/study` enrol, or `admin_study_set_access` with an end date.
+Version **1.0.0-beta** is published on app.iparkar.com (production Supabase project `iparkar`): 99 chapters, 647 sections, 789 activities, 9 formula sheets, 177 drawings in R2 (`iparkar-study-guides/lms-assets/asp-sps/`). Every signed-in user can start 7 days of free access; after that the buy button is a **Request for Access** email to support@iparkar.com until Razorpay keys are set; then it is a Razorpay checkout on `/learn/asp-sps/buy` (docs/DEPLOYMENT.md §4). Chapters were marked approved by the owner as a beta decision (audit `study_beta_approval`); every chapter shows "Beta · content under review". Subject-matter review is still outstanding (section 9). To grant paid access by hand: `/admin/study` enrol, or `admin_study_set_access` with an end date.
 
 Note: the Supabase login has CAPTCHA protection, so `npm run import:study` (which signs in from the terminal) only works while CAPTCHA is briefly switched off.
 
@@ -56,12 +56,12 @@ Owner's decision (14 Nov 2026): every signed-in user gets **7 days of free acces
 | Who | How they get in | Time limit |
 |---|---|---|
 | Any signed-in learner | My learning shows "Start 7-day free access" (`study_self_enroll`) once a version is **published** and marked the enrolment default | `trial_started_at` + 7 days. One trial per learner per course, ever; it is never restarted |
-| Buyer | Verified Paddle `transaction.completed` whose price is in `study_products` → `service_apply_study_purchase` | 365 days from purchase (a trial's remaining days are replaced, not added); a renewal before expiry adds 365 days to the current end |
+| Buyer | Captured Razorpay payment for a `checkout_orders` row with this study course → `service_apply_study_purchase` | 365 days from purchase (a trial's remaining days are replaced, not added); a renewal before expiry adds 365 days to the current end |
 | Reviewer / staff | `/admin/study` enrol (Pilot for unpublished versions) | none (`access_expires_at` null). `admin_study_set_access` can set or extend any learner's end date, with a reason, audited |
 
 When access lapses, chapters, activities, formula sheets and drawings are refused by the database (every learner write goes through `study_enrollment_for_chapter`, which now requires unexpired access). Progress, notes, bookmarks and any completion record are kept, My learning and the course overview still show progress, and the player is replaced by a "Your 7-day free access has ended — buy 12 months · US$120" panel. Refunds (`adjustment` approved, action `refund`) call `service_revoke_study_purchase`, which takes back exactly the days that payment granted (never below now). Practice-exam entitlements (`course_entitlements`, `course_products`) are untouched: a study purchase grants no exam access and an exam purchase grants no study access.
 
-**To start selling** (not done; needs the owner): create the US$120 one-time price in Paddle; add `insert into study_products (course_id, provider, provider_price_id, access_days) select id, 'paddle', 'pri_…', 365 from study_courses where code = 'ASP-SPS';` and set `NEXT_PUBLIC_CHECKOUT_URL_ASP_SPS` to a checkout page that passes `custom_data.user_id` (placeholders `{user_id}`, `{email}`). Until the URL is set, the button reads **Request for Access** and opens an email to support@iparkar.com with the course and the learner's account email and reference.
+**To start selling**: set the Razorpay keys and webhook (docs/DEPLOYMENT.md §4). Prices (US$120 and country prices) are in `src/lib/payments/catalogue.ts`. Until the URL is set, the button reads **Request for Access** and opens an email to support@iparkar.com with the course and the learner's account email and reference.
 
 ## 4a. Original drawings (protected images), formula sheets and calculator
 
@@ -144,7 +144,7 @@ Not yet verified, and required before publication:
 - **Conversion flags** (63 across all chapters, listed in each chapter's `meta.checks.flags`): tables named from their headers, drawing labels dropped, worked examples whose source has no separate Answer row. Each is a prompt to compare with the PDF page.
 - **Drawings**: 177 crops were checked on contact sheets; a reviewer should still compare each against its page (a few side-by-side layouts were cropped to the drawing's own card).
 - Course-wide search was added on 16 Nov 2026 (`docs/CSP-STUDY-COURSE.md` §6a; migration `20261116000100_study_search.sql`). Domain introductions and BCSP calculator/blueprint policy checks (section 7 of the brief) remain to build. Formula sheets need the same subject review as chapters (`review_status` is `draft`).
-- Paddle price, `study_products` row and checkout URL for the US$120 product (section 4).
+- Razorpay keys and webhook for the US$120 product (section 4; docs/DEPLOYMENT.md §4).
 - Manual screen-reader and keyboard pass; run against the real Supabase staging project.
 
 To rebuild a chapter after a fix: edit its overlay in `imports/asp-sps/authoring/overlays/<id>.json` (or `kc_*.py` / `eq_*.py` and re-save), run `python3 scripts/asp-sps/pipeline/convert.py <id>`, then `npm run import:study -- --dry-run` and the import. Re-imports keep learner progress unless the set of sections or activities changes on a version that already has learners (then publish a new version).

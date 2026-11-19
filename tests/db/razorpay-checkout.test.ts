@@ -1,10 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- test fixtures read untyped JSON */
 import { beforeAll, describe, expect, it } from "vitest";
-import { DB, as, courseId, createDb, createUser } from "./harness";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { DB, as, courseId, createDb, createUser, rpc } from "./harness";
+
+const manifest = JSON.parse(readFileSync(join(import.meta.dirname, "../../content/asp-sps/manifest.json"), "utf8"));
+const studyPkg = {
+  course: { code: "ASP-SPS", title: manifest.course.title, version: "1.0.0" },
+  source: manifest.source,
+  domains: manifest.domains.map((d: any) => ({ domain: d.domain, title: d.title, weight: d.weight })),
+  chapters: manifest.chapters.map((c: any, i: number) => ({
+    id: c.id, domain: c.domain, sort_order: i + 1, title: c.title, objectives: c.objectives, prerequisite: c.prerequisite, pages: c.pages,
+    sections: [{ code: "lesson", sort_order: 1, title: "[TEST] Lesson", blocks: [{ type: "text", md: "Synthetic fixture." }], activities: [] }],
+  })),
+};
 
 /** Razorpay checkout orders: grant once, check amount/currency, refunds revoke. */
 let db: DB;
-let stu: string, other: string, asp: string;
+let stu: string, other: string, asp: string, sps: string;
 
 async function order(id: string, uid: string, amount = 9900, currency = "USD", days = 90) {
   await db.query(`insert into checkout_orders (provider_order_id, user_id, course_id, access_days, amount_minor, currency)
@@ -26,7 +39,13 @@ beforeAll(async () => {
   stu = await createUser(db, { username: "rzp_student" });
   other = await createUser(db, { username: "rzp_other" });
   asp = await courseId(db, "ASP");
-});
+  const admin = await createUser(db, { username: "rzp_admin", role: "admin" });
+  const res = await rpc(db, admin, "admin_study_import", [JSON.stringify(studyPkg)], ["jsonb"]);
+  await db.query(`update study_chapters set review_status = 'approved' where version_id = $1`, [res.version_id]);
+  await rpc(db, admin, "admin_study_set_version_status", [res.version_id, "published", true], ["uuid", "text", "boolean"]);
+  await rpc(db, admin, "admin_study_set_course_access", ["ASP-SPS", "self", 7, 365, "US$120"], ["text", "text", "int", "int", "text"]);
+  sps = (await db.query<{ id: string }>(`select id from study_courses where code = 'ASP-SPS'`)).rows[0].id;
+}, 120_000);
 
 describe("razorpay checkout", () => {
   it("grants 90 days once, however many times the payment is reported", async () => {
@@ -72,5 +91,29 @@ describe("razorpay checkout", () => {
     await expect(as(db, stu, `select public.service_fulfil_checkout_order('order_2','pay_9',799900,'INR','x','{}'::jsonb)`)).rejects.toThrow();
     await expect(as(db, stu, `insert into checkout_orders (provider_order_id, user_id, course_id, access_days, amount_minor, currency)
                               values ('order_x', '${stu}', '${asp}', 90, 1, 'USD')`)).rejects.toThrow();
+  });
+
+  it("sells a Self Paced Study Course: 365 days once, refund takes the days back", async () => {
+    const buyer = await createUser(db, { username: "rzp_sps" });
+    await db.query(`insert into checkout_orders (provider_order_id, user_id, study_course_id, access_days, amount_minor, currency)
+                    values ('order_sps', $1, $2, 365, 3500, 'KWD')`, [buyer, sps]);
+    expect((await fulfil("order_sps", "pay_sps", 3500, "KWD")).granted).toBe(true);
+    expect((await fulfil("order_sps", "pay_sps", 3500, "KWD")).duplicate).toBe(true);
+    const enr = async () => (await db.query<any>(`select * from study_enrollments where user_id = $1`, [buyer])).rows;
+    const e = await enr();
+    expect(e).toHaveLength(1);
+    expect(e[0].access_source).toBe("purchase");
+    expect((new Date(e[0].access_expires_at).getTime() - Date.now()) / 86_400_000).toBeGreaterThan(364.9);
+    expect((await db.query(`select 1 from study_purchases sp join checkout_orders o on o.payment_id = sp.payment_id
+                            where o.provider_order_id = 'order_sps'`)).rows).toHaveLength(1);
+
+    expect((await refund("pay_sps", "rfnd_sps", 3500)).revoked).toBe(true);
+    const after = await enr();
+    expect((new Date(after[0].access_expires_at).getTime() - Date.now()) / 86_400_000).toBeLessThan(0.01);
+  });
+
+  it("rejects an order that names both a course and a study course", async () => {
+    await expect(db.query(`insert into checkout_orders (provider_order_id, user_id, course_id, study_course_id, access_days, amount_minor, currency)
+                           values ('order_both', $1, $2, $3, 90, 1, 'USD')`, [stu, asp, sps])).rejects.toThrow();
   });
 });

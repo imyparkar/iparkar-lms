@@ -89,7 +89,7 @@ export default async function CoursePage({ params, searchParams }: {
           <p className="mt-2 max-w-2xl">Full bank access includes the timed mixed exam, {subjectExam ? "subject-area practice sets" : `${ui.unit} practice exams`}, the on-screen calculator, explanations and course analytics.</p>
           <div className="mt-5 flex flex-wrap gap-3">
             {canPay && price && days ? (
-              <RazorpayButton code={course.code} days={days} label={`Pay ${formatMoney(price)} · ${course.code} access for ${period}`} />
+              <RazorpayButton code={course.code} days={days} successHref={`/courses/${course.code}?paid=1`} label={`Pay ${formatMoney(price)} · ${course.code} access for ${period}`} />
             ) : (
               <a href={`mailto:support@iparkar.com?subject=${encodeURIComponent(request)}`} className="btn-dark">Ask about {course.code} access{period ? ` · ${period}` : ""}</a>
             )}

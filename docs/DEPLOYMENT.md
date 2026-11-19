@@ -49,7 +49,8 @@ Recommended Cloudflare extras: a WAF rate-limit rule on `POST /login` and `/sign
 iParkar Learning is the seller; Razorpay is the payment gateway. Prices are set by the server in
 `src/lib/payments/catalogue.ts` (US$ prices, periods on sale, and country prices mirrored from
 `regional-prices.js` on iparkar.com — **change both together**). The visitor's country comes from
-Cloudflare's `cf-ipcountry` header. Practice-exam packages only; study courses still use the request-access email.
+Cloudflare's `cf-ipcountry` header. Sold: practice-exam packages (`/courses/<CODE>`) and the ASP and CSP Self Paced
+Study Courses, 365 days (`/learn/<asp|csp>-sps/buy`, linked from iparkar.com/resources). Without keys both fall back to the request-access email.
 
 1. **Account**: complete Razorpay KYC and activation. To charge non-INR prices (US$, KWD, AED, SAR, QAR, BHD,
    OMR, GBP, EUR) ask Razorpay to **enable international payments**; until then only INR (India) can be paid.
@@ -66,10 +67,12 @@ Cloudflare's `cf-ipcountry` header. Practice-exam packages only; study courses s
    your own secret (same as `RAZORPAY_WEBHOOK_SECRET`), events **order.paid**, **payment.captured**, **refund.processed**.
    Test and Live mode each need their own webhook.
 5. **Database**: apply `supabase/migrations/20261119000100_razorpay_checkout.sql` (table `checkout_orders`,
-   functions `service_fulfil_checkout_order`, `service_refund_checkout_payment`).
+   functions `service_fulfil_checkout_order`, `service_refund_checkout_payment`; study courses go through the existing
+   `service_apply_study_purchase` / `service_revoke_study_purchase`).
 6. **Test (Test mode keys)**: open `/courses/ASP`, pay with a Razorpay test card/UPI → access opens and a
    `checkout_orders` row turns `paid`; close the tab mid-payment → the webhook still grants access; refund the
-   full amount in the Dashboard → access is revoked. Partial refunds keep access and log `refund.partial`.
+   full amount in the Dashboard → access is revoked. Repeat with `/learn/asp-sps/buy`: 365 days of study access; a full
+   refund takes those days back (progress is kept). Partial refunds keep access and log `refund.partial`.
 
 How it works: `startCheckout` (server action) creates a Razorpay order for the server price and stores it in
 `checkout_orders`. After payment, the browser posts the signed IDs to `/api/payments/razorpay/verify`; the server

@@ -1,5 +1,5 @@
 /**
- * Practice-exam prices charged at checkout.
+ * Prices charged at checkout: practice-exam packages and Self Paced Study Courses.
  *
  * The server always decides the price: the browser only says which course and
  * access period. Prices MUST match what iparkar.com shows — keep this file in
@@ -13,6 +13,7 @@ export type Money = { amount: number; currency: string; minor: number };
 const USD = {
   exam: { 90: 99, 180: 149, 365: 199 },
   cit: { 90: 49, 180: 79, 365: 99 },
+  sps: { 90: 0, 180: 0, 365: 120 },
 } as const;
 
 /** Periods sold online (the site shows "Request" by email for the rest). */
@@ -23,22 +24,25 @@ const ON_SALE: Record<string, readonly number[]> = {
   EPI: [90],
   QEP: [90],
   CIT: [90, 180, 365],
+  // Self Paced Study Courses: 365 days (build.mjs on iparkar.com).
+  "ASP-SPS": [365],
+  "CSP-SPS": [365],
 };
 
-type Region = { currency: string; countries: string[]; exam: [number, number, number]; cit: [number, number, number] };
+type Region = { currency: string; countries: string[]; exam: [number, number, number]; cit: [number, number, number]; sps: number };
 
 /** Mirrors regional-prices.js: [90-day, 180-day, 365-day]. Other countries pay US$. */
 const REGIONS: Region[] = [
-  { currency: "INR", countries: ["IN"], exam: [7999, 12999, 16999], cit: [3999, 6999, 7999] },
-  { currency: "KWD", countries: ["KW"], exam: [30, 45, 60], cit: [15, 25, 30] },
-  { currency: "AED", countries: ["AE"], exam: [365, 550, 730], cit: [180, 290, 365] },
-  { currency: "SAR", countries: ["SA"], exam: [375, 560, 750], cit: [185, 300, 375] },
-  { currency: "QAR", countries: ["QA"], exam: [360, 545, 725], cit: [180, 290, 360] },
-  { currency: "BHD", countries: ["BH"], exam: [35, 55, 75], cit: [20, 30, 35] },
-  { currency: "OMR", countries: ["OM"], exam: [40, 55, 75], cit: [20, 30, 40] },
-  { currency: "GBP", countries: ["GB"], exam: [75, 112, 149], cit: [37, 59, 75] },
+  { currency: "INR", countries: ["IN"], exam: [7999, 12999, 16999], cit: [3999, 6999, 7999], sps: 9999 },
+  { currency: "KWD", countries: ["KW"], exam: [30, 45, 60], cit: [15, 25, 30], sps: 35 },
+  { currency: "AED", countries: ["AE"], exam: [365, 550, 730], cit: [180, 290, 365], sps: 440 },
+  { currency: "SAR", countries: ["SA"], exam: [375, 560, 750], cit: [185, 300, 375], sps: 450 },
+  { currency: "QAR", countries: ["QA"], exam: [360, 545, 725], cit: [180, 290, 360], sps: 440 },
+  { currency: "BHD", countries: ["BH"], exam: [35, 55, 75], cit: [20, 30, 35], sps: 45 },
+  { currency: "OMR", countries: ["OM"], exam: [40, 55, 75], cit: [20, 30, 40], sps: 45 },
+  { currency: "GBP", countries: ["GB"], exam: [75, 112, 149], cit: [37, 59, 75], sps: 90 },
   { currency: "EUR", countries: ["AT", "BE", "HR", "CY", "EE", "FI", "FR", "DE", "GR", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PT", "SK", "SI", "ES"],
-    exam: [85, 129, 169], cit: [42, 68, 85] },
+    exam: [85, 129, 169], cit: [42, 68, 85], sps: 105 },
 ];
 
 /** Decimal places Razorpay expects for each currency (amounts are sent in the smallest unit). */
@@ -61,10 +65,10 @@ export function isOnSale(courseCode: string, days: number): boolean {
 export function priceFor(courseCode: string, days: number, country: string | null | undefined): Money | null {
   const code = courseCode.toUpperCase();
   if (!isOnSale(code, days)) return null;
-  const tier = code === "CIT" ? "cit" : "exam";
+  const tier = code.endsWith("-SPS") ? "sps" : code === "CIT" ? "cit" : "exam";
   const cc = (country ?? "").toUpperCase();
   const region = REGIONS.find((r) => r.countries.includes(cc));
-  const amount = region ? region[tier][PERIOD_INDEX[days]] : USD[tier][days as 90 | 180 | 365];
+  const amount = region ? (tier === "sps" ? region.sps : region[tier][PERIOD_INDEX[days]]) : USD[tier][days as 90 | 180 | 365];
   const currency = region ? region.currency : "USD";
   return { amount, currency, minor: Math.round(amount * 10 ** exponent(currency)) };
 }

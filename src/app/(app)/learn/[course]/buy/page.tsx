@@ -1,9 +1,12 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import { courseCode, courseSlug } from "@/lib/study/types";
 import type { StudyAccess, StudyOffer } from "@/lib/study/types";
-import { studyBuyUrl, isAccessRequest } from "@/lib/study/buy";
+import { requestAccessUrl, razorpayReady } from "@/lib/study/buy";
+import { formatMoney, priceFor } from "@/lib/payments/catalogue";
+import { RazorpayButton } from "@/components/payments/RazorpayButton";
 import { guideForStudyCourse } from "@/lib/studyGuides";
 import { accessLine } from "@/components/study/Access";
 import { startStudyCourse } from "@/lib/study/accessActions";
@@ -14,8 +17,12 @@ export const dynamic = "force-dynamic";
 const period = (days: number | null) => (days === 365 ? "365 days" : days ? `${days} days` : "");
 
 /** Buy (or request) paid access to a Self Paced Study Course. Linked from iparkar.com/resources. */
-export default async function BuyStudyCourse({ params }: { params: Promise<{ course: string }> }) {
+export default async function BuyStudyCourse({ params, searchParams }: {
+  params: Promise<{ course: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const { course } = await params;
+  const justPaid = (await searchParams).paid === "1";
   if (!/^[a-z]{2,8}(-[a-z]{2,8})?$/.test(course)) notFound();
   const code = courseCode(course);
   const { supabase, user } = await requireUser();
@@ -39,10 +46,13 @@ export default async function BuyStudyCourse({ params }: { params: Promise<{ cou
     );
   }
 
-  const price = offer?.price_label ?? access?.price_label ?? null;
   const days = offer?.access_days ?? access?.access_days ?? null;
-  const buy = studyBuyUrl(code, user);
-  const request = isAccessRequest(buy);
+  // The price for the learner's country, the same as iparkar.com shows; Razorpay charges exactly this.
+  const local = days ? priceFor(code, days, (await headers()).get("cf-ipcountry")) : null;
+  const price = local ? formatMoney(local) : (offer?.price_label ?? access?.price_label ?? null);
+  const pay = !!local && !!days && razorpayReady();
+  const request = !pay;
+  const buy = requestAccessUrl(code, user);
 
   return (
     <div className="max-w-[720px] space-y-6">
@@ -57,8 +67,18 @@ export default async function BuyStudyCourse({ params }: { params: Promise<{ cou
           <li>One-time payment, no automatic renewal; your trial progress carries over</li>
         </ul>
         {access && <p className="mt-4 text-body-sm font-medium text-ink">Your access now: {accessLine(access)}</p>}
-        <div className="mt-6 flex flex-wrap gap-3">
-          <a href={buy} className="btn-primary" rel="noopener">{request ? "Request for Access" : `Buy ${period(days)} access${price ? ` · ${price}` : ""}`}</a>
+        {justPaid && (
+          <p role="status" className="mt-4 rounded-button border border-[#2f8f4e]/30 bg-[#e3f4e8] px-4 py-3 text-body-sm font-semibold">
+            Thank you — your payment is confirmed and your access is open. Razorpay emails your payment receipt.
+          </p>
+        )}
+        <div className="mt-6 flex flex-wrap items-start gap-3">
+          {pay && days && local ? (
+            <RazorpayButton code={code} days={days} className="btn-primary" successHref={`/learn/${slug}/buy?paid=1`}
+                            label={`Buy ${period(days)} access · ${formatMoney(local)}`} />
+          ) : (
+            <a href={buy} className="btn-primary" rel="noopener">Request for Access</a>
+          )}
           {offer?.self_enroll && offer.trial_days && (
             <form action={startStudyCourse}>
               <input type="hidden" name="course" value={slug} />
@@ -67,6 +87,7 @@ export default async function BuyStudyCourse({ params }: { params: Promise<{ cou
           )}
           {enrolled && <Link href={`/learn/${slug}`} className="btn-outline">Course overview</Link>}
         </div>
+        {pay && <p className="mt-4 text-caption text-graphite">Secure payment by Razorpay — cards, UPI, net banking and wallets where available. Access opens as soon as your payment is confirmed. See our <a className="link" href="https://iparkar.com/refunds">refund policy</a>.</p>}
         {request && <p className="mt-4 text-caption text-graphite">This opens an email to support@iparkar.com with your account details. We’ll reply with payment details and switch on your access once payment is received.</p>}
       </section>
     </div>

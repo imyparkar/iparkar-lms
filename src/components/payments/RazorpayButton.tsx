@@ -25,8 +25,9 @@ function loadScript(): Promise<boolean> {
 
 type Status = { tone: "info" | "success" | "error" | "warning"; title: string; body?: string } | null;
 
-/** Opens Razorpay Checkout for one practice-exam package; access opens once the server confirms the payment. */
-export function RazorpayButton({ code, days, label }: { code: string; days: number; label: string }) {
+/** Opens Razorpay Checkout for one package (practice exams or a study course); access opens once the server confirms the payment. */
+export function RazorpayButton({ code, days, label, successHref, className = "btn-dark" }:
+  { code: string; days: number; label: string; successHref: string; className?: string }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<Status>(null);
@@ -40,7 +41,7 @@ export function RazorpayButton({ code, days, label }: { code: string; days: numb
       const json = res ? await res.json().catch(() => ({})) : {};
       if (res?.ok && !json.pending) {
         setStatus({ tone: "success", title: "Payment received — your access is open." });
-        router.replace(`/courses/${code}?paid=1`);
+        router.replace(successHref);
         router.refresh();
         return;
       }
@@ -89,7 +90,7 @@ export function RazorpayButton({ code, days, label }: { code: string; days: numb
 
   return (
     <div className="space-y-3">
-      <button type="button" onClick={pay} disabled={busy} className="btn-dark disabled:opacity-60" aria-busy={busy}>
+      <button type="button" onClick={pay} disabled={busy} className={`${className} disabled:opacity-60`} aria-busy={busy}>
         {busy ? "Opening secure payment…" : label}
       </button>
       {status && <Alert tone={status.tone} title={status.title}>{status.body}</Alert>}
