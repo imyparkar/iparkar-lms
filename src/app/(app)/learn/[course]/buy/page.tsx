@@ -73,7 +73,7 @@ export default async function BuyStudyCourse({ params, searchParams }: {
           </p>
         )}
         <div className="mt-6 flex flex-wrap items-start gap-3">
-          {pay && days && local ? (
+          {justPaid ? null : pay && days && local ? (
             <RazorpayButton code={code} days={days} className="btn-primary" successHref={`/learn/${slug}/buy?paid=1`}
                             label={`Buy ${period(days)} access · ${formatMoney(local)}`} />
           ) : (

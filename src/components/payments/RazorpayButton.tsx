@@ -40,7 +40,9 @@ export function RazorpayButton({ code, days, label, successHref, className = "bt
       }).catch(() => null);
       const json = res ? await res.json().catch(() => ({})) : {};
       if (res?.ok && !json.pending) {
-        setStatus({ tone: "success", title: "Payment received — your access is open." });
+        // The page reloads with its own "thank you" notice; reset the button so it isn't left in "Opening…".
+        setStatus(null);
+        setBusy(false);
         router.replace(successHref);
         router.refresh();
         return;
