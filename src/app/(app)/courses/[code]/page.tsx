@@ -7,6 +7,7 @@ import { accessPeriod } from "@/lib/env";
 import { formatMoney, periodLabel, periodsOnSale, priceFor } from "@/lib/payments/catalogue";
 import { razorpayConfig } from "@/lib/payments/razorpay";
 import { RazorpayButton } from "@/components/payments/RazorpayButton";
+import { PayMethods } from "@/components/payments/PayMethods";
 import { fmtDate } from "@/lib/format";
 import { allocate } from "@/lib/exam/allocation";
 import { Pill } from "@/components/ui/Pill";
@@ -95,7 +96,7 @@ export default async function CoursePage({ params, searchParams }: {
             )}
           </div>
           <p className="mt-4 text-body-sm">One-time payment. No automatic renewal. <a className="link" href="https://iparkar.com/practice-exams/">View course pricing, access periods and included features</a>.</p>
-          <p className="mt-4 text-caption">Secure payment by Razorpay — cards, UPI, net banking and wallets where available. Access opens as soon as your payment is confirmed. See our <a className="link" href="https://iparkar.com/refunds">refund policy</a>.</p>
+          {canPay && <PayMethods />}
         </section>
       ) : justPaid ? (
         <Alert tone="success" title={`Thank you — your ${course.code} access is open`}>
