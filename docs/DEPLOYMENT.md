@@ -37,7 +37,7 @@ npm ci
 cp .env.example .env.production   # fill NEXT_PUBLIC_* values
 npx wrangler login
 npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY
-npx wrangler secret put PADDLE_WEBHOOK_SECRET
+npx wrangler secret put RAZORPAY_KEY_ID; npx wrangler secret put RAZORPAY_KEY_SECRET; npx wrangler secret put RAZORPAY_WEBHOOK_SECRET
 npm run cf:deploy                  # opennextjs-cloudflare build && deploy
 ```
 `wrangler.jsonc` binds the custom domain `app.iparkar.com` (the zone is already on Cloudflare).
@@ -45,16 +45,40 @@ Or connect the GitHub repo in **Workers & Pages → Workers Builds** with build 
 
 Recommended Cloudflare extras: a WAF rate-limit rule on `POST /login` and `/signup` (defence in depth on top of the app limiter), and Bot Fight Mode.
 
-## 4. Payments (Paddle)
-1. **Confirm eligibility first**: Paddle's seller requirements for your country of registration (Kuwait / India), supported payout currencies and fees. If Paddle isn't available to you, Lemon Squeezy or another merchant of record can be swapped in — only `src/app/api/webhooks/paddle/route.ts` changes; entitlements are provider-independent.
-2. Create one product/price per course (e.g. ASP, 90 days). Insert the mapping:
-   ```sql
-   insert into public.course_products (course_id, provider, provider_price_id, access_days, kind)
-   values ((select id from courses where code = 'ASP'), 'paddle', 'pri_xxx', 90, 'one_time');
+## 4. Payments (Razorpay)
+iParkar Learning is the seller; Razorpay is the payment gateway. Prices are set by the server in
+`src/lib/payments/catalogue.ts` (US$ prices, periods on sale, and country prices mirrored from
+`regional-prices.js` on iparkar.com — **change both together**). The visitor's country comes from
+Cloudflare's `cf-ipcountry` header. Sold: practice-exam packages (`/courses/<CODE>`) and the ASP and CSP Self Paced
+Study Courses, 365 days (`/learn/<asp|csp>-sps/buy`, linked from iparkar.com/resources). Without keys both fall back to the request-access email.
+
+1. **Account**: complete Razorpay KYC and activation. To charge non-INR prices (US$, KWD, AED, SAR, QAR, BHD,
+   OMR, GBP, EUR) ask Razorpay to **enable international payments**; until then only INR (India) can be paid.
+2. **Payment capture**: Dashboard → Account & Settings → Capture and refund settings → **auto-capture** on.
+   **Default refund speed: Normal** (instant refunds carry a fee).
+3. **API keys** (Test mode first, then Live): Dashboard → Account & Settings → API keys.
+   ```bash
+   npx wrangler secret put RAZORPAY_KEY_ID        # rzp_test_… / rzp_live_…
+   npx wrangler secret put RAZORPAY_KEY_SECRET
+   npx wrangler secret put RAZORPAY_WEBHOOK_SECRET
    ```
-3. Checkout must send `custom_data.user_id`. Set `NEXT_PUBLIC_CHECKOUT_URL_ASP` to your checkout page URL using the `{user_id}` / `{email}` placeholders, e.g. a small Paddle.js page that calls `Paddle.Checkout.open({ items:[{priceId:'pri_xxx'}], customData:{ user_id } })`.
-4. Webhook destination: `https://app.iparkar.com/api/webhooks/paddle`, events `transaction.completed`, `adjustment.created`, `adjustment.updated`, `subscription.canceled`. Copy its secret to `PADDLE_WEBHOOK_SECRET`.
-5. Test in Paddle sandbox: buy → entitlement row appears → course unlocks; refund → access revoked. Unmatched payments are logged as `payment.unmatched` in the audit log.
+   With no keys set, the course page falls back to the "Ask about access" email button.
+4. **Webhook**: Dashboard → Account & Settings → Webhooks → Add: URL `https://app.iparkar.com/api/webhooks/razorpay`,
+   your own secret (same as `RAZORPAY_WEBHOOK_SECRET`), events **order.paid**, **payment.captured**, **refund.processed**.
+   Test and Live mode each need their own webhook.
+5. **Database**: apply `supabase/migrations/20261119000100_razorpay_checkout.sql` (table `checkout_orders`,
+   functions `service_fulfil_checkout_order`, `service_refund_checkout_payment`; study courses go through the existing
+   `service_apply_study_purchase` / `service_revoke_study_purchase`).
+6. **Test (Test mode keys)**: open `/courses/ASP`, pay with a Razorpay test card/UPI → access opens and a
+   `checkout_orders` row turns `paid`; close the tab mid-payment → the webhook still grants access; refund the
+   full amount in the Dashboard → access is revoked. Repeat with `/learn/asp-sps/buy`: 365 days of study access; a full
+   refund takes those days back (progress is kept). Partial refunds keep access and log `refund.partial`.
+
+How it works: `startCheckout` (server action) creates a Razorpay order for the server price and stores it in
+`checkout_orders`. After payment, the browser posts the signed IDs to `/api/payments/razorpay/verify`; the server
+checks the signature, re-reads the payment from Razorpay and grants access. The webhook does the same independently.
+The database grants once per order and only if amount and currency match the order. Failed/uncaptured payments
+are refunded automatically by Razorpay; nothing is granted for them.
 
 ## 5. Marketing site
 Merge the `iparkar-site` change (Practice tab → `https://app.iparkar.com/courses/ASP`, "Sign in to your dashboard" link). It deploys on push as before.
@@ -66,10 +90,10 @@ Merge the `iparkar-site` change (Practice tab → `https://app.iparkar.com/cours
 - Keep the item-bank Markdown (source of truth for content) in private storage.
 
 ## 7. Privacy and retention (fill in before launch)
-- Data held: name, username, email, exam answers/scores, entitlement and payment metadata (no card data — Paddle holds it).
+- Data held: name, username, email, exam answers/scores, entitlement and payment metadata (no card data — Razorpay holds it).
 - Deletion requests to support@iparkar.com: delete the auth user (cascades to profile, attempts, entitlements); payments keep `user_id = null` for accounting.
 - Suggested retention: attempts kept while the account is active + 2 years; audit logs 2 years; rate-limit rows 1 day (automatic).
-- Update `privacy.html`, `terms.html`, `refunds.html` on the marketing site to describe the LMS and Paddle as merchant of record; have them legally reviewed.
+- Update `privacy.html`, `terms.html`, `refunds.html` on the marketing site to describe the LMS and Razorpay as payment processor (done Nov 2026); have them legally reviewed.
 
 ## 8. Routine operations
 | Task | Where |

@@ -1,13 +1,18 @@
 import { checkoutUrl } from "@/lib/env";
+import { courseSlug } from "@/lib/study/types";
+import { isOnSale } from "@/lib/payments/catalogue";
 
 const SUPPORT = "support@iparkar.com";
 
 /**
- * Where the learner goes to get paid access: the checkout page when
+ * Where the learner goes to get paid access: the app's Razorpay buy page when Razorpay keys
+ * are set; otherwise the checkout page when
  * NEXT_PUBLIC_CHECKOUT_URL_<CODE> is set, otherwise an access request email to support
  * (subject and body identify the course and the account, so support can grant access).
  */
 export function studyBuyUrl(code: string, user: { id: string; email?: string | null }): string {
+  // Razorpay checkout lives on the app's own buy page.
+  if (razorpayReady() && isOnSale(code, 365)) return `/learn/${courseSlug(code)}/buy`;
   const url = checkoutUrl(code);
   if (url) {
     return url.replace("{user_id}", encodeURIComponent(user.id)).replace("{email}", encodeURIComponent(user.email ?? ""))
@@ -30,3 +35,8 @@ export function requestAccessUrl(code: string, user: { id: string; email?: strin
 }
 
 export const isAccessRequest = (href: string) => href.startsWith("mailto:");
+
+/** True when Razorpay keys are configured (server-side env). */
+export function razorpayReady(): boolean {
+  return !!(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET);
+}

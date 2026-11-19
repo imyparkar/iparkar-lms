@@ -1,6 +1,6 @@
 # CSP Self Paced Study Course — build, policy and handoff
 
-Status on 16 Nov 2026 (evening): **published as version `1.0.0` and set as the enrolment default.** The owner reviewed all 60 chapters and the 61 redrawn figures and approved publication without a beta (audit `study_owner_review`); chapters are `approved`. Any signed-in learner can start the 7-day free access; after that the buy button is a Request for Access email until a Paddle price and checkout URL exist. Imports now go in batches of 5 chapters (`--batch`) to stay inside the database request time limit. BCSP still served CSP11 Blueprint V.2024.04.24 when checked on 16 Nov 2026. The course runs on the same study engine as ASP-SPS (`docs/STUDY-COURSE.md`); this file covers what is specific to CSP.
+Status on 16 Nov 2026 (evening): **published as version `1.0.0` and set as the enrolment default.** The owner reviewed all 60 chapters and the 61 redrawn figures and approved publication without a beta (audit `study_owner_review`); chapters are `approved`. Any signed-in learner can start the 7-day free access; after that the buy button is a Request for Access email until Razorpay keys are set; then it is a Razorpay checkout on `/learn/csp-sps/buy`. Imports now go in batches of 5 chapters (`--batch`) to stay inside the database request time limit. BCSP still served CSP11 Blueprint V.2024.04.24 when checked on 16 Nov 2026. The course runs on the same study engine as ASP-SPS (`docs/STUDY-COURSE.md`); this file covers what is specific to CSP.
 
 ## 1. Sources
 
@@ -115,7 +115,7 @@ Not verified: a manual screen-reader and keyboard-only pass; a live Supabase imp
 3. `scripts/upload-study-assets.sh csp-sps` uploads the 61 drawings to the private R2 bucket.
 4. Pilot-enrol reviewers in `/admin/study`.
 4a. **Deploy only by pushing to `main`.** Cloudflare Workers Builds builds `main` with the production variables stored in Cloudflare (`NEXT_PUBLIC_TURNSTILE_SITE_KEY`, checkout URLs, site URLs). A local `opennextjs-cloudflare build` + `wrangler versions deploy` uses the Mac's `.env.local`, which lacks them: on 16 Nov 2026 this removed the CAPTCHA from the login page for about 15 minutes (sign-ins refused while Supabase CAPTCHA was on) until the `main` build replaced it. Learners see nothing until a version is published and marked the enrolment default.
-5. To open sales: Paddle price + `study_products` row for `CSP-SPS` + `NEXT_PUBLIC_CHECKOUT_URL_CSP_SPS`; on iparkar.com set `open:true` for CSP in `studyCourses` (`build.mjs`). Not done.
+5. Sales: Razorpay checkout on `/learn/csp-sps/buy` once the Razorpay keys are set (docs/DEPLOYMENT.md §4); `open:true` is already set on iparkar.com.
 
 Rollback: `delete from study_courses where code = 'CSP-SPS'` (cascades to its versions, chapters and progress — only before learners exist), and revert the migration's check constraint as noted in its header.
 
