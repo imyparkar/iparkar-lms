@@ -1,0 +1,6 @@
+/**
+ * Razorpay's Apple Pay domain verification file, byte for byte
+ * (Dashboard → Account & Settings → Apple Pay → Verification file, downloaded 20 Nov 2026).
+ * Served at /.well-known/apple-developer-merchantid-domain-association.
+ */
+export const APPLE_PAY_DOMAIN_ASSOCIATION = "7b2276657273696f6e223a312c227073704964223a2231454442463046444246354641323036354532393937394332374437434337433935333431423445303635424438443838333136353830323230303941353732222c22637265617465644f6e223a313734393634363735323534317d";
