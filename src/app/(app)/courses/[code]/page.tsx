@@ -1,8 +1,12 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import type { MyCourse } from "@/lib/types";
-import { accessPeriod, checkoutUrl } from "@/lib/env";
+import { accessPeriod } from "@/lib/env";
+import { formatMoney, periodLabel, periodsOnSale, priceFor } from "@/lib/payments/catalogue";
+import { razorpayConfig } from "@/lib/payments/razorpay";
+import { RazorpayButton } from "@/components/payments/RazorpayButton";
 import { fmtDate } from "@/lib/format";
 import { allocate } from "@/lib/exam/allocation";
 import { Pill } from "@/components/ui/Pill";
@@ -27,9 +31,10 @@ export default async function CoursePage({ params, searchParams }: {
 }) {
   const { code } = await params;
   // Access period chosen on iparkar.com (?plan=90|180|365); carried into checkout or the access request.
-  const days = accessPeriod((await searchParams).plan);
-  const period = days === 365 ? "1 year" : days ? `${days} days` : null;
-  const { supabase, user } = await requireUser();
+  const sp = await searchParams;
+  const chosen = accessPeriod(sp.plan);
+  const justPaid = sp.paid === "1";
+  const { supabase } = await requireUser();
   const { data } = await supabase.rpc("get_my_courses");
   const course = ((data ?? []) as MyCourse[]).find((c) => c.code === code.toUpperCase());
   if (!course) notFound();
@@ -41,8 +46,13 @@ export default async function CoursePage({ params, searchParams }: {
   const subjectExam = course.exams?.find((e) => e.mode === "subject");
   const subjects = course.subject_areas ?? [];
   const alloc = mixed && bp?.domains ? allocate(bp.domains.map((d) => ({ number: d.number, weight: Number(d.weight) })), mixed.question_count) : [];
-  const buy = checkoutUrl(course.code)?.replace("{user_id}", encodeURIComponent(user.id)).replace("{email}", encodeURIComponent(user.email ?? ""))
-    .replace("{days}", String(days ?? ""));
+  // Periods sold online for this course; ?plan= picks one, otherwise the first (shortest).
+  const onSale = periodsOnSale(course.code);
+  const days = chosen && onSale.includes(chosen) ? chosen : (chosen ?? onSale[0] ?? null);
+  const period = days ? periodLabel(days) : null;
+  const country = (await headers()).get("cf-ipcountry");
+  const price = days ? priceFor(course.code, days, country) : null;
+  const canPay = !!price && !!razorpayConfig();
   const request = `${course.code} premium access${period ? ` – ${period}` : ""}`;
 
   return (
@@ -62,18 +72,35 @@ export default async function CoursePage({ params, searchParams }: {
       {!course.has_access ? (
         <section className="rounded-card bg-marigold p-8">
           <h2 className="text-heading-sm">Unlock the {course.code} question bank</h2>
-          {period && <p className="mt-1 text-body-sm font-semibold">Selected access period: {period}</p>}
+          {period && <p className="mt-1 text-body-sm font-semibold">Selected access period: {period}{price ? ` · ${formatMoney(price)}` : ""}</p>}
+          {onSale.length > 1 && (
+            <nav aria-label="Access period" className="mt-3 flex flex-wrap gap-2">
+              {onSale.map((d) => {
+                const p = priceFor(course.code, d, country);
+                return (
+                  <Link key={d} href={`/courses/${course.code}?plan=${d}`} aria-current={d === days ? "true" : undefined}
+                        className={`rounded-button border px-3 py-1.5 text-body-sm font-semibold ${d === days ? "border-midnight bg-midnight text-white" : "border-midnight/30 bg-white/60"}`}>
+                    {periodLabel(d)}{p ? ` · ${formatMoney(p)}` : ""}
+                  </Link>
+                );
+              })}
+            </nav>
+          )}
           <p className="mt-2 max-w-2xl">Full bank access includes the timed mixed exam, {subjectExam ? "subject-area practice sets" : `${ui.unit} practice exams`}, the on-screen calculator, explanations and course analytics.</p>
           <div className="mt-5 flex flex-wrap gap-3">
-            {buy ? (
-              <a href={buy} className="btn-dark">Get {course.code} access{period ? ` · ${period}` : ""}</a>
+            {canPay && price && days ? (
+              <RazorpayButton code={course.code} days={days} label={`Pay ${formatMoney(price)} · ${course.code} access for ${period}`} />
             ) : (
               <a href={`mailto:support@iparkar.com?subject=${encodeURIComponent(request)}`} className="btn-dark">Ask about {course.code} access{period ? ` · ${period}` : ""}</a>
             )}
           </div>
           <p className="mt-4 text-body-sm">One-time payment. No automatic renewal. <a className="link" href="https://iparkar.com/practice-exams/">View course pricing, access periods and included features</a>.</p>
-          <p className="mt-4 text-caption">Access is granted automatically once the payment provider confirms your payment.</p>
+          <p className="mt-4 text-caption">Secure payment by Razorpay — cards, UPI, net banking and wallets where available. Access opens as soon as your payment is confirmed. See our <a className="link" href="https://iparkar.com/refunds">refund policy</a>.</p>
         </section>
+      ) : justPaid ? (
+        <Alert tone="success" title={`Thank you — your ${course.code} access is open`}>
+          Razorpay emails your payment receipt. Your access period is shown above.
+        </Alert>
       ) : !course.exams_enabled ? (
         <Alert tone="info" title={`${course.code} practice exams are being prepared`}>
           You’re enrolled. Exams open once the {course.code} question bank has been reviewed and published — you’ll see them here.

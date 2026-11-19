@@ -20,7 +20,7 @@
 | Auth | Supabase Auth (email + password) | Username sign-in resolved server-side |
 | Data | Supabase Postgres | All business rules in SQL functions + RLS |
 | Hosting | Cloudflare Workers via `@opennextjs/cloudflare` | Verified: `opennextjs-cloudflare build` + `wrangler dev` run the app |
-| Payments | Paddle Billing (merchant of record) via webhook | Provider-independent entitlements |
+| Payments | Razorpay Orders + Checkout, verified callback and webhook | Provider-independent entitlements |
 
 Why Workers and not Pages: Next.js server actions, middleware and route handlers need a server runtime. OpenNext's Cloudflare adapter runs them on Workers with `nodejs_compat`. No edge-only APIs are assumed; `next/font` is not used (fonts load from Google Fonts like the main site).
 
@@ -41,10 +41,10 @@ src/lib/exam              start-exam action, clock maths, allocation mirror
 src/lib/calculator        safe expression parser (no eval)
 src/lib/import            Markdown/CSV item-bank parsers
 src/lib/analytics         study indicators, recommendations
-src/lib/payments          Paddle signature verification
+src/lib/payments          Razorpay catalogue, orders, signature verification
 src/app/(app)             dashboard, course, results, account, admin/*
 src/app/exam/[id]         full-viewport exam workspace
-src/app/api/webhooks      Paddle webhook
+src/app/api/webhooks      Razorpay webhook; api/payments/razorpay/verify
 ```
 
 ## 4. Data model (key tables)
@@ -62,7 +62,7 @@ courses ─┬─ course_domains ─── course_tasks
                            ├─ attempt_answers
                            ├─ domain_performance
                            └─ task_performance
-audit_logs · app_settings · rate_limits · course_products (Paddle price → course)
+audit_logs · app_settings · rate_limits · course_products (legacy price map) · checkout_orders (Razorpay orders → course access)
 ```
 
 ### Course isolation (mandatory requirement)
