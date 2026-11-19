@@ -37,6 +37,8 @@ alter table public.checkout_orders enable row level security;
 drop policy if exists checkout_orders_own on public.checkout_orders;
 create policy checkout_orders_own on public.checkout_orders for select to authenticated
   using (user_id = auth.uid() or public.is_admin());
+revoke all on public.checkout_orders from anon;
+revoke insert, update, delete, truncate, references, trigger on public.checkout_orders from authenticated;
 grant select on public.checkout_orders to authenticated;
 
 -- Grant access for a captured payment. Idempotent: the order row is locked and
