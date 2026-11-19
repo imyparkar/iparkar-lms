@@ -2,9 +2,11 @@ import Link from "next/link";
 import { requireUser } from "@/lib/auth/session";
 import { fmtDate } from "@/lib/format";
 import { Pill } from "@/components/ui/Pill";
+import { money } from "@/lib/invoices/pdf";
 
 export const metadata = { title: "Account" };
 
+type Doc = { id: string; kind: "invoice" | "credit_note"; number: string; issued_at: string; description: string; currency: string; amount_minor: number };
 type Ent = { id: string; source: string; starts_at: string; expires_at: string | null; revoked_at: string | null; courses: { code: string; name: string } | null };
 
 export default async function AccountPage() {
@@ -14,6 +16,12 @@ export default async function AccountPage() {
     .select("id, source, starts_at, expires_at, revoked_at, courses(code, name)")
     .order("starts_at", { ascending: false })
     .returns<Ent[]>();
+  const { data: docs } = await supabase
+    .from("invoices")
+    .select("id, kind, number, issued_at, description, currency, amount_minor")
+    .eq("user_id", user.id)
+    .order("issued_at", { ascending: false })
+    .returns<Doc[]>();
   const now = Date.now();
   return (
     <div className="space-y-8">
@@ -42,6 +50,25 @@ export default async function AccountPage() {
                   </tr>
                 );
               })}
+            </tbody>
+          </table>
+        )}
+      </section>
+      <section className="card overflow-x-auto" id="invoices">
+        <h2 className="text-heading-sm">Invoices and credit notes</h2>
+        {!docs?.length ? <p className="mt-2 text-body-sm text-graphite">No invoices yet. Each purchase and refund adds one here, and a copy is emailed to you.</p> : (
+          <table className="mt-4 w-full min-w-[560px]">
+            <thead><tr><th className="table-head">Number</th><th className="table-head">Date</th><th className="table-head">Item</th><th className="table-head text-right">Amount</th><th className="table-head"><span className="sr-only">Download</span></th></tr></thead>
+            <tbody>
+              {docs.map((d) => (
+                <tr key={d.id}>
+                  <td className="table-cell font-medium whitespace-nowrap">{d.number}{d.kind === "credit_note" && <span className="ml-2"><Pill tone="neutral">Refund</Pill></span>}</td>
+                  <td className="table-cell whitespace-nowrap">{fmtDate(d.issued_at)}</td>
+                  <td className="table-cell">{d.description}</td>
+                  <td className="table-cell text-right tabular-nums whitespace-nowrap">{d.kind === "credit_note" ? "−" : ""}{money(d.amount_minor, d.currency)}</td>
+                  <td className="table-cell text-right"><a className="link whitespace-nowrap" href={`/api/invoices/${d.id}`}>Download PDF</a></td>
+                </tr>
+              ))}
             </tbody>
           </table>
         )}

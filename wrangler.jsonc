@@ -10,6 +10,6 @@
   // Also holds the study courses' protected drawings under lms-assets/, served only by /api/study/asset.
   "r2_buckets": [{ "binding": "STUDY_GUIDES", "bucket_name": "iparkar-study-guides" }],
   "routes": [{ "pattern": "app.iparkar.com", "custom_domain": true }]
-  // Secrets (set with `wrangler secret put`): SUPABASE_SERVICE_ROLE_KEY, RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, RAZORPAY_WEBHOOK_SECRET
+  // Secrets (set with `wrangler secret put`): SUPABASE_SERVICE_ROLE_KEY, RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, RAZORPAY_WEBHOOK_SECRET, BREVO_API_KEY
   // Public build-time vars: NEXT_PUBLIC_* in .env.production or the Workers Builds settings
 }
