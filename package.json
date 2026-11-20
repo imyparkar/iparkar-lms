@@ -32,6 +32,7 @@
   },
   "type": "module",
   "dependencies": {
+    "@pdf-lib/fontkit": "^1.1.1",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.118.0",
     "katex": "^0.16.47",
