@@ -9,7 +9,9 @@
   // Private study-guide PDFs (no public access); served only by /api/study-guides/[code] after sign-in.
   // Also holds the study courses' protected drawings under lms-assets/, served only by /api/study/asset.
   "r2_buckets": [{ "binding": "STUDY_GUIDES", "bucket_name": "iparkar-study-guides" }],
+  // Cloudflare Email Service (Workers Paid): invoice and credit-note emails. Sender must be on the onboarded domain iparkar.com.
+  "send_email": [{ "name": "EMAIL", "allowed_sender_addresses": ["support@iparkar.com", "invoices@iparkar.com"] }],
   "routes": [{ "pattern": "app.iparkar.com", "custom_domain": true }]
-  // Secrets (set with `wrangler secret put`): SUPABASE_SERVICE_ROLE_KEY, RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, RAZORPAY_WEBHOOK_SECRET, BREVO_API_KEY
+  // Secrets (set with `wrangler secret put`): SUPABASE_SERVICE_ROLE_KEY, RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, RAZORPAY_WEBHOOK_SECRET
   // Public build-time vars: NEXT_PUBLIC_* in .env.production or the Workers Builds settings
 }

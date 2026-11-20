@@ -83,14 +83,17 @@ are refunded automatically by Razorpay; nothing is granted for them.
 ### Invoices and credit notes (own, not Razorpay Invoices)
 Every paid order gets an invoice and every processed refund a credit note, created in the same database
 transaction (`invoices`, migration `20261120000100_invoices.sql`). Numbers run per Indian financial year:
-`INV/2026-27/0001`, `CN/2026-27/0001`. The PDF (`src/lib/invoices/pdf.ts`, seller details in `SELLER`) is emailed
-through Brevo's transactional API and listed under Account → Invoices (download via `/api/invoices/<id>`).
+`INV/2026-27/0001`, `CN/2026-27/0001`. The PDF (`src/lib/invoices/pdf.ts`, iParkar letterhead, seller details in
+`SELLER`) is emailed through **Cloudflare Email Service** (binding `EMAIL` in `wrangler.jsonc`, no API key) and listed
+under Account → Invoices (download via `/api/invoices/<id>`).
 iParkar Learning is not GST-registered, so no GST lines are printed; change `SELLER.taxNote` and the PDF if that changes.
 
-Secrets: `BREVO_API_KEY` (Brevo → SMTP & API → API keys). Optional variables: `INVOICE_FROM_EMAIL`
-(default support@iparkar.com; must be a verified sender/domain in Brevo) and `INVOICE_BCC_EMAIL` (a copy of every
-invoice email, e.g. for your records). Without `BREVO_API_KEY` invoices are still created and downloadable; only the
-email is skipped. Failed sends are stored in `invoices.email_error` and retried on the next webhook delivery.
+Setup: the account must be on **Workers Paid** (sending to customers is not available on Workers Free), and
+iparkar.com must be onboarded under Compute → Email Service → Email Sending (adds MX/SPF/DKIM on `cf-bounce.iparkar.com`
+only; root iCloud MX/SPF and the existing EasyDMARC `p=none` record are untouched). Sender: `support@iparkar.com`
+(override with `INVOICE_FROM_EMAIL`; must be in `allowed_sender_addresses`). Optional `INVOICE_BCC_EMAIL` sends a copy.
+Without the binding or onboarding, invoices are still created and downloadable; failed sends are stored in
+`invoices.email_error` and retried on the next webhook delivery. Sending logs: Email Service dashboard.
 
 ## 5. Marketing site
 Merge the `iparkar-site` change (Practice tab → `https://app.iparkar.com/courses/ASP`, "Sign in to your dashboard" link). It deploys on push as before.
