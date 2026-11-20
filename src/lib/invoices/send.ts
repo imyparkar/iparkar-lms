@@ -1,4 +1,5 @@
 import "server-only";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getServiceClient } from "@/lib/supabase/admin";
 import { SELLER, docDate, docFileName, docTitle, money, renderInvoicePdf, type InvoiceDoc } from "@/lib/invoices/pdf";
 
@@ -17,15 +18,34 @@ export async function loadInvoiceDoc(row: Row, db = getServiceClient()): Promise
 
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
 
+type EmailAddress = { email: string; name: string };
+type SendEmail = {
+  send(msg: {
+    to: string | EmailAddress; from: string | EmailAddress; replyTo?: string | EmailAddress; bcc?: string | EmailAddress;
+    subject: string; html?: string; text?: string;
+    attachments?: { content: string; filename: string; type: string; disposition: "attachment" | "inline" }[];
+  }): Promise<{ messageId: string }>;
+};
+
+/** Cloudflare Email Service binding (wrangler.jsonc "send_email": [{ "name": "EMAIL" }]). */
+async function emailBinding(): Promise<SendEmail | null> {
+  try {
+    const { env } = await getCloudflareContext({ async: true });
+    return (env as unknown as { EMAIL?: SendEmail }).EMAIL ?? null;
+  } catch {
+    return null; // not running on Cloudflare (local dev / tests)
+  }
+}
+
 /**
- * Emails an invoice or credit note (PDF attached) through Brevo's transactional API.
+ * Emails an invoice or credit note (PDF attached) through Cloudflare Email Service.
  * Sends at most once: a claim on the row stops the browser callback and the webhook
  * from both sending. Never throws — failures are stored in email_error and logged.
  */
 export async function sendInvoiceEmail(invoiceId: string | null | undefined): Promise<void> {
   if (!invoiceId) return;
-  const key = process.env.BREVO_API_KEY;
-  if (!key) { console.warn("invoice email skipped: BREVO_API_KEY not set"); return; }
+  const email = await emailBinding();
+  if (!email) { console.warn("invoice email skipped: EMAIL binding not available"); return; }
   const db = getServiceClient();
   const staleClaim = new Date(Date.now() - 10 * 60_000).toISOString();
   const { data: row } = await db.from("invoices").update({ email_claimed_at: new Date().toISOString() })
@@ -54,22 +74,17 @@ export async function sendInvoiceEmail(invoiceId: string | null | undefined): Pr
 
     const from = process.env.INVOICE_FROM_EMAIL || SELLER.email;
     const bcc = process.env.INVOICE_BCC_EMAIL || "";
-    const res = await fetch("https://api.brevo.com/v3/smtp/email", {
-      method: "POST",
-      headers: { "api-key": key, "content-type": "application/json", accept: "application/json" },
-      body: JSON.stringify({
-        sender: { name: SELLER.name, email: from },
-        to: [{ email: doc.buyer_email, ...(doc.buyer_name ? { name: doc.buyer_name } : {}) }],
-        ...(bcc ? { bcc: [{ email: bcc }] } : {}),
-        replyTo: { email: SELLER.email, name: SELLER.name },
-        subject: doc.kind === "invoice" ? `Your iParkar Learning invoice ${doc.number}` : `Your iParkar Learning refund – credit note ${doc.number}`,
-        textContent: text,
-        htmlContent: html,
-        attachment: [{ name: docFileName(doc), content: Buffer.from(pdf).toString("base64") }],
-        tags: [doc.kind],
-      }),
+    const result = await email.send({
+      from: { email: from, name: SELLER.name },
+      to: doc.buyer_name ? { email: doc.buyer_email!, name: doc.buyer_name } : doc.buyer_email!,
+      ...(bcc ? { bcc } : {}),
+      replyTo: { email: SELLER.email, name: SELLER.name },
+      subject: doc.kind === "invoice" ? `Your iParkar Learning invoice ${doc.number}` : `Your iParkar Learning refund – credit note ${doc.number}`,
+      text,
+      html,
+      attachments: [{ content: Buffer.from(pdf).toString("base64"), filename: docFileName(doc), type: "application/pdf", disposition: "attachment" }],
     });
-    if (!res.ok) throw new Error(`Brevo ${res.status}: ${(await res.text()).slice(0, 300)}`);
+    console.log("invoice emailed", doc.number, result.messageId);
     await db.from("invoices").update({ emailed_at: new Date().toISOString(), email_error: null }).eq("id", row.id);
   } catch (e) {
     console.error("invoice email", invoiceId, e);
