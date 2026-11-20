@@ -52,7 +52,7 @@ export const docFileName = (d: Pick<InvoiceDoc, "kind" | "number">) =>
 const hex = (h: string) => rgb(parseInt(h.slice(1, 3), 16) / 255, parseInt(h.slice(3, 5), 16) / 255, parseInt(h.slice(5, 7), 16) / 255);
 const C = {
   midnight: hex("#02093a"), marigold: hex("#ffb110"), paper: hex("#f6f5f4"), white: hex("#ffffff"),
-  ink: hex("#111111"), graphite: hex("#615d59"), hair: hex("#e4e2df"), sky: hex("#e6f3fe"),
+  ink: hex("#111111"), graphite: hex("#615d59"), hair: hex("#e4e2df"),
 };
 const W = 595.28, H = 841.89;
 const b64 = (s: string) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
@@ -73,7 +73,7 @@ function monogram(p: PDFPage, x: number, y: number, size: number) {
     { x, y: top, scale: s, borderColor: C.white, borderWidth: 13 });
 }
 
-/** Builds the A4 PDF in the iParkar design system (layout "C": white card on paper, centred title). */
+/** Builds the A4 PDF in the iParkar design system (layout "B": clean letterhead). */
 export async function renderInvoicePdf(d: InvoiceDoc): Promise<Uint8Array> {
   const pdf = await PDFDocument.create();
   pdf.registerFontkit(fontkit);
@@ -103,94 +103,80 @@ export async function renderInvoicePdf(d: InvoiceDoc): Promise<Uint8Array> {
     if (cur) out.push(cur);
     return out;
   };
-  const label = (s: string, x: number, y: number, align?: "left" | "center" | "right") =>
-    text(s.toUpperCase(), x, y, { font: f.s, size: 7.5, color: C.graphite, align });
+  const label = (s: string, x: number, y: number) => text(s.toUpperCase(), x, y, { font: f.s, size: 7.5, color: C.graphite });
 
   const isInv = d.kind === "invoice";
-  const L = 56, R = W - 56, CX = W / 2;
+  const L = 56, R = W - 56;
 
-  // Page and header
-  p.drawRectangle({ x: 0, y: 0, width: W, height: H, color: C.paper });
-  monogram(p, L, H - 84, 32);
-  const wm = f.b.widthOfTextAtSize("iParkar", 15);
-  text("iParkar", L + 42, H - 72, { font: f.b, size: 15, color: C.midnight });
-  text("Learning", L + 42 + wm + 4.5, H - 72, { size: 15, color: C.graphite });
-  const pill = isInv ? "PAID" : "REFUNDED";
-  const pw = Math.max(80, f.b.widthOfTextAtSize(pill, 10) + 36);
-  roundRect(p, R - pw, H - 81, pw, 26, 13, isInv ? C.marigold : C.sky);
-  text(pill, R - pw / 2, H - 71.5, { font: f.b, size: 10, color: C.midnight, align: "center" });
+  // Letterhead: monogram, wordmark, seller details
+  monogram(p, L, H - 96, 44);
+  const wm = f.b.widthOfTextAtSize("iParkar", 20);
+  text("iParkar", L + 56, H - 80, { font: f.b, size: 20, color: C.midnight });
+  text("Learning", L + 56 + wm + 6, H - 80, { size: 20, color: C.graphite });
+  [SELLER.address[0], `${SELLER.address[1]}, ${SELLER.address[2]}`, `${SELLER.email}  ·  ${SELLER.web}`]
+    .forEach((v, i) => text(v, L + 56, H - 98 - i * 12, { size: 8.5, color: C.graphite }));
 
-  // Card
-  roundRect(p, 40, 70, W - 80, H - 180, 12, C.white);
-
-  // Centred title and document details
-  let y = H - 160;
-  text(docTitle(d), CX, y, { font: f.b, size: 30, color: C.midnight, align: "center" });
-  p.drawRectangle({ x: CX - 18, y: y - 16, width: 36, height: 3, color: C.marigold });
+  // Marigold rule, title (left) and document details (right)
+  p.drawRectangle({ x: L, y: H - 150, width: 64, height: 4, color: C.marigold });
+  text(docTitle(d), L, H - 190, { font: f.b, size: 30, color: C.midnight });
   const meta: [string, string][] = [[isInv ? "Invoice no." : "Credit note no.", d.number], ["Date", docDate(d.issued_at)]];
   if (d.original) meta.push(["Against invoice", d.original.number], ["Invoice date", docDate(d.original.issued_at)]);
-  const colW = Math.min(150, (R - L) / meta.length);
-  const x0 = CX - (colW * meta.length) / 2;
-  y -= 48;
   meta.forEach(([k, v], i) => {
-    const cx = x0 + colW * i + colW / 2;
-    label(k, cx, y, "center");
-    text(v, cx, y - 15, { font: f.s, size: 10, align: "center" });
+    text(k, R - 185, H - 164 - i * 15, { size: 9, color: C.graphite });
+    text(v, R, H - 164 - i * 15, { font: f.s, size: 9, align: "right" });
   });
-  y -= 36;
-  p.drawLine({ start: { x: L + 8, y }, end: { x: R - 8, y }, thickness: 0.8, color: C.hair });
 
-  // From / Billed to
-  y -= 28;
-  label("From", L + 8, y);
-  label(isInv ? "Billed to" : "Issued to", CX + 20, y);
-  const from = [SELLER.name, ...SELLER.address, SELLER.email];
+  // Billed to
+  let y = H - 240;
+  label(isInv ? "Billed to" : "Issued to", L, y);
   const name = d.buyer_name && !safe(d.buyer_name).includes("?") ? d.buyer_name : null;
   const to = [name, d.buyer_email, countryName(d.buyer_country)].filter(Boolean) as string[];
-  from.forEach((v, i) => text(v, L + 8, y - 16 - i * 13, { size: 9.5, font: i === 0 ? f.s : f.r }));
-  to.forEach((v, i) => text(v, CX + 20, y - 16 - i * 13, { size: 9.5, font: i === 0 && name ? f.s : f.r }));
-  y -= 16 + Math.max(from.length, to.length) * 13 + 22;
+  to.forEach((v, i) => text(v, L, y - 18 - i * 15, { size: 11, font: i === 0 && name ? f.s : f.r }));
+  y -= 18 + to.length * 15 + 40;
 
-  // Line item table
-  roundRect(p, L, y - 8, R - L, 26, 6, C.paper);
-  text("Description", L + 12, y, { font: f.s, size: 9, color: C.graphite });
+  // Line item table (hairlines)
+  p.drawLine({ start: { x: L, y: y + 18 }, end: { x: R, y: y + 18 }, thickness: 0.8, color: C.hair });
+  text("Description", L, y, { font: f.s, size: 9, color: C.graphite });
   text("Qty", R - 150, y, { font: f.s, size: 9, color: C.graphite, align: "right" });
-  text("Amount", R - 12, y, { font: f.s, size: 9, color: C.graphite, align: "right" });
+  text("Amount", R, y, { font: f.s, size: 9, color: C.graphite, align: "right" });
+  p.drawLine({ start: { x: L, y: y - 8 }, end: { x: R, y: y - 8 }, thickness: 0.8, color: C.hair });
   const amount = money(d.amount_minor, d.currency);
   y -= 32;
-  const desc = wrap(d.description, f.r, 11, R - 200 - L);
+  const desc = wrap(d.description, f.r, 11, R - 190 - L);
   text("1", R - 150, y, { size: 11, align: "right" });
-  text(amount, R - 12, y, { size: 11, align: "right" });
-  desc.forEach((ln, i) => text(ln, L + 12, y - i * 15, { size: 11 }));
+  text(amount, R, y, { size: 11, align: "right" });
+  desc.forEach((ln, i) => text(ln, L, y - i * 15, { size: 11 }));
   y -= (desc.length - 1) * 15 + 14;
   p.drawLine({ start: { x: L, y }, end: { x: R, y }, thickness: 0.8, color: C.hair });
-  y -= 26;
-  text("Total", R - 150, y, { font: f.s, size: 12, align: "right" });
-  text(amount, R - 12, y, { font: f.b, size: 14, color: C.midnight, align: "right" });
-  y -= 16;
-  text(isInv ? "Amount paid" : "Amount refunded", R - 150, y, { size: 8.5, color: C.graphite, align: "right" });
-  text(amount, R - 12, y, { size: 8.5, color: C.graphite, align: "right" });
+
+  // Total box
+  const boxW = 230, boxH = 54;
+  roundRect(p, R - boxW, y - 12 - boxH, boxW, boxH, 12, C.paper);
+  text("Total", R - boxW + 16, y - 33, { font: f.s, size: 11, color: C.graphite });
+  text(amount, R - 16, y - 36, { font: f.b, size: 16, color: C.midnight, align: "right" });
+  text(isInv ? "Amount paid in full" : "Amount refunded", R - boxW + 16, y - 50, { size: 8, color: C.graphite });
+  y -= 12 + boxH + 40;
 
   // Payment / refund details
-  y -= 44;
-  label(isInv ? "Payment" : "Refund", L + 8, y);
-  const pay = isInv
+  label(isInv ? "Payment" : "Refund", L, y);
+  const pay = (isInv
     ? [`Paid online via Razorpay on ${docDate(d.issued_at)}`, d.provider_payment_id ? `Payment ID: ${d.provider_payment_id}` : null]
     : ["Refunded via Razorpay to the original payment method", d.provider_payment_id ? `Original payment ID: ${d.provider_payment_id}` : null,
-       d.provider_refund_id ? `Refund ID: ${d.provider_refund_id}` : null];
-  (pay.filter(Boolean) as string[]).forEach((v, i) => text(v, L + 8, y - 16 - i * 14, { size: 10 }));
-  y -= 16 + pay.filter(Boolean).length * 14 + 26;
+       d.provider_refund_id ? `Refund ID: ${d.provider_refund_id}` : null]).filter(Boolean) as string[];
+  pay.forEach((v, i) => text(v, L, y - 16 - i * 14, { size: 10 }));
+  y -= 16 + pay.length * 14 + 28;
 
   // Notes
-  label("Notes", L + 8, y);
+  label("Notes", L, y);
   y -= 16;
   const notes = [SELLER.taxNote, isInv
     ? "One-time payment for online access for the period shown; no automatic renewal. Refunds follow our refund policy at iparkar.com/refunds."
     : "This credit note records a refund against the invoice shown above."];
-  for (const n of notes) for (const ln of wrap(n, f.r, 8.5, R - L - 24)) { text(ln, L + 8, y, { size: 8.5, color: C.graphite }); y -= 12; }
+  for (const n of notes) for (const ln of wrap(n, f.r, 8.5, R - L)) { text(ln, L, y, { size: 8.5, color: C.graphite }); y -= 12; }
 
-  // Footer
-  text("This is a computer-generated document and does not require a signature.", L, 44, { size: 8, color: C.graphite });
-  text(`${SELLER.name} · ${SELLER.web}`, R, 44, { size: 8, color: C.graphite, align: "right" });
+  // Footer and Midnight base strip
+  text("This is a computer-generated document and does not require a signature.", L, 40, { size: 8, color: C.graphite });
+  text(`${SELLER.name} · ${SELLER.web}`, R, 40, { size: 8, color: C.graphite, align: "right" });
+  p.drawRectangle({ x: 0, y: 0, width: W, height: 6, color: C.midnight });
   return pdf.save();
 }
