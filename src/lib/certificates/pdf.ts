@@ -254,8 +254,8 @@ export async function renderCertificatePdf(data: CertificateData, assets: Certif
   page.drawRectangle({ x: X(RX), y: Y(ruleTop + 1), width: X(220), height: 1 * S, color: C.ink, opacity: 0.2 });
   text("Date of completion", { x: RX, top: capTop, size: 12, font: F.r, color: C.graphite });
   if (I.sig) {
-    // Handwritten signature (transparent PNG) above the signatory name, fitted inside 220 × 56 px.
-    const maxW = 220, maxH = 56;
+    // Handwritten signature (transparent PNG) above the signatory name, fitted inside 220 × 72 px.
+    const maxW = 220, maxH = 72;
     const k = Math.min(maxW / I.sig.width, maxH / I.sig.height);
     const w = I.sig.width * k, h = I.sig.height * k;
     page.drawImage(I.sig, { x: X(sx), y: Y(valTop - 2), width: X(w), height: h * S });
