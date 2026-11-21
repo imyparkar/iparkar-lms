@@ -160,7 +160,8 @@ export const ChapterContentSchema = z.object({
   meta: z.object({
     summary: z.string().optional(),
     outcomes: z.array(z.string()).optional(),
-    source: z.object({ edition: z.string(), pages: z.tuple([z.number(), z.number()]) }).passthrough(),
+    // pages is the source study guide's page range; courses written as original content (PMP-SPS) have none.
+    source: z.object({ edition: z.string(), pages: z.tuple([z.number(), z.number()]).optional() }).passthrough(),
   }).passthrough(),
   sections: z.array(SectionSchema).min(1),
 }).superRefine((c, ctx) => {
@@ -181,7 +182,7 @@ export const ManifestSchema = z.object({
   domains: z.array(z.object({ domain: z.number(), title: z.string(), weight: z.number(), chapter_count: z.number() }).passthrough()).min(1).max(12),
   chapters: z.array(z.object({
     id: z.string(), domain: z.number(), title: z.string(), objectives: z.array(z.string()),
-    prerequisite: z.boolean(), pages: z.tuple([z.number(), z.number()]),
+    prerequisite: z.boolean(), pages: z.tuple([z.number(), z.number()]).nullable(),
   }).passthrough()),
 }).passthrough();
 export type Manifest = z.infer<typeof ManifestSchema>;

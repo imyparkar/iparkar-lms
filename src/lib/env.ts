@@ -22,6 +22,8 @@ export function checkoutUrl(courseCode: string): string | null {
     "ASP-SPS": process.env.NEXT_PUBLIC_CHECKOUT_URL_ASP_SPS,
     // CSP Self Paced Study Course — separate from the CSP practice-exam package.
     "CSP-SPS": process.env.NEXT_PUBLIC_CHECKOUT_URL_CSP_SPS,
+    // PMP® Exam Prep Course (self-paced, 35 hours).
+    "PMP-SPS": process.env.NEXT_PUBLIC_CHECKOUT_URL_PMP_SPS,
   };
   return map[courseCode] || null;
 }

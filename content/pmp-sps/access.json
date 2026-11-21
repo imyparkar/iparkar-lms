@@ -1,0 +1,7 @@
+{
+  "_note": "Commercial settings applied by `npm run import:study`. Mirrors ASP-SPS / CSP-SPS (owner to confirm the PMP price and access period). Self enrollment opens only once a version is published and marked as the enrollment default.",
+  "enrollment_policy": "self",
+  "trial_days": 7,
+  "access_days": 365,
+  "price_label": "US$120"
+}
