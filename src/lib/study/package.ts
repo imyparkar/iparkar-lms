@@ -36,7 +36,7 @@ export function buildPackage(manifestRaw: unknown, chapterRaw: Record<string, un
     const m = manifest.chapters.find((x) => x.id === c.id);
     if (!m) { issues.push({ chapter: c.id, message: "not in manifest" }); continue; }
     if (chapters[c.id]) { issues.push({ chapter: c.id, message: "authored twice" }); continue; }
-    const [lo, hi] = m.pages;
+    const [lo, hi] = m.pages ?? [1, Number.MAX_SAFE_INTEGER];
     for (const s of c.sections) for (const b of s.blocks) {
       if ("pages" in b && b.pages && (b.pages[0] < lo || b.pages[1] > hi || b.pages[0] > b.pages[1])) {
         issues.push({ chapter: c.id, message: `${s.code}: block pages ${b.pages} outside chapter ${lo}–${hi}` });
@@ -58,7 +58,9 @@ export function buildPackage(manifestRaw: unknown, chapterRaw: Record<string, un
       const c = chapters[m.id];
       return {
         id: m.id, domain: m.domain, sort_order: i + 1, title: m.title, objectives: m.objectives,
-        prerequisite: m.prerequisite, required: true, pages: m.pages,
+        prerequisite: m.prerequisite, required: true,
+        // omitted rather than null: admin_study_import reads ch -> 'pages' with jsonb_array_elements_text
+        ...(m.pages ? { pages: m.pages } : {}),
         ...(c ? {
           est_minutes: c.est_minutes, review_status: c.review_status,
           meta: { ...c.meta, objective_statement: (m as { objective_statement?: string | null }).objective_statement ?? null },

@@ -25,6 +25,32 @@ export type StudyCourseProfile = {
   startHint: string;
   /** Extra lead on the Domain 1 page, if any. */
   domainOneLead?: string;
+  /** Body that owns the examination mark, e.g. "the Board of Certified Safety Professionals (BCSP)". */
+  markOwner: string;
+  /** Short name of that body, used in "X does not issue this record". */
+  markOwnerShort: string;
+  /** Where learners check exam policies, e.g. "bcsp.org". */
+  policySite: string;
+  /** What a top-level group is called: "Domain" (exam domains) or "Module" (course modules). */
+  unit: "Domain" | "Module";
+  /** Caption for a group's weight, e.g. "12% of the exam" or "4 hours". */
+  weightLabel: (weight: number | string | null) => string;
+  /** Lead under the group list on the course page. */
+  weightsLead: (statedBlueprint: string | null | undefined) => string;
+  /** Prefix for a chapter's objective codes on the domain page, e.g. "Objective" or "ECO tasks". */
+  objectiveLabel: string;
+  /** True when learners can generate an iParkar Learning certificate of course completion (PDF). */
+  certificate?: boolean;
+};
+
+const BCSP = {
+  markOwner: "the Board of Certified Safety Professionals (BCSP)",
+  markOwnerShort: "BCSP",
+  policySite: "bcsp.org",
+  unit: "Domain" as const,
+  weightLabel: (w: number | string | null) => `${Number(w)}% of the exam`,
+  weightsLead: (b: string | null | undefined) => `Weights are the exam distribution the guide states for blueprint ${b ?? ""}. Every chapter counts equally towards completion.`,
+  objectiveLabel: "Objective",
 };
 
 const PROFILES: Record<string, StudyCourseProfile> = {
@@ -40,6 +66,7 @@ const PROFILES: Record<string, StudyCourseProfile> = {
     betaSource: "the iParkar ASP Exam Study Guide",
     startHint: "Start with chapters 1.1 and 1.2; every calculation chapter relies on them.",
     domainOneLead: "Start with chapters 1.1 and 1.2. Every later calculation chapter assumes the unit habits and maths tools they teach.",
+    ...BCSP,
   },
   "CSP-SPS": {
     code: "CSP-SPS",
@@ -53,6 +80,28 @@ const PROFILES: Record<string, StudyCourseProfile> = {
     separateFrom: "the CSP practice exams",
     betaSource: "the iParkar CSP Exam Study Guide",
     startHint: "Start with chapter 1.1, or open any domain: chapters can be studied in any order.",
+    ...BCSP,
+  },
+  "PMP-SPS": {
+    code: "PMP-SPS",
+    examMark: "PMP®",
+    blueprint: "ECO",
+    guideName: "original iParkar Learning lessons referencing the PMBOK® Guide, 8th edition",
+    overview: () =>
+      "Thirty-five hours of self-paced study in nine modules and fifty-two chapters, mapped to every task in the PMP® Examination Content Outline (July 2026). Each chapter teaches one topic, works an example from a different industry across predictive, adaptive and hybrid delivery, asks you to apply it, recaps, and ends with a knowledge check. Study in any order; we recommend starting with module 1.",
+    practiceNote: "Knowledge-check questions are original to this course and are not PMI examination items.",
+    separateFrom: "PMI's own courses and examination",
+    betaSource: "the iParkar Learning PMP® Exam Prep Course",
+    startHint: "Start with chapter 1.1, or open any module: chapters can be studied in any order.",
+    markOwner: "the Project Management Institute, Inc. (PMI)",
+    markOwnerShort: "PMI",
+    policySite: "pmi.org",
+    unit: "Module",
+    weightLabel: (w) => `${Number(w)} hour${Number(w) === 1 ? "" : "s"}`,
+    weightsLead: () =>
+      "Module hours are the course's 35-hour learning budget (Business Acumen 8 h, Ways of Working 19 h, Power Skills 8 h), including reading, examples, activities and knowledge checks. Every chapter counts equally towards completion.",
+    objectiveLabel: "ECO",
+    certificate: true,
   },
 };
 
@@ -66,6 +115,13 @@ const NEUTRAL: StudyCourseProfile = {
   separateFrom: "iParkar's practice exams",
   betaSource: "the course study guide",
   startHint: "Start with the first chapter, or open any domain.",
+  markOwner: "the certification body named in this course",
+  markOwnerShort: "The certification body",
+  policySite: "the certification body's website",
+  unit: "Domain",
+  weightLabel: (w) => `${Number(w)}% of the exam`,
+  weightsLead: () => "Every chapter counts equally towards completion.",
+  objectiveLabel: "Objective",
 };
 
 export function courseProfile(codeOrSlug: string | null | undefined): StudyCourseProfile {
@@ -73,9 +129,9 @@ export function courseProfile(codeOrSlug: string | null | undefined): StudyCours
   return PROFILES[key] ?? NEUTRAL;
 }
 
-/** Independence statement for a course, never implying BCSP review or endorsement. */
+/** Independence statement for a course, never implying review or endorsement by the mark owner. */
 export function independenceStatement(p: StudyCourseProfile) {
   return p.examMark
-    ? `${p.examMark} is a registered mark of the Board of Certified Safety Professionals (BCSP), which has not reviewed or endorsed this course.`
+    ? `${p.examMark} is a registered mark of ${p.markOwner}, which has not reviewed or endorsed this course.`
     : "The certification body named in this course has not reviewed or endorsed it.";
 }

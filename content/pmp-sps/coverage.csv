@@ -1,0 +1,27 @@
+eco_code,domain,task,chapters
+People 1,People,Develop a common vision,2.1 9.3
+People 2,People,Manage conflicts,6.4 6.5 9.3
+People 3,People,Lead the project team,1.2 6.3 6.4 6.7 9.2 9.3
+People 4,People,Engage stakeholders,2.2 6.1 6.7 9.3
+People 5,People,Align stakeholder expectations,2.2 2.3 6.6
+People 6,People,Manage stakeholder expectations,2.3
+People 7,People,Help ensure knowledge transfer,6.6 8.3 8.5 9.3
+People 8,People,Plan and manage communication,2.6 6.1 6.2 9.3
+Process 1,Process,Develop an integrated project management plan and plan delivery,1.3 1.4 4.1 4.2 4.6 9.1 9.3
+Process 2,Process,Develop and manage project scope,3.3 3.4 3.6
+Process 3,Process,Help ensure value-based delivery,1.1 1.2 2.5 3.1 3.2 9.3
+Process 4,Process,Plan and manage resources,4.2 4.3
+Process 5,Process,Plan and manage procurement,5.1 5.2 5.3 8.4 9.3
+Process 6,Process,Plan and manage finance,4.4 4.5 7.6 8.4 9.3
+Process 7,Process,Plan and optimize quality of products/deliverables,3.5 5.4 9.3
+Process 8,Process,Plan and manage schedule,4.2 5.5 5.6 9.3
+Process 9,Process,Evaluate project status,1.4 3.6 4.6 5.6 6.2 7.6 8.1 9.2 9.3
+Process 10,Process,Manage project closure,8.2 8.3 8.4 9.3
+Business Environment 1,Business Environment,Define and establish project governance,1.1 2.4 2.5 2.6 3.1 3.6 9.3
+Business Environment 2,Business Environment,Plan and manage project compliance,1.2 3.5 7.8 9.3
+Business Environment 3,Business Environment,Manage and control changes,7.5 9.2 9.3
+Business Environment 4,Business Environment,Remove impediments and manage issues,7.4
+Business Environment 5,Business Environment,Plan and manage risk,7.1 7.2 7.3 9.3
+Business Environment 6,Business Environment,Continuous improvement,8.5 9.3 9.4
+Business Environment 7,Business Environment,Support organizational change,7.7 9.3
+Business Environment 8,Business Environment,Evaluate external business environment changes,7.8 9.3

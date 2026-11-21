@@ -12,6 +12,7 @@ export function AppHeader({ name, isAdmin }: { name: string; isAdmin: boolean })
           <NavLink href="/dashboard">Dashboard</NavLink>
           <NavLink href="/learn">My learning</NavLink>
           <NavLink href="/study-guides">Study guides</NavLink>
+          <NavLink href="/certificates">Certificates</NavLink>
           {isAdmin && <NavLink href="/admin">Admin</NavLink>}
         </nav>
         <div className="flex items-center gap-2">

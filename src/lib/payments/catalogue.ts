@@ -27,6 +27,8 @@ const ON_SALE: Record<string, readonly number[]> = {
   // Self Paced Study Courses: 365 days (build.mjs on iparkar.com).
   "ASP-SPS": [365],
   "CSP-SPS": [365],
+  // PMP® Exam Prep Course (35-hour self-paced, certificate of course completion). Price tier as the other SPS courses: owner to confirm.
+  "PMP-SPS": [365],
 };
 
 type Region = { currency: string; countries: string[]; exam: [number, number, number]; cit: [number, number, number]; sps: number };

@@ -21,7 +21,8 @@ async function latestPdf(bucket: R2Bucket, code: string) {
     const page = await bucket.list({ cursor, limit: 1000 });
     for (const o of page.objects) {
       const k = o.key.toLowerCase();
-      if (k.endsWith(".pdf") && word.test(k) && (!best || o.uploaded > best.uploaded)) best = o;
+      // certificates/ holds learners' issued certificates in the same private bucket; never serve them as a guide.
+      if (k.endsWith(".pdf") && !k.startsWith("certificates/") && word.test(k) && (!best || o.uploaded > best.uploaded)) best = o;
     }
     cursor = page.truncated ? page.cursor : undefined;
   } while (cursor);

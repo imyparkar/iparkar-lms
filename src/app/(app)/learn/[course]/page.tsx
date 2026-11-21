@@ -52,7 +52,7 @@ export default async function CourseOverview({ params }: { params: Promise<{ cou
         </div>
         <div className="card space-y-4">
           <ProgressMeter done={p.completed_chapters} total={p.required_chapters} label="Chapters completed" />
-          <p className="text-body-sm text-graphite">{p.domains_completed} of {p.domains_total} domains complete{c.course.completed_at ? ` · Course completed ${fmtDate(c.course.completed_at)}` : ""}</p>
+          <p className="text-body-sm text-graphite">{p.domains_completed} of {p.domains_total} {profile.unit.toLowerCase()}s complete{c.course.completed_at ? ` · Course completed ${fmtDate(c.course.completed_at)}` : ""}</p>
           {c.course.completed_at && <Link className="btn-outline" href={`/learn/${course}/completion`}>View completion record</Link>}
           <p className="text-caption text-slate">Version {c.course.version}{c.course.is_pilot ? " · pilot enrollment in an unpublished version" : ""} · {authored} of {p.required_chapters} chapters available now</p>
           <p className="text-body-sm text-ink">{accessLine(c.access)}</p>
@@ -68,8 +68,8 @@ export default async function CourseOverview({ params }: { params: Promise<{ cou
 
       <section aria-labelledby="domains" className="space-y-5">
         <div>
-          <h2 id="domains" className="text-[32px] font-semibold tracking-[-0.8px]">{NUMBER_WORDS[c.domains.length] ?? c.domains.length} domains</h2>
-          <p className="lead mt-2">Weights are the exam distribution the guide states for blueprint {c.course.stated_blueprint}. Every chapter counts equally towards completion.</p>
+          <h2 id="domains" className="text-[32px] font-semibold tracking-[-0.8px]">{NUMBER_WORDS[c.domains.length] ?? c.domains.length} {profile.unit.toLowerCase()}s</h2>
+          <p className="lead mt-2">{profile.weightsLead(c.course.stated_blueprint)}</p>
         </div>
         {c.access.has_access && c.resources.some((r) => r.kind === "glossary" || r.kind === "bibliography") && (
           <p className="text-body text-graphite">
@@ -86,7 +86,7 @@ export default async function CourseOverview({ params }: { params: Promise<{ cou
               <li key={d.number} className="flex h-full flex-col overflow-hidden rounded-card border border-hairline bg-white">
                 <Link href={`/learn/${course}/domain/${d.number}`} className="flex flex-1 flex-col transition-colors duration-200 hover:bg-paper">
                   <div className={`flex-1 px-5 py-4 text-ink ${PANELS[i % PANELS.length]}`}>
-                    <p className="text-caption">Domain {d.number} · {d.weight}% of the exam</p>
+                    <p className="text-caption">{profile.unit} {d.number} · {profile.weightLabel(d.weight)}</p>
                     <h3 className="mt-1 text-heading-sm">{d.title}</h3>
                   </div>
                   <div className="space-y-2 p-5">
@@ -107,7 +107,7 @@ export default async function CourseOverview({ params }: { params: Promise<{ cou
 
       <section className="card space-y-2 text-body-sm text-graphite" aria-label="About this course">
         <p><span className="font-semibold text-ink">About completion.</span> A chapter is complete when you have opened and marked every section as studied, answered every required activity and read its feedback, then pressed Finish chapter. Opening or scrolling never completes a chapter. Completion records your participation; it isn&apos;t a predicted score or a certification.</p>
-        <p><span className="font-semibold text-ink">Independence.</span> {independenceStatement(profile)} Check exam policies at bcsp.org. This study course is separate from {profile.separateFrom}.</p>
+        <p><span className="font-semibold text-ink">Independence.</span> {independenceStatement(profile)} Check exam policies at {profile.policySite}. This study course is separate from {profile.separateFrom}.</p>
       </section>
     </div>
   );

@@ -7,7 +7,7 @@ course-scoped analytics. Linked from the **Practice exam** tab on iparkar.com.
 - Architecture and security model: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 - Deploy, import the ASP bank, payments, backups: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)
 - Free SCORM courses (signed-in learners, `/free/<course>`): [`docs/SCORM-COURSES.md`](docs/SCORM-COURSES.md)
-- Self-paced study courses: ASP [`docs/STUDY-COURSE.md`](docs/STUDY-COURSE.md) · CSP [`docs/CSP-STUDY-COURSE.md`](docs/CSP-STUDY-COURSE.md) (60 chapters converted, draft, not yet imported)
+- Self-paced study courses: ASP [`docs/STUDY-COURSE.md`](docs/STUDY-COURSE.md) · CSP [`docs/CSP-STUDY-COURSE.md`](docs/CSP-STUDY-COURSE.md) (60 chapters converted, draft, not yet imported) · PMP [`docs/PMP-STUDY-COURSE.md`](docs/PMP-STUDY-COURSE.md) (52 chapters, 35 h, certificates of course completion)
 
 ```bash
 npm install

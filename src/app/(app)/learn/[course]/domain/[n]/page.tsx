@@ -27,19 +27,19 @@ export default async function DomainPage({ params }: { params: Promise<{ course:
   return (
     <div className="space-y-8">
       <nav aria-label="Breadcrumb" className="text-body-sm text-graphite">
-        <Link href="/learn" className="hover:text-ink">My learning</Link> / <Link href={`/learn/${course}`} className="hover:text-ink">{c.course.title}</Link> / <span className="text-ink">Domain {d.number}</span>
+        <Link href="/learn" className="hover:text-ink">My learning</Link> / <Link href={`/learn/${course}`} className="hover:text-ink">{c.course.title}</Link> / <span className="text-ink">{courseProfile(course).unit} {d.number}</span>
       </nav>
       <TrialNotice access={c.access} buyHref={buy} />
       {!c.access.has_access && <Paywall access={c.access} buyHref={buy} courseTitle={c.course.title} done={c.progress.completed_chapters} total={c.progress.required_chapters} slug={course} />}
       <header className="grid gap-6 lg:grid-cols-[1.4fr_1fr] lg:items-end">
         <div>
-          <p className="text-subheading text-graphite">Domain {d.number} · {d.weight}% of the exam (as stated by the guide)</p>
+          <p className="text-subheading text-graphite">{courseProfile(course).unit} {d.number} · {courseProfile(course).weightLabel(d.weight)}{courseProfile(course).unit === "Domain" ? " (as stated by the guide)" : ""}</p>
           <h1 className="mt-3 text-[40px] font-semibold leading-[1.1] tracking-[-1.2px]">{d.title}</h1>
           {d.intro && <p className="lead mt-3">{d.intro}</p>}
           {d.number === 1 && courseProfile(course).domainOneLead && <p className="lead mt-3">{courseProfile(course).domainOneLead}</p>}
         </div>
-        <div className="card"><ProgressMeter done={done} total={d.chapters.length} label="Chapters completed in this domain" />
-          <p className="mt-3 text-body-sm text-graphite">{done === d.chapters.length ? "Domain complete." : "The domain completes when every chapter in it is finished."}</p>
+        <div className="card"><ProgressMeter done={done} total={d.chapters.length} label={`Chapters completed in this ${courseProfile(course).unit.toLowerCase()}`} />
+          <p className="mt-3 text-body-sm text-graphite">{done === d.chapters.length ? `${courseProfile(course).unit} complete.` : `The ${courseProfile(course).unit.toLowerCase()} completes when every chapter in it is finished.`}</p>
           {sheet && c.access.has_access && <Link href={`/learn/${course}/formulas/${d.number}`} className="btn-outline mt-4">Open the formula sheet</Link>}</div>
       </header>
 
@@ -48,7 +48,7 @@ export default async function DomainPage({ params }: { params: Promise<{ course:
           <li key={ch.code} className="card flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
               <p className="text-caption text-slate">
-                {ch.objectives.length ? `Objective ${ch.objectives.join(", ")}` : "Prerequisite"}
+                {ch.objectives.length ? `${courseProfile(course).objectiveLabel} ${ch.objectives.join(", ")}` : "Prerequisite"}
                 {ch.source_pages ? ` · Guide pp. ${ch.source_pages[0]}–${ch.source_pages[1]}` : ""}
               </p>
               <h2 className="mt-1 text-[18px] font-semibold leading-snug text-ink"><span className="mr-1.5">{ch.code}</span>{ch.title}</h2>
