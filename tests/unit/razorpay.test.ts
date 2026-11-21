@@ -44,6 +44,22 @@ describe("price catalogue (mirrors iparkar.com)", () => {
     expect(priceFor("ASP-SPS", 90, "US")).toBeNull();
     expect(priceFor("XYZ", 90, "US")).toBeNull();
   });
+  it("charges the PMP course's own 365-day prices", () => {
+    const pmp = (cc: string) => priceFor("PMP-SPS", 365, cc);
+    expect(pmp("US")).toEqual({ amount: 299, currency: "USD", minor: 29900 });
+    expect(pmp("KW")).toEqual({ amount: 99, currency: "KWD", minor: 99000 });
+    expect(pmp("GB")).toEqual({ amount: 240, currency: "GBP", minor: 24000 });
+    expect(pmp("DE")).toEqual({ amount: 290, currency: "EUR", minor: 29000 });
+    expect(pmp("AE")).toEqual({ amount: 1150, currency: "AED", minor: 115000 });
+    expect(pmp("SA")).toEqual({ amount: 1200, currency: "SAR", minor: 120000 });
+    expect(pmp("QA")).toEqual({ amount: 1160, currency: "QAR", minor: 116000 });
+    expect(pmp("OM")).toEqual({ amount: 120, currency: "OMR", minor: 120000 });
+    expect(pmp("IN")).toEqual({ amount: 25000, currency: "INR", minor: 2500000 });
+    expect(pmp("BH")).toEqual({ amount: 299, currency: "USD", minor: 29900 }); // no BHD price set
+    expect(priceFor("PMP-SPS", 90, "US")).toBeNull();
+    expect(formatMoney(pmp("IN")!)).toBe("₹25,000");
+    expect(formatMoney(pmp("AE")!)).toBe("AED 1,150");
+  });
   it("formats like the website", () => {
     expect(formatMoney({ amount: 7999, currency: "INR" })).toBe("₹7,999");
     expect(formatMoney({ amount: 30, currency: "KWD" })).toBe("KWD 30");

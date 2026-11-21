@@ -12,6 +12,11 @@ export type CertificateBucket = {
   put(key: string, value: Uint8Array, opts?: { httpMetadata?: { contentType?: string }; customMetadata?: Record<string, string>; sha256?: string }): Promise<unknown>;
 };
 export const CERT_PREFIX = "certificates/";
+/**
+ * The instructor's handwritten signature (transparent PNG), kept in the private bucket rather than in this public
+ * repository. Upload it once: `wrangler r2 object put iparkar-study-guides/certificate-assets/signature.png --file signature.png --remote`.
+ */
+export const SIGNATURE_KEY = "certificate-assets/signature.png";
 
 export async function certificateBucket(): Promise<CertificateBucket | null> {
   try {
@@ -53,6 +58,7 @@ const MESSAGES: Record<string, [number, string]> = {
   course_incomplete: [403, "Finish every required chapter first. The certificate unlocks when the whole course is complete."],
   in_progress: [409, "Your certificate is already being generated. Wait a few seconds, then refresh this page."],
   invalid_name: [400, "Use letters, spaces, apostrophes, hyphens and full stops only."],
+  signature_missing: [503, "Certificates can't be issued at the moment. Nothing was issued. Please try again later or contact support@iparkar.com."],
   storage_unavailable: [503, "We couldn't save your certificate just now. Nothing was issued. Try again in a minute."],
   render_failed: [500, "We couldn't create the certificate PDF. Nothing was issued. Try again, or contact support@iparkar.com if it keeps happening."],
   save_failed: [503, "We couldn't save your certificate just now. Nothing was issued. Try again in a minute."],
@@ -83,6 +89,16 @@ export async function issueCertificate(
   const bucket = deps.bucket !== undefined ? deps.bucket : await certificateBucket();
   if (!bucket) return fail("storage_unavailable");
 
+  // Issued certificates are permanent, so never issue one without the signature in production.
+  let signature: Uint8Array | null = null;
+  try {
+    const obj = await bucket.get(SIGNATURE_KEY);
+    if (obj) signature = new Uint8Array(await new Response(obj.body).arrayBuffer());
+  } catch {
+    signature = null;
+  }
+  if (!signature && process.env.NODE_ENV === "production") return fail("signature_missing");
+
   const { data: claim, error } = await supabase.rpc("study_claim_certificate", { p_course_code: courseCode, p_name: check.value });
   if (error || !claim) return fail("save_failed");
   if (!claim.ok) return fail(claim.error);
@@ -98,7 +114,7 @@ export async function issueCertificate(
       issuedAtISO: c.completed_at, courseTitle: c.certificate_title, courseShortTitle: c.short_title,
       totalHours: Number(c.hours), categories: c.categories, mode: c.wording, issuer: c.issuer,
       instructorName: c.signatory_name, instructorTitle: c.signatory_title, siteLabel: "iparkar.com", timeZone: "UTC",
-    }, assets);
+    }, { ...assets, images: { ...assets.images, signature } });
   } catch {
     await release();
     return fail("render_failed");

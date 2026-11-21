@@ -19,7 +19,7 @@ Status on 21 Nov 2026: **built and validated, not yet imported or published.** C
 | `content/pmp-sps/manifest.json` | yes | 9 modules (stored as study domains; `weight` = module hours), 52 chapters (`1.1` … `9.4`, objectives = ECO task codes, `pages: null`) |
 | `content/pmp-sps/content-register.csv` | yes | Per chapter: minutes by component (reading, lesson, example, activity, check), Talent Triangle category, ECO tasks, PMBOK references, approaches, example industry, check items, review status |
 | `content/pmp-sps/coverage.csv` | yes | ECO task → chapters |
-| `content/pmp-sps/access.json` | yes | Self enrollment, 7-day trial, 365 days, US$120 (mirrors ASP/CSP; **owner to confirm**) |
+| `content/pmp-sps/access.json` | yes | Self enrollment, 7-day trial, 365 days, US$299. Regional prices are in `src/lib/payments/catalogue.ts` (`COURSE_PRICES`) |
 | `imports/pmp-sps/authoring/` | **no** | Source YAML (one file per module) and the PMBOK heading index |
 | `imports/pmp-sps/chapters/<id>.json` | **no** | Generated lesson packages (content and answer keys) |
 | `scripts/pmp-sps/build_package.py` | yes | Authoring YAML → manifest, registers and chapter JSON, with curriculum validation |
@@ -61,6 +61,8 @@ Then, on `/admin/study`, review it with a pilot enrollment, publish it and make 
 
 **Wording (owner decision, 21 Nov 2026):** the left panel reads **"Contact hours completed"**, and the body reads "…and completing 35 hours of project management training across the PMI Talent Triangle®". The Talent Triangle artwork is kept as supplied. The `study_certificate_programs.wording` value `pdu` would restore the template's PDU text, but don't use it unless iParkar Learning holds PMI ATP status.
 
+**Signature row:** the completion date and the signatory name share one line, the two rules sit at the same height, and "Date of completion" lines up with "Course instructor, iParkar Learning". The handwritten signature sits above the name. The iP monogram is drawn from `public/brand/iparkar-mark-reversed.svg`.
+
 **Turning certificates on for another course:** insert a row into `study_certificate_programs` (hours, categories, title, signatory) and set `certificate: true` in `courseProfile.ts`. The template is currently the PMP design.
 
 | Piece | Where |
@@ -91,8 +93,10 @@ Then, on `/admin/study`, review it with a pilot enrollment, publish it and make 
 
 ## 6. Open items for the owner
 
-1. **Price and access period** for PMP-SPS (set to US$120 / 365 days like the other study courses). The iparkar.com catalogue (`site-config.js`, `build.mjs`) needs a PMP-SPS entry, and `NEXT_PUBLIC_CHECKOUT_URL_PMP_SPS` is optional.
+1. **Prices (owner, 21 Nov 2026), 365 days.** KWD 99 · US$299 · £240 · €290 · AED 1,150 · SAR 1,200 · QAR 1,160 · OMR 120 · ₹25,000. Bahrain has no BHD price, so it pays US$299. The iparkar.com catalogue (`site-config.js`, `regional-prices.js`, `build.mjs`) needs the same PMP-SPS entry.
 2. **Talent Triangle artwork:** confirm your right to display it as a non-ATP, as noted in the course's flags-and-gaps document.
-3. **Signatory line** "Imran Parkar, PMP, CSP / Course instructor, iParkar Learning": confirm it is current. It is in `study_certificate_programs`.
+3. **Signature.** Upload the handwritten signature as a transparent PNG to the private bucket **before** the first certificate is issued:
+   `npx wrangler r2 object put iparkar-study-guides/certificate-assets/signature.png --file signature.png --remote`.
+   Production refuses to issue without it, because issued certificates cannot be changed. It is drawn above the signatory line "Imran Parkar, PMP, CIT" / "Course instructor, iParkar Learning". The signature stays out of this public repository.
 4. **Worker size:** the certificate assets add about 236 KB gzip, bringing the Worker to about 2.75 MB gzip. That is under the 3 MB Free-plan limit but close to it. On Workers Paid the limit is 10 MB.
 5. Content review: chapters are `draft`. Approve them in the register before publishing.

@@ -249,7 +249,7 @@ insert into public.study_certificate_programs (course_code, template, certificat
                                                signatory_name, signatory_title)
 values ('PMP-SPS', 'pmp-a4-landscape-v1', 'PMP® Exam Prep Course', 'PMP® Exam Prep Course', 35,
         '{"businessAcumen": 8, "waysOfWorking": 19, "powerSkills": 8}'::jsonb, 'hours',
-        'Imran Parkar, PMP, CSP', 'Course instructor, iParkar Learning')
+        'Imran Parkar, PMP, CIT', 'Course instructor, iParkar Learning')
 on conflict (course_code) do nothing;
 
 -- ---------- RLS and grants ----------

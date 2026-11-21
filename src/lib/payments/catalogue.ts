@@ -27,7 +27,7 @@ const ON_SALE: Record<string, readonly number[]> = {
   // Self Paced Study Courses: 365 days (build.mjs on iparkar.com).
   "ASP-SPS": [365],
   "CSP-SPS": [365],
-  // PMP® Exam Prep Course (35-hour self-paced, certificate of course completion). Price tier as the other SPS courses: owner to confirm.
+  // PMP® Exam Prep Course (35-hour self-paced, certificate of course completion): own prices in COURSE_PRICES.
   "PMP-SPS": [365],
 };
 
@@ -46,6 +46,15 @@ const REGIONS: Region[] = [
   { currency: "EUR", countries: ["AT", "BE", "HR", "CY", "EE", "FI", "FR", "DE", "GR", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PT", "SK", "SI", "ES"],
     exam: [85, 129, 169], cit: [42, 68, 85], sps: 105 },
 ];
+
+/**
+ * Course-specific 365-day prices that replace the shared SPS tier (owner, 21 Nov 2026).
+ * Countries without an entry here pay the course's USD price, even where the shared table has a region
+ * (for example Bahrain for PMP-SPS).
+ */
+const COURSE_PRICES: Record<string, { USD: number; byCurrency: Record<string, number> }> = {
+  "PMP-SPS": { USD: 299, byCurrency: { KWD: 99, GBP: 240, EUR: 290, AED: 1150, SAR: 1200, QAR: 1160, OMR: 120, INR: 25000 } },
+};
 
 /** Decimal places Razorpay expects for each currency (amounts are sent in the smallest unit). */
 const EXPONENT: Record<string, number> = { KWD: 3, BHD: 3, OMR: 3 };
@@ -67,9 +76,16 @@ export function isOnSale(courseCode: string, days: number): boolean {
 export function priceFor(courseCode: string, days: number, country: string | null | undefined): Money | null {
   const code = courseCode.toUpperCase();
   if (!isOnSale(code, days)) return null;
-  const tier = code.endsWith("-SPS") ? "sps" : code === "CIT" ? "cit" : "exam";
   const cc = (country ?? "").toUpperCase();
   const region = REGIONS.find((r) => r.countries.includes(cc));
+  const own = COURSE_PRICES[code];
+  if (own) {
+    const local = region ? own.byCurrency[region.currency] : undefined;
+    const currency = local !== undefined ? region!.currency : "USD";
+    const amount = local ?? own.USD;
+    return { amount, currency, minor: Math.round(amount * 10 ** exponent(currency)) };
+  }
+  const tier = code.endsWith("-SPS") ? "sps" : code === "CIT" ? "cit" : "exam";
   const amount = region ? (tier === "sps" ? region.sps : region[tier][PERIOD_INDEX[days]]) : USD[tier][days as 90 | 180 | 365];
   const currency = region ? region.currency : "USD";
   return { amount, currency, minor: Math.round(amount * 10 ** exponent(currency)) };

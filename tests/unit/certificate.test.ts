@@ -73,7 +73,7 @@ describe("issueCertificate", () => {
     certificate: { id: "c1", user_id: "u1", certificate_code: "IPL-PMP-AAAA-BBBB", name_on_certificate: "Ben Okafor",
       certificate_title: "PMP® Exam Prep Course", short_title: "PMP® Exam Prep Course", completed_at: "2026-11-21T09:30:00Z", hours: 35,
       categories: { businessAcumen: 8, waysOfWorking: 19, powerSkills: 8 }, wording: "hours", issuer: "iParkar Learning",
-      signatory_name: "Imran Parkar, PMP, CSP", signatory_title: "Course instructor, iParkar Learning" },
+      signatory_name: "Imran Parkar, PMP, CIT", signatory_title: "Course instructor, iParkar Learning" },
   };
   const session = (r: any) => ({ rpc: vi.fn(async () => ({ data: r, error: null })) }) as any;
 
@@ -105,6 +105,26 @@ describe("issueCertificate", () => {
     expect(again).toEqual({ ok: true, certificate_code: "IPL-PMP-AAAA-BBBB", already: true });
     expect(bucket.put).not.toHaveBeenCalled();
     expect(service.rpc).not.toHaveBeenCalled();
+  });
+  it("refuses to issue in production when the signature isn't in the private bucket", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+    try {
+      const s = session(claimed);
+      const r = await issueCertificate(s, "PMP-SPS", "Ben Okafor", "Ben Okafor", { bucket: { get: vi.fn(async () => null), put: vi.fn() }, service: { rpc: vi.fn() } as any });
+      expect(r).toMatchObject({ ok: false, error: "signature_missing" });
+      expect(s.rpc).not.toHaveBeenCalled();
+    } finally { vi.unstubAllEnvs(); }
+  });
+  it("reads the signature from the private bucket and draws it", async () => {
+    const png = (await certificateAssets()).images.iconBA as Uint8Array; // any PNG stands in for the signature
+    const bucket = { get: vi.fn(async (k: string) => (k === "certificate-assets/signature.png" ? { body: new Response(png as Uint8Array<ArrayBuffer>).body!, size: png.byteLength } : null)),
+      put: vi.fn(async (_k: string, v: Uint8Array) => { stored = v; }) };
+    let stored: Uint8Array | null = null;
+    const service = { rpc: vi.fn(async () => ({ data: { ok: true }, error: null })) } as any;
+    expect((await issueCertificate(session(claimed), "PMP-SPS", "Ben Okafor", "Ben Okafor", { bucket, service })).ok).toBe(true);
+    expect(bucket.get).toHaveBeenCalledWith("certificate-assets/signature.png");
+    const unsigned = await renderCertificatePdf({ ...base }, await certificateAssets());
+    expect(stored!.byteLength).toBeGreaterThan(unsigned.byteLength);
   });
   it("validates the name before touching the database", async () => {
     const s = session(claimed);

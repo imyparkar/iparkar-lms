@@ -17,7 +17,7 @@ export type CertificateData = {
 type Bytes = Uint8Array | ArrayBuffer;
 export type CertificateAssets = {
   fonts: { interRegular: Bytes; interMedium: Bytes; interSemiBold: Bytes; interBold: Bytes; serifSemiBold: Bytes };
-  images: { talentTriangle: Bytes; iconBA: Bytes; iconWoW: Bytes; iconPS: Bytes };
+  images: { talentTriangle: Bytes; iconBA: Bytes; iconWoW: Bytes; iconPS: Bytes; signature?: Bytes | null };
 };
 type TextOpts = { x: number; top: number; size: number; font: PDFFont; color: ReturnType<typeof rgb>; lh?: number; ls?: number; opacity?: number; kind?: "inter" | "serif"; align?: "left" | "right" };
 
@@ -89,6 +89,7 @@ export async function renderCertificatePdf(data: CertificateData, assets: Certif
     ba: await doc.embedPng(assets.images.iconBA),
     wow: await doc.embedPng(assets.images.iconWoW),
     ps: await doc.embedPng(assets.images.iconPS),
+    sig: assets.images.signature && (assets.images.signature as Uint8Array).byteLength ? await doc.embedPng(assets.images.signature) : null,
   };
   const page: PDFPage = doc.addPage([A4_W, A4_H]);
 
@@ -137,7 +138,7 @@ export async function renderCertificatePdf(data: CertificateData, assets: Certif
   svg("M33 27A7 7 0 1 1 19 27A7 7 0 1 1 33 27Z", { color: C.marigold });
   svg("M21.5 40H30.5A2 2 0 0 1 32.5 42V76A2 2 0 0 1 30.5 78H21.5A2 2 0 0 1 19.5 76V42A2 2 0 0 1 21.5 40Z", { color: C.midnight });
   svg("M43 22H52A2 2 0 0 1 54 24V76A2 2 0 0 1 52 78H43A2 2 0 0 1 41 76V24A2 2 0 0 1 43 22Z", { color: C.midnight });
-  svg("M47 28.5 H59 C68 28.5 74 34.5 74 42.5 C74 50.5 68 56.5 59 56.5 H47", { borderColor: C.midnight, borderWidth: 13 * S * mk });
+  svg("M47 28.5 H59 C68 28.5 74 34.5 74 42.5 C74 50.5 68 56.5 59 56.5 H47", { borderColor: C.midnight, borderWidth: 13 }); // viewBox units: drawSvgPath scales the stroke with the path
   text(data.issuer || "iParkar Learning", { x: 96, top: 72 - (18 * 1.2109) / 2, size: 18, font: F.sb, color: C.white, ls: -0.2 });
 
   // middle block — space-between positions computed from the template's flex column
@@ -242,21 +243,26 @@ export async function renderCertificatePdf(data: CertificateData, assets: Certif
   const fineTop = ART_H - 40 - fineLines.length * 10.667 * 1.4;
   fineLines.forEach((l, i) => text(l, { x: RX, top: fineTop + i * 10.667 * 1.4, size: 10.667, font: F.r, color: C.slate, lh: 10.667 * 1.4, ls: 0.21 }));
   const rowBottom = fineTop - 22;
-  // date block (220 px)
-  const dH = 16 * 1.2109 + 6 + 1 + 6 + 12 * 1.2109;
-  let dt = rowBottom - dH;
-  text(formatCertificateDate(data.completionDateISO, data.timeZone), { x: RX, top: dt, size: 16, font: F.sb, color: C.charcoal });
-  dt += 16 * 1.2109 + 6;
-  page.drawRectangle({ x: X(RX), y: Y(dt + 1), width: X(220), height: 1 * S, color: C.ink, opacity: 0.2 });
-  text("Date of completion", { x: RX, top: dt + 7, size: 12, font: F.r, color: C.graphite });
-  // signature block (260 px, right)
+  // Signature row: the date block (left, 220 px) and the signatory block (right, 260 px) share one baseline grid —
+  // the date and the signatory name on one line, the two rules at the same height, and "Date of completion" and
+  // the signatory title on one line beneath them.
+  const capTop = rowBottom - 12 * 1.2109;
+  const ruleTop = capTop - 7;
+  const valTop = ruleTop - 6 - 16 * 1.2109;
   const sx = RR - 260;
-  const sH = 26 + 6 + 1 + 6 + 14 * 1.2109 + 6 + 12 * 1.2109;
-  let st = rowBottom - sH + 26 + 6;
-  page.drawRectangle({ x: X(sx), y: Y(st + 1), width: X(260), height: 1 * S, color: C.ink, opacity: 0.2 });
-  st += 7;
-  text(data.instructorName || "Imran Parkar, PMP, CSP", { x: sx, top: st, size: 14, font: F.sb, color: C.charcoal });
-  text(data.instructorTitle || "Course instructor, iParkar Learning", { x: sx, top: st + 14 * 1.2109 + 6, size: 12, font: F.r, color: C.graphite });
+  text(formatCertificateDate(data.completionDateISO, data.timeZone), { x: RX, top: valTop, size: 16, font: F.sb, color: C.charcoal });
+  page.drawRectangle({ x: X(RX), y: Y(ruleTop + 1), width: X(220), height: 1 * S, color: C.ink, opacity: 0.2 });
+  text("Date of completion", { x: RX, top: capTop, size: 12, font: F.r, color: C.graphite });
+  if (I.sig) {
+    // Handwritten signature (transparent PNG) above the signatory name, fitted inside 220 × 56 px.
+    const maxW = 220, maxH = 56;
+    const k = Math.min(maxW / I.sig.width, maxH / I.sig.height);
+    const w = I.sig.width * k, h = I.sig.height * k;
+    page.drawImage(I.sig, { x: X(sx), y: Y(valTop - 2), width: X(w), height: h * S });
+  }
+  text(data.instructorName || "Imran Parkar, PMP, CIT", { x: sx, top: valTop, size: 16, font: F.sb, color: C.charcoal });
+  page.drawRectangle({ x: X(sx), y: Y(ruleTop + 1), width: X(260), height: 1 * S, color: C.ink, opacity: 0.2 });
+  text(data.instructorTitle || "Course instructor, iParkar Learning", { x: sx, top: capTop, size: 12, font: F.r, color: C.graphite });
 
   return doc.save({ useObjectStreams: true });
 }
