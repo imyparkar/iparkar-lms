@@ -55,6 +55,7 @@ const MESSAGES: Record<string, [number, string]> = {
   not_signed_in: [401, "Your session has ended. Sign in again, then generate your certificate."],
   not_offered: [404, "This course doesn't offer a certificate."],
   not_enrolled: [403, "You're not enrolled in this course, so a certificate can't be generated."],
+  purchase_required: [403, "Certificates are issued to learners who have bought the course. Buy the course to generate your certificate; your progress and completion are kept."],
   course_incomplete: [403, "Finish every required chapter first. The certificate unlocks when the whole course is complete."],
   in_progress: [409, "Your certificate is already being generated. Wait a few seconds, then refresh this page."],
   invalid_name: [400, "Use letters, spaces, apostrophes, hyphens and full stops only."],

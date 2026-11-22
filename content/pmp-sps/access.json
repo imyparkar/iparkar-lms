@@ -1,7 +1,7 @@
 {
-  "_note": "Commercial settings applied by `npm run import:study`. Owner-approved 21 Nov 2026: 365 days; US$299 (regional prices in src/lib/payments/catalogue.ts). Self enrollment opens only once a version is published and marked as the enrollment default.",
+  "_note": "Commercial settings applied by `npm run import:study`. Owner-approved 21 Nov 2026: 365 days; 3-day free trial (owner, 22 Nov 2026); US$299 (regional prices in src/lib/payments/catalogue.ts). Self enrollment opens only once a version is published and marked as the enrollment default.",
   "enrollment_policy": "self",
-  "trial_days": 7,
+  "trial_days": 3,
   "access_days": 365,
   "price_label": "US$299"
 }

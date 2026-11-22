@@ -23,7 +23,9 @@ export default async function BuyStudyCourse({ params, searchParams }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { course } = await params;
-  const justPaid = (await searchParams).paid === "1";
+  const sp = await searchParams;
+  const justPaid = sp.paid === "1";
+  const trialUsed = sp.notice === "trial-used";
   if (!/^[a-z]{2,8}(-[a-z]{2,8})?$/.test(course)) notFound();
   const code = courseCode(course);
   const { supabase, user } = await requireUser();
@@ -68,6 +70,11 @@ export default async function BuyStudyCourse({ params, searchParams }: {
           <li>One-time payment, no automatic renewal; your trial progress carries over</li>
         </ul>
         {access && <p className="mt-4 text-body-sm font-medium text-ink">Your access now: {accessLine(access)}</p>}
+        {trialUsed && !justPaid && (
+          <p role="status" className="mt-4 rounded-button border border-[#e0a100]/40 bg-[#fff6dd] px-4 py-3 text-body-sm">
+            <span className="font-semibold">Your access to this course has ended.</span> The free trial can be used once per account, and yours has already been used or your earlier access was closed. Buy the course to continue; any progress you made is kept. If you think this is wrong, contact support@iparkar.com.
+          </p>
+        )}
         {justPaid && (
           <p role="status" className="mt-4 rounded-button border border-[#2f8f4e]/30 bg-[#e3f4e8] px-4 py-3 text-body-sm font-semibold">
             Thank you — your payment is confirmed and your access is open. Razorpay emails your payment receipt.
@@ -80,7 +87,7 @@ export default async function BuyStudyCourse({ params, searchParams }: {
           ) : (
             <a href={buy} className="btn-primary" rel="noopener">Request for Access</a>
           )}
-          {offer?.self_enroll && offer.trial_days && (
+          {offer?.self_enroll && offer.trial_days && !trialUsed && (
             <form action={startStudyCourse}>
               <input type="hidden" name="course" value={slug} />
               <button type="submit" className="btn-outline">Start {offer.trial_days}-day free trial first</button>

@@ -9,8 +9,16 @@ export async function startStudyCourse(form: FormData) {
   const slug = String(form.get("course") ?? "");
   if (!/^[a-z]{2,8}(-[a-z]{2,8})?$/.test(slug)) redirect("/learn");
   const { supabase } = await requireUser();
-  const { data } = await supabase.rpc("study_self_enroll", { p_course_code: courseCode(slug) });
+  const code = courseCode(slug);
+  const { data } = await supabase.rpc("study_self_enroll", { p_course_code: code });
   revalidatePath("/learn");
   if (!data?.ok) redirect(`/learn?error=${encodeURIComponent(data?.error ?? "enrollment_closed")}`);
-  redirect(`/study/${courseSlug(courseCode(slug))}/1.1`);
+  if (data.started === false) {
+    // The free trial runs once per learner. If they already had this course (an earlier trial, a revoked
+    // pilot or an ended purchase) and have no access now, explain and offer to buy instead of opening a
+    // chapter that would refuse them.
+    const { data: course } = await supabase.rpc("get_study_course", { p_course_code: code });
+    if (!(course?.ok && course.access?.has_access)) redirect(`/learn/${courseSlug(code)}/buy?notice=trial-used`);
+  }
+  redirect(`/study/${courseSlug(code)}/1.1`);
 }
