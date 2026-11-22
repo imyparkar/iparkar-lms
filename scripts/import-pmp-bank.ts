@@ -3,7 +3,7 @@
  * pull-down, matching, drag-and-drop and hotspot, with case briefs and
  * exhibits) into the PMP course.
  *
- *   ADMIN_EMAIL=… ADMIN_PASSWORD='…' npm run import:pmp -- --dir imports/PMP26_Question_Bank --status draft [--dry-run]
+ *   ADMIN_EMAIL=… ADMIN_PASSWORD='…' npm run import:pmp -- --dir imports/PMP26_Question_Bank --status published [--dry-run]
  *
  * The folder is the bank export: PMP26_bank_reviewer.jsonl, PMP26_case_briefs.json,
  * PMP26_exhibit_manifest.json and exhibits/*.svg. Keep it in imports/ — premium
@@ -66,7 +66,7 @@ async function main() {
 
   let created = 0, updated = 0, unchanged = 0;
   const errors: unknown[] = [];
-  const parts = payloadChunks(bank, 50);
+  const parts = payloadChunks(bank);
   for (const [n, part] of parts.entries()) {
     const { data, error } = await supabase.rpc("admin_import_rich_questions", { p_course_code: course, p_payload: part, p_status: status });
     if (error || data?.error) throw new Error(`Chunk ${n + 1} failed: ${error?.message ?? data?.error}`);

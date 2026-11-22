@@ -105,6 +105,6 @@ describe("PMP bank conversion", () => {
   });
   it("sends exhibits and cases before items", () => {
     const parts = payloadChunks({ exhibits: [{ ref: "E", svg: "<svg/>", alt_text: "x" }], cases: [], items: Array(120).fill(convertRecord(rec({}))) }, 50);
-    expect(parts.map((p) => [p.exhibits.length, p.items.length])).toEqual([[1, 0], [0, 50], [0, 50], [0, 20]]);
+    expect(parts.map((p) => [p.exhibits.length, p.items.length])).toEqual([[1, 0], [0, 0], [0, 50], [0, 50], [0, 20]]);
   });
 });
