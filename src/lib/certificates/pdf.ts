@@ -150,8 +150,22 @@ export async function renderCertificatePdf(data: CertificateData, assets: Certif
   const midTop = colTop + 40 + gap;
   page.drawImage(I.tri, { x: X(44), y: Y(midTop + triH), width: X(220), height: triH * S });
   const numTop = midTop + triH + 28;
-  text(total, { x: 44, top: numTop, size: 96, font: F.b, color: C.white, lh: 96, ls: -3.84 });
-  text(labels.leftCaption, { x: 44, top: numTop + 96 + 6, size: 16, font: F.sb, color: C.marigold, ls: 0.24 });
+  // The hours figure and its caption are centred on the Talent Triangle by their visible ink (glyph outlines,
+  // letter-spacing included), not by advance widths, so they sit exactly under the triangle's apex.
+  const triCenter = 44 + 220 / 2;
+  const inkLeft = (bytes: Bytes, str: string, size: number, ls: number) => {
+    const f = fontkit.create(bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes)) as unknown as {
+      unitsPerEm: number; layout(t: string): { glyphs: { bbox: { minX: number; maxX: number } }[]; positions: { xAdvance: number }[] } };
+    const run = f.layout(str); const k = size / f.unitsPerEm;
+    let pen = 0, minX = Infinity, maxX = -Infinity;
+    run.glyphs.forEach((g, i) => {
+      if (g.bbox.maxX > g.bbox.minX) { minX = Math.min(minX, pen + g.bbox.minX * k); maxX = Math.max(maxX, pen + g.bbox.maxX * k); }
+      pen += run.positions[i].xAdvance * k + ls;
+    });
+    return triCenter - (minX + maxX) / 2; // x of the pen start that centres the ink on the triangle
+  };
+  text(total, { x: inkLeft(assets.fonts.interBold, total, 96, -3.84), top: numTop, size: 96, font: F.b, color: C.white, lh: 96, ls: -3.84 });
+  text(labels.leftCaption, { x: inkLeft(assets.fonts.interSemiBold, labels.leftCaption, 16, 0.24), top: numTop + 96 + 6, size: 16, font: F.sb, color: C.marigold, ls: 0.24 });
   const botTop = colBottom - botH;
   text(data.courseShortTitle || "PMP® Exam Prep Course", { x: 44, top: botTop, size: 12, font: F.sb, color: C.white, lh: 18 });
   text(data.siteLabel || "iparkar.com", { x: 44, top: botTop + 22, size: 12, font: F.r, color: C.white, lh: 18, opacity: 0.78 });
