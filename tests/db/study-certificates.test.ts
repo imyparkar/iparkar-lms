@@ -75,6 +75,8 @@ describe("study certificates (PMP-SPS)", () => {
     expect(res.counts).toMatchObject({ domains: 9, chapters: 52, chapters_with_content: 52 });
     versionId = res.version_id;
     for (const u of [ana, ben, cal, dee]) expect((await rpc(db, admin, "admin_study_enroll", [u, versionId, true], ["uuid", "uuid", "boolean"])).ok).toBe(true);
+    // These learners have bought the course (certificates need purchased access since 22 Nov 2026).
+    await db.query(`update study_enrollments set is_pilot = false, access_source = 'purchase' where user_id = any($1::uuid[])`, [[ana, ben, cal, dee]]);
     await db.query(`update profiles set full_name = 'Ben Okafor' where id = $1`, [ben]);
   }, 300_000);
 
@@ -100,6 +102,32 @@ describe("study certificates (PMP-SPS)", () => {
     expect(last.course_completed).toBe(true);
     expect((await status(ana))).toMatchObject({ completed: true, eligible: true, suggested_name: "ana" });
   }, 300_000);
+
+  it("lets a trial learner finish but issues no certificate until the course is bought", async () => {
+    const tia = await createUser(db, { username: "tia" });
+    expect((await rpc(db, admin, "admin_study_enroll", [tia, versionId, true], ["uuid", "uuid", "boolean"])).ok).toBe(true);
+    await db.query(`update study_enrollments set is_pilot = false, access_source = 'trial', trial_started_at = now(),
+                    access_expires_at = now() + interval '3 days' where user_id = $1`, [tia]);
+    expect((await completeAll(tia)).course_completed).toBe(true);
+    expect(await status(tia)).toMatchObject({ completed: true, enrolled: true, paid: false, eligible: false, certificate: null });
+    expect((await claim(tia, "Tia Moreau")).error).toBe("purchase_required");
+    // Pilot (reviewer) access doesn't count as bought either.
+    await db.query(`update study_enrollments set is_pilot = true, access_source = 'admin' where user_id = $1`, [tia]);
+    expect((await claim(tia, "Tia Moreau")).error).toBe("purchase_required");
+    await db.query(`update study_enrollments set is_pilot = false, access_source = 'trial' where user_id = $1`, [tia]);
+    // A verified purchase converts the trial; the completion is kept and the certificate unlocks.
+    const course = (await db.query<{ id: string }>(`select id from study_courses where code = 'PMP-SPS'`)).rows[0].id;
+    expect((await asService(`select public.service_apply_study_purchase($1::uuid, $2::uuid, 365, null) as r`, [tia, course])).ok).toBe(true);
+    expect(await status(tia)).toMatchObject({ completed: true, paid: true, eligible: true });
+    const c = await claim(tia, "Tia Moreau");
+    expect(c).toMatchObject({ ok: true, state: "claimed" });
+    // An admin grant (e.g. after a manual payment) also counts.
+    const ida = await createUser(db, { username: "ida" });
+    expect((await rpc(db, admin, "admin_study_enroll", [ida, versionId, true], ["uuid", "uuid", "boolean"])).ok).toBe(true);
+    await db.query(`update study_enrollments set is_pilot = false, access_source = 'admin' where user_id = $1`, [ida]);
+    await completeAll(ida);
+    expect(await status(ida)).toMatchObject({ paid: true, eligible: true });
+  }, 600_000);
 
   it("rejects learners who are not signed in, not enrolled or revoked", async () => {
     await expect(rpc(db, null, "study_certificate_status", ["PMP-SPS"], ["text"])).rejects.toThrow(/permission denied/);

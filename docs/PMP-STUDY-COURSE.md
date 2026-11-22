@@ -19,7 +19,7 @@ Status on 21 Nov 2026: **built and validated, not yet imported or published.** C
 | `content/pmp-sps/manifest.json` | yes | 9 modules (stored as study domains; `weight` = module hours), 52 chapters (`1.1` … `9.4`, objectives = ECO task codes, `pages: null`) |
 | `content/pmp-sps/content-register.csv` | yes | Per chapter: minutes by component (reading, lesson, example, activity, check), Talent Triangle category, ECO tasks, PMBOK references, approaches, example industry, check items, review status |
 | `content/pmp-sps/coverage.csv` | yes | ECO task → chapters |
-| `content/pmp-sps/access.json` | yes | Self enrollment, 7-day trial, 365 days, US$299. Regional prices are in `src/lib/payments/catalogue.ts` (`COURSE_PRICES`) |
+| `content/pmp-sps/access.json` | yes | Self enrollment, 3-day trial (owner, 22 Nov 2026), 365 days, US$299. Regional prices are in `src/lib/payments/catalogue.ts` (`COURSE_PRICES`) |
 | `imports/pmp-sps/authoring/` | **no** | Source YAML (one file per module) and the PMBOK heading index |
 | `imports/pmp-sps/chapters/<id>.json` | **no** | Generated lesson packages (content and answer keys) |
 | `scripts/pmp-sps/build_package.py` | yes | Authoring YAML → manifest, registers and chapter JSON, with curriculum validation |
@@ -51,7 +51,7 @@ Then, on `/admin/study`, review it with a pilot enrollment, publish it and make 
 **Rules**
 
 - Generation unlocks only when the course is complete, meaning a `study_course_completions` row exists. That row is written from the canonical chapter rows when the last required chapter is finished.
-- Generation also requires an active enrollment. The database checks all of this inside `study_claim_certificate`, using the learner's own session, on every request, whichever way it reaches the server.
+- Generation also requires an active enrollment **with purchased access** (`access_source` `purchase`, or `admin` for an admin grant; owner, 22 Nov 2026). A learner on the free trial or a pilot enrollment can finish the course and keep the completion record, but `study_claim_certificate` answers `purchase_required` and the completion page offers Buy instead (migration `20261122000100_certificate_requires_purchase.sql`). The database checks all of this inside `study_claim_certificate`, using the learner's own session, on every request, whichever way it reaches the server.
 - **One certificate per completion.** The certificate code (`IPL-PMP-XXXX-XXXX`) is created at the first attempt and never changes, even after a failed save. Concurrent or repeated clicks get `in_progress` or the already-issued certificate.
 - **Stored before success.** The server renders the PDF and puts it at `certificates/<user id>/<code>.pdf` in the private `STUDY_GUIDES` R2 bucket. Only then does `service_finalize_study_certificate` (service role only) mark it issued, with its SHA-256 and size. If rendering or saving fails, the claim is released and the learner sees an actionable message and can retry immediately.
 - **Immutable.** A trigger blocks changes to an issued certificate's name, code, file or dates, and blocks deleting it. The account-erasure cascade is the only exception. The name is the one the learner typed and confirmed, so a later profile rename changes nothing.

@@ -10,7 +10,7 @@ import { GenerateCertificate } from "@/components/certificates/GenerateCertifica
 export const metadata = { title: "Completion record" };
 export const dynamic = "force-dynamic";
 
-type CertStatus = { ok: boolean; offered: boolean; eligible: boolean; suggested_name: string | null;
+type CertStatus = { ok: boolean; offered: boolean; enrolled: boolean; eligible: boolean; paid?: boolean; suggested_name: string | null;
   certificate: { certificate_code: string; status: "pending" | "issued"; name_on_certificate: string; issued_at: string | null } | null };
 type Completion = { ok: true; learner_name: string; course_title: string; product: string; version: string; completed_at: string; record_code: string; chapters_completed: number };
 
@@ -45,7 +45,14 @@ export default async function CompletionPage({ params }: { params: Promise<{ cou
           </div>
           {cs.eligible || issued
             ? <GenerateCertificate course={courseCode(course)} suggestedName={cs.suggested_name ?? c.learner_name} issued={issued} />
-            : <p className="text-body text-graphite">Your enrollment is no longer active, so a certificate can&apos;t be generated. Contact support@iparkar.com if you think this is wrong.</p>}
+            : cs.enrolled && cs.paid === false
+              ? (
+                <div className="space-y-3">
+                  <p className="text-body text-graphite">You&apos;ve finished the course on free access. The certificate is issued to learners who have bought the course: buy it to generate and download your certificate. Your progress and completion are kept.</p>
+                  <Link className="btn-primary" href={`/learn/${course}/buy`}>Buy the course to get your certificate</Link>
+                </div>
+              )
+              : <p className="text-body text-graphite">Your enrollment is no longer active, so a certificate can&apos;t be generated. Contact support@iparkar.com if you think this is wrong.</p>}
         </section>
       )}
       <div className="no-print flex flex-wrap items-center justify-between gap-3">
