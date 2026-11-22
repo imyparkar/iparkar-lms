@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Calculator as CalcIcon, ChevronLeft, ChevronRight, Flag, Maximize2, Minimize2, LayoutGrid, Check, CloudOff, Loader2, LogOut, X, Send } from "lucide-react";
-import type { AttemptPayload, AttemptQuestion } from "@/lib/types";
+import type { AttemptPayload, AttemptQuestion, ItemResponse } from "@/lib/types";
 import { getBrowserClient } from "@/lib/supabase/client";
 import { clockLevel, createSync, formatClock, remainingMs, type ClockSync } from "@/lib/exam/clock";
 import { letter, rpcMessage } from "@/lib/format";
@@ -13,8 +13,11 @@ import { useAnswerSync } from "./useAnswerSync";
 import { QuestionNav, type NavFilter } from "./QuestionNav";
 import { SubmitDialog } from "./SubmitDialog";
 import { ConfirmDialog } from "./ConfirmDialog";
+import { CaseBriefPanel, DragDrop, ExhibitView, Hotspot, Matching, MultipleResponse, Pulldown, defaultInstructions,
+         hasResponse, isInteractive, normalise, ownExhibits, pulldownStem } from "./ItemInteractions";
 
-type QState = { selected: string | null; flagged: boolean; locked: boolean; feedback: AttemptQuestion["feedback"] };
+type QState = { selected: string | null; response: ItemResponse | null; flagged: boolean; locked: boolean; feedback: AttemptQuestion["feedback"] };
+const answered = (v: Pick<QState, "selected" | "response">) => !!v.selected || hasResponse(v.response);
 
 export function ExamWorkspace({ data }: { data: AttemptPayload }) {
   const router = useRouter();
@@ -22,9 +25,11 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
   const immediate = attempt.feedback_policy === "immediate";
   const [index, setIndex] = useState(0);
   const [state, setState] = useState<Record<string, QState>>(() =>
-    Object.fromEntries(questions.map((q) => [q.question_id, { selected: q.selected_option_id, flagged: q.flagged, locked: q.locked, feedback: q.feedback }])));
+    Object.fromEntries(questions.map((q) => [q.question_id, { selected: q.selected_option_id, response: q.response ?? null, flagged: q.flagged, locked: q.locked, feedback: q.feedback }])));
   const [draft, setDraft] = useState<Record<string, string | null>>({}); // immediate mode: selection before "Check"
+  const [draftResponse, setDraftResponse] = useState<Record<string, ItemResponse | null>>({}); // same, for interactive items
   const [calcOpen, setCalcOpen] = useState(false);
+  const calculator = attempt.course.calculator_enabled !== false; // e.g. PMP is sat without a calculator
   const ui = courseUi(attempt.course.code);
   const [navOpen, setNavOpen] = useState(false); // navigator is hidden until the student asks for it
   const [filter, setFilter] = useState<NavFilter>("all");
@@ -81,7 +86,8 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
       for (const c of pending) {
         const q = next[c.questionId];
         if (!q) continue;
-        next[c.questionId] = c.kind === "answer" ? { ...q, selected: c.optionId } : { ...q, flagged: c.flagged };
+        next[c.questionId] = c.kind === "answer" ? { ...q, selected: c.optionId }
+          : c.kind === "response" ? { ...q, response: c.response as ItemResponse | null } : { ...q, flagged: c.flagged };
       }
       return next;
     });
@@ -128,7 +134,7 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
   const counts = useMemo(() => {
     const vals = Object.values(state);
     return {
-      answered: vals.filter((v) => v.selected).length,
+      answered: vals.filter(answered).length,
       flagged: vals.filter((v) => v.flagged).length,
     };
   }, [state]);
@@ -139,8 +145,26 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
 
   useEffect(() => { stemRef.current?.focus({ preventScroll: false }); }, [index]);
 
+  const respond = useCallback((r: ItemResponse) => {
+    if (submitting || qs.locked) return;
+    const value = normalise(r);
+    if (immediate) {
+      setDraftResponse((d) => ({ ...d, [q.question_id]: value }));
+      return;
+    }
+    setState((s) => ({ ...s, [q.question_id]: { ...s[q.question_id], response: value } }));
+    enqueue({ kind: "response", questionId: q.question_id, response: value as Record<string, unknown> | null });
+  }, [submitting, qs, immediate, q.question_id, enqueue]);
+
   const choose = useCallback((optionId: string) => {
     if (submitting || qs.locked) return;
+    if (q.type === "multiple_response") {
+      const cur = (immediate ? draftResponse[q.question_id] : qs.response)?.selected ?? [];
+      const next = cur.includes(optionId) ? cur.filter((x) => x !== optionId) : [...cur, optionId];
+      respond({ selected: q.options.map((o) => o.id).filter((x) => next.includes(x)) });
+      return;
+    }
+    if (isInteractive(q)) return;
     if (immediate) {
       setDraft((d) => ({ ...d, [q.question_id]: optionId }));
       return;
@@ -148,9 +172,21 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
     const value = qs.selected === optionId ? null : optionId; // click again to clear
     setState((s) => ({ ...s, [q.question_id]: { ...s[q.question_id], selected: value } }));
     enqueue({ kind: "answer", questionId: q.question_id, optionId: value });
-  }, [submitting, qs, immediate, q.question_id, enqueue]);
+  }, [submitting, qs, immediate, q, enqueue, respond, draftResponse]);
 
   const check = useCallback(async () => {
+    if (isInteractive(q)) {
+      const response = draftResponse[q.question_id];
+      if (!response) return;
+      const { data: r } = await getBrowserClient().rpc("save_response", {
+        p_attempt: attempt.id, p_question: q.question_id, p_response: response, p_client_seq: Date.now(),
+      });
+      if (r?.ok) {
+        setState((s) => ({ ...s, [q.question_id]: { ...s[q.question_id], response, locked: true, feedback: r.feedback } }));
+      } else if (r?.error === "ATTEMPT_EXPIRED" || r?.error === "ATTEMPT_CLOSED") onClosed(r.error);
+      else setNotice(rpcMessage(r?.error));
+      return;
+    }
     const optionId = draft[q.question_id];
     if (!optionId) return;
     const { data: r } = await getBrowserClient().rpc("save_answer", {
@@ -160,7 +196,7 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
       setState((s) => ({ ...s, [q.question_id]: { ...s[q.question_id], selected: optionId, locked: true, feedback: r.feedback } }));
     } else if (r?.error === "ATTEMPT_EXPIRED" || r?.error === "ATTEMPT_CLOSED") onClosed(r.error);
     else setNotice(rpcMessage(r?.error));
-  }, [draft, q.question_id, attempt.id, onClosed]);
+  }, [draft, draftResponse, q, attempt.id, onClosed]);
 
   const toggleFlag = useCallback(() => {
     const flagged = !qs.flagged;
@@ -231,6 +267,11 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
 
   const level = clockLevel(left, attempt.duration_seconds);
   const selectedId = immediate && !qs.locked ? draft[q.question_id] ?? null : qs.selected;
+  const response = immediate && !qs.locked ? draftResponse[q.question_id] ?? null : qs.response;
+  const type = q.type ?? "single_best_answer";
+  const instructions = q.instructions ?? defaultInstructions(q);
+  const pulldownText = type === "pulldown" ? q.options.find((o) => o.id === selectedId)?.body ?? null : null;
+  const busy = submitting || qs.locked;
 
   return (
     <div className="flex min-h-screen flex-col bg-paper">
@@ -253,9 +294,11 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
             <span className="hidden md:inline">{navOpen ? "Hide questions" : "Questions"}</span>
             <span className="tabular-nums md:hidden">{index + 1}/{questions.length}</span>
           </button>
-          <button type="button" onClick={() => setCalcOpen((o) => !o)} className="btn-ghost px-3" aria-pressed={calcOpen}>
-            <CalcIcon size={16} aria-hidden /><span className="hidden md:inline">{calcOpen ? "Hide calculator" : "Show calculator"}</span>
-          </button>
+          {calculator && (
+            <button type="button" onClick={() => setCalcOpen((o) => !o)} className="btn-ghost px-3" aria-pressed={calcOpen}>
+              <CalcIcon size={16} aria-hidden /><span className="hidden md:inline">{calcOpen ? "Hide calculator" : "Show calculator"}</span>
+            </button>
+          )}
           {canFullscreen && (
             <button type="button" onClick={toggleFullscreen} className="btn-text hidden px-2 sm:inline-flex" aria-label={fullscreen ? "Exit full screen" : "Enter full screen"}>
               {fullscreen ? <Minimize2 size={18} aria-hidden /> : <Maximize2 size={18} aria-hidden />}
@@ -284,9 +327,25 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
                 {qs.flagged ? "Flagged for review" : "Flag for review"}
               </button>
             </div>
+            {q.case && <div className="mt-4"><CaseBriefPanel key={q.question_id} brief={q.case} seq={q.case_seq} /></div>}
             <h1 id="stem" ref={stemRef} tabIndex={-1} className="mt-4 whitespace-pre-line text-[18px] font-medium leading-relaxed text-ink outline-none">
-              <RichText text={q.stem} />
+              <RichText text={type === "pulldown" ? pulldownStem(q.stem, pulldownText) : q.stem} />
             </h1>
+            {instructions && type !== "single_best_answer" && <p className="mt-2 text-body-sm font-medium text-graphite">{instructions}</p>}
+            {type !== "enhanced_matching" && type !== "hotspot" && ownExhibits(q).map((e, i, all) => (
+              <ExhibitView key={e.ref} exhibit={e} label={all.length > 1 ? `Exhibit ${i + 1}` : "Exhibit"} />
+            ))}
+            {type === "multiple_response" && <MultipleResponse q={q} value={response} onChange={respond} disabled={busy} />}
+            {type === "pulldown" && <Pulldown q={q} selected={selectedId} disabled={busy} onChoose={(id) => {
+              if (busy) return;
+              if (immediate) { setDraft((d) => ({ ...d, [q.question_id]: id })); return; }
+              setState((s) => ({ ...s, [q.question_id]: { ...s[q.question_id], selected: id } }));
+              enqueue({ kind: "answer", questionId: q.question_id, optionId: id });
+            }} />}
+            {type === "matching" && <Matching q={q} value={response} onChange={respond} disabled={busy} />}
+            {type === "enhanced_matching" && <DragDrop key={q.question_id} q={q} value={response} onChange={respond} disabled={busy} />}
+            {type === "hotspot" && <Hotspot q={q} value={response} onChange={respond} disabled={busy} />}
+            {type === "single_best_answer" && (
             <fieldset className="mt-6" disabled={submitting || qs.locked}>
               <legend className="sr-only">Answer options</legend>
               <ul className="space-y-2.5">
@@ -314,8 +373,10 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
                 })}
               </ul>
             </fieldset>
+            )}
             {immediate && !qs.locked && (
-              <button type="button" className="btn-primary mt-5" onClick={check} disabled={!draft[q.question_id] || submitting}>Check answer</button>
+              <button type="button" className="btn-primary mt-5" onClick={check}
+                disabled={(isInteractive(q) ? !draftResponse[q.question_id] : !draft[q.question_id]) || submitting}>Check answer</button>
             )}
             {qs.feedback && (
               <div className="mt-5 rounded-button bg-paper p-4 text-body-sm">
@@ -323,7 +384,7 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
                 {qs.feedback.explanation && <p className="mt-1 whitespace-pre-line text-graphite"><RichText text={qs.feedback.explanation} /></p>}
               </div>
             )}
-            {!immediate && qs.selected && (
+            {!immediate && qs.selected && type === "single_best_answer" && (
               <p className="mt-4 text-caption text-slate">Tip: select your answer again to clear it.</p>
             )}
           </article>
@@ -387,10 +448,10 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
         </div>
       )}
 
-      <Calculator open={calcOpen} onClose={() => setCalcOpen(false)} />
+      {calculator && <Calculator open={calcOpen} onClose={() => setCalcOpen(false)} />}
 
       <SubmitDialog open={confirm} total={questions.length} answered={counts.answered} flagged={counts.flagged}
-        unansweredList={questions.filter((x) => !state[x.question_id].selected).map((x) => x.position)}
+        unansweredList={questions.filter((x) => !answered(state[x.question_id])).map((x) => x.position)}
         flaggedList={questions.filter((x) => state[x.question_id].flagged).map((x) => x.position)}
         pendingSync={status.pending}
         onCancel={() => setConfirm(false)}

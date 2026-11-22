@@ -24,6 +24,8 @@ const ON_SALE: Record<string, readonly number[]> = {
   EPI: [90, 180, 365],
   QEP: [90, 180, 365],
   CIT: [90, 180, 365],
+  // PMP® practice exams: same exam tier and periods as ASP/CSP.
+  PMP: [90, 180, 365],
   // Self Paced Study Courses: 365 days (build.mjs on iparkar.com).
   "ASP-SPS": [365],
   "CSP-SPS": [365],

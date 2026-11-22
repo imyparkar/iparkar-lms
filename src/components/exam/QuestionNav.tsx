@@ -1,9 +1,11 @@
 "use client";
 import { Flag } from "lucide-react";
-import type { AttemptQuestion } from "@/lib/types";
+import type { AttemptQuestion, ItemResponse } from "@/lib/types";
+import { hasResponse } from "./ItemInteractions";
 
 export type NavFilter = "all" | "flagged" | "unanswered";
-type S = { selected: string | null; flagged: boolean };
+type S = { selected: string | null; response?: ItemResponse | null; flagged: boolean };
+const isAnswered = (s: S) => !!s.selected || hasResponse(s.response);
 
 /** Numbered navigator. States use fill, a tick/flag glyph and labels — not colour alone. */
 export function QuestionNav({ questions, state, current, onGo, filter, setFilter }: {
@@ -11,9 +13,9 @@ export function QuestionNav({ questions, state, current, onGo, filter, setFilter
   filter: NavFilter; setFilter: (f: NavFilter) => void;
 }) {
   const list = questions.map((q, i) => ({ q, i, s: state[q.question_id] }))
-    .filter(({ s }) => filter === "all" || (filter === "flagged" ? s.flagged : !s.selected));
+    .filter(({ s }) => filter === "all" || (filter === "flagged" ? s.flagged : !isAnswered(s)));
   const flaggedCount = questions.filter((q) => state[q.question_id].flagged).length;
-  const unanswered = questions.filter((q) => !state[q.question_id].selected).length;
+  const unanswered = questions.filter((q) => !isAnswered(state[q.question_id])).length;
 
   return (
     <div className="card p-4">
@@ -34,7 +36,7 @@ export function QuestionNav({ questions, state, current, onGo, filter, setFilter
       ) : (
         <ol className="mt-3 grid grid-cols-6 gap-1.5 sm:grid-cols-8 lg:grid-cols-6">
           {list.map(({ q, i, s }) => {
-            const answered = !!s.selected;
+            const answered = isAnswered(s);
             const label = `Question ${i + 1}: ${answered ? "answered" : "unanswered"}${s.flagged ? ", flagged" : ""}${i === current ? ", current" : ""}`;
             return (
               <li key={q.question_id}>

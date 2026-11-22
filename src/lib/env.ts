@@ -18,6 +18,7 @@ export function checkoutUrl(courseCode: string): string | null {
     EPI: process.env.NEXT_PUBLIC_CHECKOUT_URL_EPI,
     QEP: process.env.NEXT_PUBLIC_CHECKOUT_URL_QEP,
     CIT: process.env.NEXT_PUBLIC_CHECKOUT_URL_CIT,
+    PMP: process.env.NEXT_PUBLIC_CHECKOUT_URL_PMP,
     // ASP Self Paced Study Course — a separate product from the ASP practice-exam package.
     "ASP-SPS": process.env.NEXT_PUBLIC_CHECKOUT_URL_ASP_SPS,
     // CSP Self Paced Study Course — separate from the CSP practice-exam package.

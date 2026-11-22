@@ -36,15 +36,59 @@ export type SubjectPerformance = {
   attempts?: number;
 };
 
+export type QuestionType = "single_best_answer" | "multiple_response" | "pulldown" | "matching" | "enhanced_matching" | "hotspot";
+
+/** Normalised rectangle on an exhibit: [x, y, width, height], each 0–1. */
+export type Rect = [number, number, number, number];
+export type Interaction =
+  | { type: "multiple_response"; select_count?: number }
+  | { type: "pulldown"; fields: { field_id: string; options: string[] }[] }
+  | { type: "matching"; left_title?: string; right_title?: string; left: { id: string; text: string }[];
+      right: { id: string; text: string }[]; options_reusable?: boolean }
+  | { type: "enhanced_matching"; draggables: { id: string; label: string }[];
+      targets: { id: string; label: string; shape?: string; coords: Rect }[]; targets_reusable?: boolean; unplaced_allowed?: boolean }
+  | { type: "hotspot"; select_count?: number; regions: { id: string; label: string; shape?: string; coords: Rect }[] };
+
+/** Answer to an interactive item (save_response). */
+export type ItemResponse = {
+  selected?: string[];
+  regions?: string[];
+  pairs?: Record<string, string>;
+  placements?: Record<string, string>;
+};
+
+export type Exhibit = {
+  ref: string; title?: string | null; svg: string; alt: string;
+  data_table?: { headers?: string[]; rows?: string[][] } | null; width?: number | null; height?: number | null;
+};
+export type CaseBrief = { ref: string; title: string; brief: string; exhibits?: Exhibit[] | null };
+
+export type AnswerFeedback = {
+  is_correct: boolean;
+  correct_option_id: string | null;
+  explanation: string | null;
+  correct_option_ids?: string[];
+  answer_key?: unknown;
+  response_feedback?: Record<string, string>;
+};
+
 export type AttemptQuestion = {
   position: number;
   question_id: string;
+  /** Absent on attempts created before interactive items existed: treat as single best answer. */
+  type?: QuestionType;
   stem: string;
+  instructions?: string;
+  interaction?: Interaction;
+  case?: CaseBrief;
+  case_seq?: number;
+  exhibits?: Exhibit[];
   options: { id: string; body: string }[];
   selected_option_id: string | null;
+  response?: ItemResponse | null;
   flagged: boolean;
   locked: boolean;
-  feedback: { is_correct: boolean; correct_option_id: string; explanation: string | null } | null;
+  feedback: AnswerFeedback | null;
 };
 
 export type AttemptPayload = {
@@ -53,7 +97,7 @@ export type AttemptPayload = {
     id: string;
     status: "in_progress" | "submitted" | "expired";
     mode: ExamMode;
-    course: { id: string; code: string; name: string };
+    course: { id: string; code: string; name: string; calculator_enabled?: boolean };
     domain: { code: string; name: string } | null;
     blueprint: { id: string; version: string; name: string };
     question_count: number;
@@ -79,11 +123,22 @@ export type ReviewItem = {
   stem: string;
   options: { id: string; body: string }[];
   selected_option_id: string | null;
-  correct_option_id: string;
+  correct_option_id: string | null;
   is_correct: boolean;
   flagged: boolean;
   explanation: string | null;
   reference: string | null;
+  // interactive items, case children and items with exhibits
+  type?: QuestionType;
+  response?: ItemResponse | null;
+  instructions?: string;
+  interaction?: Interaction;
+  answer_key?: unknown;
+  correct_option_ids?: string[];
+  response_feedback?: Record<string, string>;
+  case?: CaseBrief;
+  case_seq?: number;
+  exhibits?: Exhibit[];
 };
 
 export type AttemptResult = {
