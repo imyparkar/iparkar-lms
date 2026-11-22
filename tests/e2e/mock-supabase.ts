@@ -64,6 +64,19 @@ if (process.env.MOCK_PUBLISH !== "0") {
 }
 console.log("seeded", imp.counts);
 
+// MOCK_PMP_DIR=imports/PMP26_Question_Bank also loads the PMP bank, opens the PMP course and enrols learner@
+if (process.env.MOCK_PMP_DIR) {
+  const { loadPmpBank, payloadChunks } = await import("../../src/lib/import/pmpBank");
+  for (const part of payloadChunks(loadPmpBank(process.env.MOCK_PMP_DIR), 100)) {
+    const r = await rpc(db, adminId, "admin_import_rich_questions", ["PMP", JSON.stringify(part), "published"], ["text", "jsonb", "text"]);
+    if (r.errors?.length) throw new Error(JSON.stringify(r.errors).slice(0, 1000));
+  }
+  await db.query(`update courses set is_visible = true, exams_enabled = true where code = 'PMP'`);
+  await db.query(`insert into course_entitlements (user_id, course_id, source, starts_at) values ($1, (select id from courses where code = 'PMP'), 'complimentary', now() - interval '1 day')`,
+                 [users["learner@example.test"]]);
+  console.log("PMP bank loaded");
+}
+
 const b64 = (o: unknown) => Buffer.from(JSON.stringify(o)).toString("base64url");
 const jwt = (sub: string) => `${b64({ alg: "HS256", typ: "JWT" })}.${b64({ sub, role: "authenticated", aud: "authenticated", exp: Math.floor(Date.now() / 1000) + 3600 * 24, iat: Math.floor(Date.now() / 1000) })}.mock`;
 const subOf = (token: string | undefined) => {

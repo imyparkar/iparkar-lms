@@ -5,11 +5,13 @@ import { getBrowserClient } from "@/lib/supabase/client";
 /**
  * Reliable answer persistence.
  * - Every change is queued, mirrored to localStorage, and sent to the
- *   save_answer / set_flag RPCs in order.
+ *   save_answer / save_response / set_flag RPCs in order (save_response
+ *   carries answers to multiple-response, matching, drag-and-drop and hotspot items).
  * - Network failures retry with back-off; nothing is dropped silently.
  * - A monotonically increasing client_seq lets the server ignore stale writes.
  */
 export type ChangeInput = { kind: "answer"; questionId: string; optionId: string | null }
+                        | { kind: "response"; questionId: string; response: Record<string, unknown> | null }
                         | { kind: "flag"; questionId: string; flagged: boolean };
 type Change = ChangeInput & { seq: number };
 
@@ -62,6 +64,8 @@ export function useAnswerSync(attemptId: string, onClosed: (reason: string) => v
         setStatus({ state: "saving", pending: queue.current.length });
         const res = c.kind === "answer"
           ? await supabase.rpc("save_answer", { p_attempt: attemptId, p_question: c.questionId, p_option: c.optionId, p_client_seq: c.seq })
+          : c.kind === "response"
+          ? await supabase.rpc("save_response", { p_attempt: attemptId, p_question: c.questionId, p_response: c.response, p_client_seq: c.seq })
           : await supabase.rpc("set_flag", { p_attempt: attemptId, p_question: c.questionId, p_flagged: c.flagged });
         if (res.error) throw res.error; // network / transport: retry
         const data = res.data as { ok: boolean; error?: string };
