@@ -83,7 +83,7 @@ export default async function MyLearning({ searchParams }: { searchParams: Promi
                   {c.completed_at ? `Completed on ${fmtDate(c.completed_at)}.` : c.resume ? `Pick up at chapter ${c.resume.chapter}: ${c.resume.chapter_title}.` : courseProfile(c.code).startHint}
                 </p>
                 <div className="mt-6"><ProgressMeter dark done={p.completed_chapters} total={p.required_chapters} label="Chapters completed" /></div>
-                <p className="mt-3 text-body-sm text-white">{p.domains_completed} of {p.domains_total} domains complete · Last activity {fmtDateTime(c.last_activity_at)}</p>
+                <p className="mt-3 text-body-sm text-white">{p.domains_completed} of {p.domains_total} {courseProfile(c.code).unit.toLowerCase()}s complete · Last activity {fmtDateTime(c.last_activity_at)}</p>
                 <p className="mt-1 text-body-sm font-medium text-white">{accessLine(c.access)}</p>
                 {!c.access.has_access && <p className="mt-3 text-body-sm text-white">Your progress is saved. Buy access to continue where you left off.</p>}
                 <div className="mt-6 flex flex-wrap gap-2">

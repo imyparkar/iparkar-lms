@@ -12,7 +12,12 @@ export function AppHeader({ name, isAdmin }: { name: string; isAdmin: boolean })
           <NavLink href="/dashboard">Dashboard</NavLink>
           <NavLink href="/learn">My learning</NavLink>
           <NavLink href="/study-guides">Study guides</NavLink>
+          <NavLink href="/certificates">Certificates</NavLink>
           {isAdmin && <NavLink href="/admin">Admin</NavLink>}
+          {/* Public site: browse courses and practice exams in the same session, then come back via Dashboard. */}
+          <a href="https://iparkar.com/" className="whitespace-nowrap rounded-button px-3 py-2 text-body-sm font-medium text-ink-54 transition-colors duration-200 hover:text-ink">
+            Browse iParkar.com <span aria-hidden="true">↗</span>
+          </a>
         </nav>
         <div className="flex items-center gap-2">
           <Link href="/account" className="hidden sm:inline text-body-sm text-ink-54 hover:text-ink transition-colors" title="Account">

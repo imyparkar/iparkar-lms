@@ -1,0 +1,1087 @@
+{
+ "schema": "iparkar.course-manifest/1",
+ "course": {
+  "code": "PMP-SPS",
+  "title": "PMP® Exam Prep Course",
+  "product": "iParkar Learning",
+  "version": "1.0.0",
+  "completion_policy": "all_required_chapters",
+  "duration_hours": 35,
+  "description": "A 35-hour, self-paced course aligned to the July 2026 PMP® Examination Content Outline and the PMBOK® Guide — Eighth Edition. Nine modules cover the People, Process, and Business Environment domains across predictive, adaptive, and hybrid delivery, with a knowledge check in every section and an end-of-course assessment."
+ },
+ "source": {
+  "title": "iParkar Learning PMP® Exam Prep Course (original content)",
+  "edition": "1.0",
+  "stated_blueprint": "PMP® Examination Content Outline, July 2026",
+  "blueprint_note": "Chapters map to the 26 tasks of the July 2026 PMP ECO (People 33%, Process 41%, Business Environment 26%). Module hours track PMI Talent Triangle® categories: Business Acumen 8 h, Ways of Working 19 h, Power Skills 8 h.",
+  "references": [
+   "PMI, The Standard for Project Management and A Guide to the Project Management Body of Knowledge (PMBOK® Guide), 8th ed., 2025",
+   "PMI, PMP® Examination Content Outline, July 2026",
+   "PMI® Certification Handbook, revised June 2026"
+  ]
+ },
+ "domains": [
+  {
+   "domain": 1,
+   "title": "Project management foundations and delivery approaches",
+   "weight": 2.0,
+   "chapter_count": 4,
+   "summary": "What a project is, how projects create value inside an organization, the six principles and mindset that guide practice, and how to choose between predictive, adaptive, and hybrid delivery. This module sets the vocabulary used for the rest of the course.",
+   "category_minutes": {
+    "Business Acumen": 60,
+    "Ways of Working": 60,
+    "Power Skills": 0
+   }
+  },
+  {
+   "domain": 2,
+   "title": "Shared vision, stakeholders, and governance",
+   "weight": 4.0,
+   "chapter_count": 6,
+   "summary": "How to build and keep a shared vision, identify and analyze stakeholders, align and manage their expectations, and establish the governance — structures, decision rights, success criteria, and escalation paths — that keeps a project pointed at value.",
+   "category_minutes": {
+    "Business Acumen": 120,
+    "Ways of Working": 0,
+    "Power Skills": 120
+   }
+  },
+  {
+   "domain": 3,
+   "title": "Scope, value, compliance, and success measures",
+   "weight": 4.0,
+   "chapter_count": 6,
+   "summary": "Identifying value with stakeholders and measuring benefits, prioritizing and delivering value incrementally, eliciting requirements, defining and decomposing scope, planning for compliance (including health, safety, security, and sustainability), and validating that deliverables meet agreed success measures.",
+   "category_minutes": {
+    "Business Acumen": 180,
+    "Ways of Working": 60,
+    "Power Skills": 0
+   }
+  },
+  {
+   "domain": 4,
+   "title": "Integrated planning, resources, and budgeting",
+   "weight": 4.0,
+   "chapter_count": 6,
+   "summary": "Assessing project needs and complexity, building and maintaining an integrated plan, estimating effort and resources, planning and acquiring people and materials, estimating costs, building the budget and reserves, planning financial tracking and reporting, and using data — including AI-assisted analysis — to make sound planning decisions.",
+   "category_minutes": {
+    "Business Acumen": 0,
+    "Ways of Working": 240,
+    "Power Skills": 0
+   }
+  },
+  {
+   "domain": 5,
+   "title": "Procurement, quality, and scheduling",
+   "weight": 4.0,
+   "chapter_count": 6,
+   "summary": "Planning the sourcing strategy and make-or-buy decisions, selecting contract types and sellers, negotiating and managing suppliers, planning and optimizing quality (including cost of quality and sustainability), and building, baselining, and controlling schedules for predictive and adaptive work.",
+   "category_minutes": {
+    "Business Acumen": 0,
+    "Ways of Working": 240,
+    "Power Skills": 0
+   }
+  },
+  {
+   "domain": 6,
+   "title": "Communication, collaboration, and team leadership",
+   "weight": 5.0,
+   "chapter_count": 7,
+   "summary": "Defining a communication strategy, reporting transparently and building feedback loops, leading and empowering teams, developing teams and ground rules, managing conflict, transferring knowledge, and using emotional intelligence to build trust and influence.",
+   "category_minutes": {
+    "Business Acumen": 0,
+    "Ways of Working": 0,
+    "Power Skills": 300
+   }
+  },
+  {
+   "domain": 7,
+   "title": "Risk, change, and performance",
+   "weight": 6.0,
+   "chapter_count": 8,
+   "summary": "Planning, identifying, analyzing, responding to, and monitoring risks; removing impediments and managing issues; controlling change across delivery approaches; measuring performance with earned value and adaptive metrics; supporting organizational change; and responding to changes in the external business environment.",
+   "category_minutes": {
+    "Business Acumen": 60,
+    "Ways of Working": 240,
+    "Power Skills": 60
+   }
+  },
+  {
+   "domain": 8,
+   "title": "Closure, transition, and lessons learned",
+   "weight": 4.0,
+   "chapter_count": 5,
+   "summary": "Managing project artifacts and evaluating status through to the end, defining closure criteria and obtaining acceptance, validating readiness for transition to operations or the next phase, closing procurements, finances, and resources, and turning lessons learned into continuous improvement and updated organizational process assets.",
+   "category_minutes": {
+    "Business Acumen": 60,
+    "Ways of Working": 180,
+    "Power Skills": 0
+   }
+  },
+  {
+   "domain": 9,
+   "title": "PMP exam readiness and applied review",
+   "weight": 2.0,
+   "chapter_count": 4,
+   "summary": "Verified PMP® exam requirements and policies, strategies for each question format, a 30-item end-of-course assessment across all three domains and delivery approaches with worked rationales, and a targeted personal review plan.",
+   "category_minutes": {
+    "Business Acumen": 0,
+    "Ways of Working": 120,
+    "Power Skills": 0
+   }
+  }
+ ],
+ "chapters": [
+  {
+   "id": "1.1",
+   "domain": 1,
+   "title": "Projects, value, and the project environment",
+   "objectives": [
+    "Business Environment 1",
+    "Process 3"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M01-S01",
+   "category": "Business Acumen",
+   "minutes": 30,
+   "approaches": [
+    "predictive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "1.2",
+   "domain": 1,
+   "title": "The six principles and the project management mindset",
+   "objectives": [
+    "People 3",
+    "Process 3",
+    "Business Environment 2"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M01-S02",
+   "category": "Business Acumen",
+   "minutes": 30,
+   "approaches": [
+    "adaptive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "1.3",
+   "domain": 1,
+   "title": "Development approaches — predictive, adaptive, and hybrid",
+   "objectives": [
+    "Process 1"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M01-S03",
+   "category": "Ways of Working",
+   "minutes": 35,
+   "approaches": [
+    "predictive",
+    "adaptive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "1.4",
+   "domain": 1,
+   "title": "Life cycles, focus areas, performance domains, and tailoring",
+   "objectives": [
+    "Process 1",
+    "Process 9"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M01-S04",
+   "category": "Ways of Working",
+   "minutes": 25,
+   "approaches": [
+    "predictive",
+    "adaptive"
+   ]
+  },
+  {
+   "id": "2.1",
+   "domain": 2,
+   "title": "Building and promoting a shared vision",
+   "objectives": [
+    "People 1"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M02-S01",
+   "category": "Power Skills",
+   "minutes": 40,
+   "approaches": [
+    "adaptive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "2.2",
+   "domain": 2,
+   "title": "Identifying and analyzing stakeholders",
+   "objectives": [
+    "People 4",
+    "People 5"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M02-S02",
+   "category": "Power Skills",
+   "minutes": 45,
+   "approaches": [
+    "predictive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "2.3",
+   "domain": 2,
+   "title": "Aligning and managing stakeholder expectations",
+   "objectives": [
+    "People 5",
+    "People 6"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M02-S03",
+   "category": "Power Skills",
+   "minutes": 35,
+   "approaches": [
+    "adaptive",
+    "predictive"
+   ]
+  },
+  {
+   "id": "2.4",
+   "domain": 2,
+   "title": "Project governance — structures, roles, and decision rights",
+   "objectives": [
+    "Business Environment 1"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M02-S04",
+   "category": "Business Acumen",
+   "minutes": 45,
+   "approaches": [
+    "predictive",
+    "adaptive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "2.5",
+   "domain": 2,
+   "title": "Initiating — business case, charter, and success criteria",
+   "objectives": [
+    "Business Environment 1",
+    "Process 3"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M02-S05",
+   "category": "Business Acumen",
+   "minutes": 40,
+   "approaches": [
+    "predictive",
+    "adaptive"
+   ]
+  },
+  {
+   "id": "2.6",
+   "domain": 2,
+   "title": "Escalation paths, thresholds, and the PMO",
+   "objectives": [
+    "Business Environment 1",
+    "People 8"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M02-S06",
+   "category": "Business Acumen",
+   "minutes": 35,
+   "approaches": [
+    "predictive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "3.1",
+   "domain": 3,
+   "title": "Value components and benefits measurement",
+   "objectives": [
+    "Process 3",
+    "Business Environment 1"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M03-S01",
+   "category": "Business Acumen",
+   "minutes": 45,
+   "approaches": [
+    "predictive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "3.2",
+   "domain": 3,
+   "title": "Prioritizing by value and delivering incrementally",
+   "objectives": [
+    "Process 3"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M03-S02",
+   "category": "Business Acumen",
+   "minutes": 40,
+   "approaches": [
+    "adaptive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "3.3",
+   "domain": 3,
+   "title": "Eliciting and analyzing requirements",
+   "objectives": [
+    "Process 2"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M03-S03",
+   "category": "Ways of Working",
+   "minutes": 30,
+   "approaches": [
+    "predictive",
+    "adaptive"
+   ]
+  },
+  {
+   "id": "3.4",
+   "domain": 3,
+   "title": "Defining scope and breaking it down",
+   "objectives": [
+    "Process 2"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M03-S04",
+   "category": "Ways of Working",
+   "minutes": 30,
+   "approaches": [
+    "predictive",
+    "adaptive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "3.5",
+   "domain": 3,
+   "title": "Compliance — requirements, categories, and consequences",
+   "objectives": [
+    "Business Environment 2",
+    "Process 7"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M03-S05",
+   "category": "Business Acumen",
+   "minutes": 50,
+   "approaches": [
+    "predictive",
+    "hybrid",
+    "adaptive"
+   ]
+  },
+  {
+   "id": "3.6",
+   "domain": 3,
+   "title": "Success metrics, SMART criteria, and validating scope",
+   "objectives": [
+    "Business Environment 1",
+    "Process 2",
+    "Process 9"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M03-S06",
+   "category": "Business Acumen",
+   "minutes": 45,
+   "approaches": [
+    "adaptive",
+    "predictive"
+   ]
+  },
+  {
+   "id": "4.1",
+   "domain": 4,
+   "title": "The integrated project management plan and execution strategy",
+   "objectives": [
+    "Process 1"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M04-S01",
+   "category": "Ways of Working",
+   "minutes": 45,
+   "approaches": [
+    "predictive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "4.2",
+   "domain": 4,
+   "title": "Estimating work effort and resources",
+   "objectives": [
+    "Process 1",
+    "Process 4",
+    "Process 8"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M04-S02",
+   "category": "Ways of Working",
+   "minutes": 40,
+   "approaches": [
+    "predictive",
+    "adaptive"
+   ]
+  },
+  {
+   "id": "4.3",
+   "domain": 4,
+   "title": "Planning, acquiring, and optimizing resources",
+   "objectives": [
+    "Process 4"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M04-S03",
+   "category": "Ways of Working",
+   "minutes": 40,
+   "approaches": [
+    "predictive",
+    "hybrid",
+    "adaptive"
+   ]
+  },
+  {
+   "id": "4.4",
+   "domain": 4,
+   "title": "Estimating costs and developing the budget",
+   "objectives": [
+    "Process 6"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M04-S04",
+   "category": "Ways of Working",
+   "minutes": 45,
+   "approaches": [
+    "predictive",
+    "adaptive"
+   ]
+  },
+  {
+   "id": "4.5",
+   "domain": 4,
+   "title": "Reserves, spend tracking, and financial reporting",
+   "objectives": [
+    "Process 6"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M04-S05",
+   "category": "Ways of Working",
+   "minutes": 40,
+   "approaches": [
+    "predictive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "4.6",
+   "domain": 4,
+   "title": "Dependencies, gaps, and data-informed decisions (including AI)",
+   "objectives": [
+    "Process 1",
+    "Process 9"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M04-S06",
+   "category": "Ways of Working",
+   "minutes": 30,
+   "approaches": [
+    "hybrid",
+    "adaptive"
+   ]
+  },
+  {
+   "id": "5.1",
+   "domain": 5,
+   "title": "Sourcing strategy and make-or-buy decisions",
+   "objectives": [
+    "Process 5"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M05-S01",
+   "category": "Ways of Working",
+   "minutes": 40,
+   "approaches": [
+    "predictive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "5.2",
+   "domain": 5,
+   "title": "Contract types and source selection",
+   "objectives": [
+    "Process 5"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M05-S02",
+   "category": "Ways of Working",
+   "minutes": 45,
+   "approaches": [
+    "predictive",
+    "adaptive"
+   ]
+  },
+  {
+   "id": "5.3",
+   "domain": 5,
+   "title": "Negotiation, supplier management, and claims",
+   "objectives": [
+    "Process 5"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M05-S03",
+   "category": "Ways of Working",
+   "minutes": 35,
+   "approaches": [
+    "predictive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "5.4",
+   "domain": 5,
+   "title": "Planning and optimizing quality",
+   "objectives": [
+    "Process 7"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M05-S04",
+   "category": "Ways of Working",
+   "minutes": 40,
+   "approaches": [
+    "predictive",
+    "adaptive"
+   ]
+  },
+  {
+   "id": "5.5",
+   "domain": 5,
+   "title": "Building and baselining the schedule",
+   "objectives": [
+    "Process 8"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M05-S05",
+   "category": "Ways of Working",
+   "minutes": 45,
+   "approaches": [
+    "predictive",
+    "adaptive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "5.6",
+   "domain": 5,
+   "title": "Monitoring schedule variation and recovering time",
+   "objectives": [
+    "Process 8",
+    "Process 9"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M05-S06",
+   "category": "Ways of Working",
+   "minutes": 35,
+   "approaches": [
+    "predictive",
+    "adaptive"
+   ]
+  },
+  {
+   "id": "6.1",
+   "domain": 6,
+   "title": "Communication strategy and planning",
+   "objectives": [
+    "People 8",
+    "People 4"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M06-S01",
+   "category": "Power Skills",
+   "minutes": 45,
+   "approaches": [
+    "predictive",
+    "adaptive"
+   ]
+  },
+  {
+   "id": "6.2",
+   "domain": 6,
+   "title": "Reporting, transparency, and feedback loops",
+   "objectives": [
+    "People 8",
+    "Process 9"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M06-S02",
+   "category": "Power Skills",
+   "minutes": 40,
+   "approaches": [
+    "adaptive",
+    "predictive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "6.3",
+   "domain": 6,
+   "title": "Leading the team — style, empowerment, and roles",
+   "objectives": [
+    "People 3"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M06-S03",
+   "category": "Power Skills",
+   "minutes": 50,
+   "approaches": [
+    "adaptive",
+    "predictive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "6.4",
+   "domain": 6,
+   "title": "Team development, ground rules, and working agreements",
+   "objectives": [
+    "People 2",
+    "People 3"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M06-S04",
+   "category": "Power Skills",
+   "minutes": 40,
+   "approaches": [
+    "adaptive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "6.5",
+   "domain": 6,
+   "title": "Managing conflict",
+   "objectives": [
+    "People 2"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M06-S05",
+   "category": "Power Skills",
+   "minutes": 45,
+   "approaches": [
+    "predictive",
+    "adaptive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "6.6",
+   "domain": 6,
+   "title": "Knowledge transfer and mentoring",
+   "objectives": [
+    "People 7",
+    "People 5"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M06-S06",
+   "category": "Power Skills",
+   "minutes": 40,
+   "approaches": [
+    "predictive",
+    "adaptive"
+   ]
+  },
+  {
+   "id": "6.7",
+   "domain": 6,
+   "title": "Emotional intelligence, trust, and influence",
+   "objectives": [
+    "People 4",
+    "People 3"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M06-S07",
+   "category": "Power Skills",
+   "minutes": 40,
+   "approaches": [
+    "adaptive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "7.1",
+   "domain": 7,
+   "title": "Risk planning and identification",
+   "objectives": [
+    "Business Environment 5"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M07-S01",
+   "category": "Ways of Working",
+   "minutes": 45,
+   "approaches": [
+    "predictive",
+    "adaptive"
+   ]
+  },
+  {
+   "id": "7.2",
+   "domain": 7,
+   "title": "Analyzing risks — qualitative and quantitative",
+   "objectives": [
+    "Business Environment 5"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M07-S02",
+   "category": "Ways of Working",
+   "minutes": 50,
+   "approaches": [
+    "predictive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "7.3",
+   "domain": 7,
+   "title": "Risk responses and monitoring",
+   "objectives": [
+    "Business Environment 5"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M07-S03",
+   "category": "Ways of Working",
+   "minutes": 45,
+   "approaches": [
+    "predictive",
+    "adaptive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "7.4",
+   "domain": 7,
+   "title": "Removing impediments and managing issues",
+   "objectives": [
+    "Business Environment 4"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M07-S04",
+   "category": "Power Skills",
+   "minutes": 30,
+   "approaches": [
+    "adaptive",
+    "predictive"
+   ]
+  },
+  {
+   "id": "7.5",
+   "domain": 7,
+   "title": "Change control across delivery approaches",
+   "objectives": [
+    "Business Environment 3"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M07-S05",
+   "category": "Ways of Working",
+   "minutes": 45,
+   "approaches": [
+    "predictive",
+    "adaptive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "7.6",
+   "domain": 7,
+   "title": "Measuring performance — earned value and adaptive metrics",
+   "objectives": [
+    "Process 9",
+    "Process 6"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M07-S06",
+   "category": "Ways of Working",
+   "minutes": 55,
+   "approaches": [
+    "predictive",
+    "adaptive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "7.7",
+   "domain": 7,
+   "title": "Supporting organizational change",
+   "objectives": [
+    "Business Environment 7"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M07-S07",
+   "category": "Power Skills",
+   "minutes": 30,
+   "approaches": [
+    "hybrid",
+    "adaptive"
+   ]
+  },
+  {
+   "id": "7.8",
+   "domain": 7,
+   "title": "Responding to changes in the external business environment",
+   "objectives": [
+    "Business Environment 8",
+    "Business Environment 2"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M07-S08",
+   "category": "Business Acumen",
+   "minutes": 60,
+   "approaches": [
+    "predictive",
+    "adaptive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "8.1",
+   "domain": 8,
+   "title": "Managing artifacts and evaluating project status",
+   "objectives": [
+    "Process 9"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M08-S01",
+   "category": "Ways of Working",
+   "minutes": 40,
+   "approaches": [
+    "predictive",
+    "adaptive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "8.2",
+   "domain": 8,
+   "title": "Closure criteria and stakeholder acceptance",
+   "objectives": [
+    "Process 10"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M08-S02",
+   "category": "Ways of Working",
+   "minutes": 40,
+   "approaches": [
+    "predictive",
+    "adaptive"
+   ]
+  },
+  {
+   "id": "8.3",
+   "domain": 8,
+   "title": "Validating readiness for transition",
+   "objectives": [
+    "Process 10",
+    "People 7"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M08-S03",
+   "category": "Ways of Working",
+   "minutes": 50,
+   "approaches": [
+    "predictive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "8.4",
+   "domain": 8,
+   "title": "Closing procurements, finances, and resources",
+   "objectives": [
+    "Process 10",
+    "Process 5",
+    "Process 6"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M08-S04",
+   "category": "Ways of Working",
+   "minutes": 50,
+   "approaches": [
+    "predictive",
+    "adaptive"
+   ]
+  },
+  {
+   "id": "8.5",
+   "domain": 8,
+   "title": "Lessons learned, continuous improvement, and OPAs",
+   "objectives": [
+    "Business Environment 6",
+    "People 7"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M08-S05",
+   "category": "Business Acumen",
+   "minutes": 60,
+   "approaches": [
+    "adaptive",
+    "predictive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "9.1",
+   "domain": 9,
+   "title": "PMP exam requirements and the application (verified facts)",
+   "objectives": [
+    "Process 1"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M09-S01",
+   "category": "Ways of Working",
+   "minutes": 30,
+   "approaches": [
+    "predictive",
+    "adaptive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "9.2",
+   "domain": 9,
+   "title": "Question formats and scenario strategy",
+   "objectives": [
+    "People 3",
+    "Process 9",
+    "Business Environment 3"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M09-S02",
+   "category": "Ways of Working",
+   "minutes": 30,
+   "approaches": [
+    "predictive",
+    "adaptive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "9.3",
+   "domain": 9,
+   "title": "End-of-course assessment",
+   "objectives": [
+    "People 1",
+    "People 2",
+    "People 3",
+    "People 4",
+    "People 7",
+    "People 8",
+    "Process 1",
+    "Process 3",
+    "Process 5",
+    "Process 6",
+    "Process 7",
+    "Process 8",
+    "Process 9",
+    "Process 10",
+    "Business Environment 1",
+    "Business Environment 2",
+    "Business Environment 3",
+    "Business Environment 5",
+    "Business Environment 6",
+    "Business Environment 7",
+    "Business Environment 8"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M09-S03",
+   "category": "Ways of Working",
+   "minutes": 45,
+   "approaches": [
+    "predictive",
+    "adaptive",
+    "hybrid"
+   ]
+  },
+  {
+   "id": "9.4",
+   "domain": 9,
+   "title": "Targeted review plan",
+   "objectives": [
+    "Business Environment 6"
+   ],
+   "prerequisite": false,
+   "pages": null,
+   "course_section_id": "PMP-M09-S04",
+   "category": "Ways of Working",
+   "minutes": 15,
+   "approaches": [
+    "predictive",
+    "adaptive",
+    "hybrid"
+   ]
+  }
+ ]
+}

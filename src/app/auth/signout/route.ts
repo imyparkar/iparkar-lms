@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getServerClient } from "@/lib/supabase/server";
+import { safeNext } from "@/lib/auth/next";
 
 export async function POST(request: NextRequest) {
   const supabase = await getServerClient();
@@ -9,8 +10,8 @@ export async function POST(request: NextRequest) {
   const url = new URL("/login", request.nextUrl.origin);
   if (form?.get("reason") === "idle") {
     url.searchParams.set("notice", "idle");
-    const next = String(form.get("next") ?? "");
-    if (next.startsWith("/") && !next.startsWith("//")) url.searchParams.set("next", next);
+    const next = safeNext(form.get("next"), "");
+    if (next) url.searchParams.set("next", next);
   } else {
     url.searchParams.set("notice", "signed-out");
   }
