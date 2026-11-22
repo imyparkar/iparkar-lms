@@ -5,6 +5,7 @@ import { z } from "zod";
 import { getServerClient } from "@/lib/supabase/server";
 import { getServiceClient } from "@/lib/supabase/admin";
 import { SITE_URL } from "@/lib/env";
+import { safeNext } from "@/lib/auth/next";
 
 export type FormState = { error?: string; message?: string; fields?: Record<string, string> };
 
@@ -21,10 +22,6 @@ function isCaptchaError(error: { message?: string; code?: string } | null | unde
   return Boolean(error && (error.code === "captcha_failed" || error.message?.toLowerCase().includes("captcha")));
 }
 
-function safeNext(next: FormDataEntryValue | null): string {
-  const n = typeof next === "string" ? next : "";
-  return n.startsWith("/") && !n.startsWith("//") ? n : "/dashboard";
-}
 
 async function clientIp() {
   const h = await headers();
