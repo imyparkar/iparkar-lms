@@ -41,9 +41,9 @@ reports failures one by one; re-running is safe. Interactive items are
 read-only in Admin → Questions (pull-down items stay editable); change them in
 the bank and re-import.
 
-Then make the course visible and enable exams in Admin → Courses. The course
-has no online price yet, so access is granted by an administrator until prices
-are added to `src/lib/payments/catalogue.ts` (and iparkar.com).
+Then make the course visible and enable exams in Admin → Courses. PMP is sold
+at the same exam-tier prices and periods as ASP and CSP (90 / 180 / 365 days,
+`src/lib/payments/catalogue.ts`); keep iparkar.com's `site-config.js` in step.
 
 To check the bank locally against the real migrations:
 
