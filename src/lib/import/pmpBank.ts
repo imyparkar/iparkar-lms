@@ -135,9 +135,14 @@ export function loadPmpBank(dir: string): RichPayload {
   return { exhibits, cases: briefs, items: records.map(convertRecord) };
 }
 
-/** Exhibits and cases first (items refer to them), then items in batches. */
-export function payloadChunks(p: RichPayload, size = 50): RichPayload[] {
-  const out: RichPayload[] = [{ exhibits: p.exhibits, cases: p.cases, items: [] }];
+/**
+ * Exhibits and cases first (items refer to them), then items in batches. Batches stay
+ * small so each call finishes well inside Supabase's statement timeout for signed-in users.
+ */
+export function payloadChunks(p: RichPayload, size = 25, exhibitsPerCall = 50): RichPayload[] {
+  const out: RichPayload[] = [];
+  for (let i = 0; i < p.exhibits.length; i += exhibitsPerCall) out.push({ exhibits: p.exhibits.slice(i, i + exhibitsPerCall), cases: [], items: [] });
+  out.push({ exhibits: [], cases: p.cases, items: [] });
   for (let i = 0; i < p.items.length; i += size) out.push({ exhibits: [], cases: [], items: p.items.slice(i, i + size) });
   return out;
 }
