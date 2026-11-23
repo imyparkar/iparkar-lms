@@ -41,6 +41,8 @@ export type StudyCourseProfile = {
   objectiveLabel: string;
   /** True when learners can generate an iParkar Learning certificate of course completion (PDF). */
   certificate?: boolean;
+  /** False when the course has no glossary resource, so the player hides its Glossary link. Defaults to true. */
+  glossary?: boolean;
 };
 
 const BCSP = {
@@ -96,6 +98,7 @@ const PROFILES: Record<string, StudyCourseProfile> = {
     markOwner: "the Project Management Institute, Inc. (PMI)",
     markOwnerShort: "PMI",
     policySite: "pmi.org",
+    glossary: false,
     unit: "Module",
     weightLabel: (w) => `${Number(w)} hour${Number(w) === 1 ? "" : "s"}`,
     weightsLead: () =>

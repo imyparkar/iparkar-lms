@@ -558,7 +558,7 @@ export function Player({ userId, courseSlug, courseTitle, data, outline, startSe
           )}
           <Link href={`/learn/${courseSlug}`} className="topnav hidden md:inline-flex">Home</Link>
           <a href={`/learn/${courseSlug}/search`} className="topnav hidden md:inline-flex">Search</a>
-          <a href={`/learn/${courseSlug}/resources/glossary`} target="_blank" rel="noopener" className="topnav hidden lg:inline-flex">Glossary<span className="sr-only"> (opens in a new tab)</span></a>
+          {profile.glossary !== false && <a href={`/learn/${courseSlug}/resources/glossary`} target="_blank" rel="noopener" className="topnav hidden lg:inline-flex">Glossary<span className="sr-only"> (opens in a new tab)</span></a>}
           {formulaHref && <a href={formulaHref} target="_blank" rel="noopener" className="topnav hidden lg:inline-flex">Formulas<span className="sr-only"> (opens in a new tab)</span></a>}
           {desktop && <button type="button" className="topnav" aria-pressed={calcOpen} onClick={() => setCalcOpen((o) => !o)}>{calcOpen ? "Hide calculator" : "Calculator"}</button>}
           {sections.length > 0 && <button type="button" className="topnav" onClick={() => setDialog("notes")}>Notes</button>}
