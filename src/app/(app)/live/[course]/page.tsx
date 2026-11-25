@@ -161,7 +161,7 @@ export default async function LiveCoursePage({ params, searchParams }:
                     {p.passed ? "Passed" : last ? (last.mark === null ? "Awaiting marking" : "Not yet passed") : "Not submitted"}
                   </span>
                 </div>
-                <a href={`/api/live/briefs/${course}/${p.code}`} className="link text-body-sm">Open the learner brief</a>
+                <a href={`/api/live/briefs/${course}/${p.code}`} target="_blank" rel="noopener" className="link text-body-sm">Open the learner brief<span aria-hidden="true"> ↗</span><span className="sr-only"> (opens in a new tab)</span></a>
                 {p.submissions.map((x) => (
                   <div key={x.id} className="rounded-button bg-sky-tint/50 px-3 py-2 text-body-sm">
                     <p>Attempt {x.attempt_no} · submitted {fmtDateTime(x.submitted_at)}{x.file_name && <> · <a className="link" href={`/api/live/submissions/${x.id}`}>{x.file_name}</a></>}</p>
