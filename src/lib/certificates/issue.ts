@@ -5,6 +5,7 @@ import { getServiceClient } from "@/lib/supabase/admin";
 import { certificateAssets } from "./assets";
 import { validateCertificateName } from "./name";
 import { renderCertificatePdf } from "./pdf";
+import { verifyUrl } from "./qr";
 
 /** Private R2 object store: certificates live under certificates/<user id>/<certificate code>.pdf in the study-guides bucket. */
 export type CertificateBucket = {
@@ -118,7 +119,7 @@ export async function issueCertificate(
       issuedAtISO: c.completed_at, courseTitle: c.certificate_title, courseShortTitle: c.short_title,
       totalHours: Number(c.hours), categories: c.categories, mode: c.wording, issuer: c.issuer,
       instructorName: c.signatory_name, instructorTitle: c.signatory_title, siteLabel: "iparkar.com", timeZone: "UTC",
-      template: c.template, statement: c.statement ?? undefined,
+      template: c.template, statement: c.statement ?? undefined, verifyUrl: verifyUrl(c.certificate_code),
     }, { ...assets, images: { ...assets.images, signature } });
   } catch {
     await release();
