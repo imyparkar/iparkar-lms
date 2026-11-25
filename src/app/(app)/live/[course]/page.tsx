@@ -8,7 +8,8 @@ import { MakeupForm, PracticalSubmit } from "@/components/live/Forms";
 import { EXAM_BLOCKED, type LiveDashboard, type LiveNotEnrolled } from "@/lib/live/types";
 import { hoursMinutes, sessionWhen } from "@/lib/live/format";
 import { razorpayReady, requestAccessUrl } from "@/lib/study/buy";
-import { isOnSale } from "@/lib/payments/catalogue";
+import { formatMoney, isOnSale, priceFor } from "@/lib/payments/catalogue";
+import { headers } from "next/headers";
 import { RazorpayButton } from "@/components/payments/RazorpayButton";
 
 export const metadata = { title: "Live course" };
@@ -25,8 +26,10 @@ const ATTEND: Record<string, string> = { present: "Attended", absent: "Missed" }
 const MAKEUP: Record<string, string> = { open: "Make-up deadline extended", submitted: "Make-up submitted — awaiting review", approved: "Make-up approved", returned: "Make-up returned — please revise" };
 
 /** Learner dashboard for a live instructor-led course: schedule and Teams links, attendance, practicals, independent study, exam, certificate. */
-export default async function LiveCoursePage({ params }: { params: Promise<{ course: string }> }) {
+export default async function LiveCoursePage({ params, searchParams }:
+  { params: Promise<{ course: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const { course } = await params;
+  const justPaid = (await searchParams).paid === "1";
   if (!/^[a-z]{2,8}$/.test(course)) notFound();
   const { supabase, user } = await requireUser();
   const { data } = await supabase.rpc("live_course_dashboard", { p_course_code: course.toUpperCase() });
@@ -34,12 +37,19 @@ export default async function LiveCoursePage({ params }: { params: Promise<{ cou
   if (!data.ok) {
     const d = data as LiveNotEnrolled;
     if (!d.course) notFound();
+    const price = priceFor(d.course.code, 365, (await headers()).get("cf-ipcountry"));
     return (
       <div className="card max-w-[720px] space-y-3">
         <p className="text-caption text-slate">iParkar Learning · Live online course</p>
         <h1 className="text-heading-sm">{d.course.title}</h1>
         {d.course.description && <p className="text-body text-charcoal">{d.course.description}</p>}
-        <p className="text-body text-charcoal">Places are booked per cohort. Request a place and we&apos;ll confirm the next cohort&apos;s dates, the fee and how to pay.</p>
+        {justPaid && (
+          <p role="status" className="rounded-button border border-[#2f8f4e]/30 bg-[#e3f4e8] px-4 py-3 text-body-sm font-semibold">
+            Thank you — we&apos;re confirming your payment. Refresh this page in a minute; your course page opens as soon as it&apos;s confirmed.
+          </p>
+        )}
+        {price && <p className="text-[28px] font-semibold tracking-[-0.6px]">{formatMoney(price)} <span className="text-body font-normal text-graphite">/ course place, with 1 year&apos;s access</span></p>}
+        <p className="text-body text-charcoal">Places are booked per cohort. After you pay, we place you in the next cohort and the session dates and Teams links appear on this page. One-time payment, no automatic renewal.</p>
         <div className="flex flex-wrap gap-3">
           {razorpayReady() && isOnSale(d.course.code, 365) && (
             <RazorpayButton code={d.course.code} days={365} label="Buy a place" successHref={`/live/${course}?paid=1`} className="btn-primary" />

@@ -1236,13 +1236,14 @@ end $$;
 -- Seed: OHBP — Basic Principles in Occupational Hygiene (version 1.0.0)
 -- Owner decisions 24–25 Nov 2026: 36 h designed study; 40-item open-book exam, 60 min, pass 24; 2 retakes,
 -- 7-day cooldown, +25% time for approved accommodations; make-up within 14 days; practicals /10, pass 6.
--- Enrolment is by purchase or administrator only (no free trial). Not on sale online until a price is set.
+-- Enrolment is by purchase or administrator only (no free trial). Fee KD 60 (owner, 25 Nov 2026; other currencies in catalogue.ts).
 -- =====================================================================
 insert into public.study_courses (code, title, product, description, enrollment_policy, delivery, access_days)
 values ('OHBP', 'Basic Principles in Occupational Hygiene', 'iParkar Learning',
         'A foundation course in anticipating, recognising, evaluating and controlling workplace health hazards, taught in twelve live instructor-led online sessions on Microsoft Teams, with practical assignments, independent study and an internal course examination. Independent course by iParkar Learning, aligned to a published foundation syllabus in occupational hygiene.',
         'admin', 'live', 365)
 on conflict (code) do update set title = excluded.title, description = excluded.description, delivery = 'live';
+update public.study_courses set price_label = 'KD 60' where code = 'OHBP';
 
 insert into public.study_course_versions (course_id, version, status, is_enrollment_default, source_title, source_edition, notes, published_at)
 select id, '1.0.0', 'published', true, 'Internal coverage reference: occupational hygiene foundation syllabus', 'November 2023',
@@ -1317,10 +1318,11 @@ on conflict (course_id, code) do update set title = excluded.title, minutes = ex
 insert into public.study_certificate_programs (course_code, is_enabled, template, certificate_title, short_title, hours, categories, wording,
                                                signatory_name, signatory_title, completion_rule, statement)
 values ('OHBP', true, 'course-a4-landscape-v1', 'Basic Principles in Occupational Hygiene', 'Basic Principles in Occupational Hygiene', 36,
-        '{}'::jsonb, 'hours', 'Imran Parkar, CIH, CSP', 'Course instructor, iParkar Learning', 'live',
+        '{}'::jsonb, 'hours', 'Imran Parkar, CIH, CIT', 'Course Instructor', 'live',
         'Evidence of completion of an independent course by iParkar Learning: live instructor-led sessions, practical assessments, independent study and an internal course examination. It is not a qualification awarded by a professional body.')
 on conflict (course_code) do update set template = excluded.template, certificate_title = excluded.certificate_title, short_title = excluded.short_title,
-  hours = excluded.hours, completion_rule = excluded.completion_rule, statement = excluded.statement;
+  hours = excluded.hours, completion_rule = excluded.completion_rule, statement = excluded.statement,
+  signatory_name = excluded.signatory_name, signatory_title = excluded.signatory_title;
 
 -- Extend a learner's make-up deadline (e.g. illness). Creates the deadline override even before anything is submitted.
 create or replace function public.admin_live_extend_makeup(p_session uuid, p_enrollment uuid, p_days int, p_reason text) returns jsonb

@@ -22,7 +22,7 @@ Status on 25 Nov 2026: built and tested locally on branch `feat/ohbp-course`; fi
 
 ## The rules (all enforced in the database)
 
-- **Enrolment.** A purchase (Razorpay, or an offline payment recorded by an admin) or an admin grant. No free trial. Learners are placed in a cohort by an admin; the cohort gets the course's 12 sessions.
+- **Enrolment.** A purchase (Razorpay at KD 60 or the local equivalent, or an offline payment recorded by an admin) or an admin grant. No free trial. Learners are placed in a cohort by an admin; the cohort gets the course's 12 sessions.
 - **Joining links.** Shown only to an enrolled learner whose purchase is verified (or with admin/pilot access) while access is open, and only until an hour after each session ends. Links must be Microsoft Teams URLs.
 - **Attendance and make-up.** Instructor records present/missed from the Teams attendance report. A missed session is satisfied by watching the captioned recording and submitting the make-up task within 14 days, then instructor approval. Admins can extend a deadline (1–30 days, with a reason).
 - **Practicals.** Marked out of 10, pass 6, written feedback required. One resubmission within 14 days of marking (individually or in the make-up clinic).
@@ -32,7 +32,7 @@ Status on 25 Nov 2026: built and tested locally on branch `feat/ohbp-course`; fi
 
 ## Go-live (owner)
 
-1. **Decisions still needed:** course fee and currency (then add `OHBP: [365]` to `ON_SALE` and a `COURSE_PRICES` entry in `src/lib/payments/catalogue.ts`); confirm the certificate signatory line ("Imran Parkar, CIH, CSP — Course instructor"); the occupational hygiene reviewer's sign-off of exam Forms A and B; written permission for the course title.
+1. **Decided (25 Nov 2026):** fee **KD 60** per place (365 days' access), with local prices US$195, £145, €175, AED 710, SAR 725, QAR 700, BHD 75, OMR 75, ₹18,500 (`src/lib/payments/catalogue.ts`); certificate signatory **Imran Parkar, CIH, CIT — Course Instructor**. **Still needed:** the occupational hygiene reviewer's sign-off of exam Forms A and B; written permission for the course title. If the course is listed on iparkar.com, show the same prices there.
 2. **Database:** apply `20261125000100_live_courses.sql`. Additive; it also replaces `scorm_open_course`, `scorm_can_view`, `scorm_my_courses`, `study_certificate_status`, `study_claim_certificate` and `study_certificate_file` with versions that keep the existing behaviour for other courses (all existing tests pass).
 3. **Exam bank:** copy `ohbp-exam-forms.json` (assessor only) into `imports/ohbp/` (git-ignored) and run `npm run import:live-exam -- --file imports/ohbp/ohbp-exam-forms.json`. After the technical review, tick *Technical review complete* and *Open to learners* for each form in Admin → Live courses.
 4. **Files:** from this repo, logged in to Wrangler: `bash "<course folder>/lms/upload-ohbp.sh" "<course folder>/lms"` uploads the 6 independent-study and 12 slide packages and the 5 learner briefs. Then publish the two SCORM courses: `update scorm_courses set status = 'published' where code in ('ohbp-study', 'ohbp-slides');`

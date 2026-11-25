@@ -31,8 +31,8 @@ const ON_SALE: Record<string, readonly number[]> = {
   "CSP-SPS": [365],
   // PMP® Exam Prep Course (35-hour self-paced, certificate of course completion): own prices in COURSE_PRICES.
   "PMP-SPS": [365],
-  // Live online course "Basic Principles in Occupational Hygiene": add [365] here and a COURSE_PRICES entry once the
-  // owner sets the fee. Until then the course page offers "Request a place" (admin records the payment).
+  // Live online course "Basic Principles in Occupational Hygiene" (one cohort place, 365 days' access): own prices in COURSE_PRICES.
+  OHBP: [365],
 };
 
 type Region = { currency: string; countries: string[]; exam: [number, number, number]; cit: [number, number, number]; sps: number };
@@ -58,6 +58,8 @@ const REGIONS: Region[] = [
  */
 const COURSE_PRICES: Record<string, { USD: number; byCurrency: Record<string, number> }> = {
   "PMP-SPS": { USD: 299, byCurrency: { KWD: 99, GBP: 240, EUR: 290, AED: 1150, SAR: 1200, QAR: 1160, OMR: 120, INR: 25000 } },
+  // Owner, 25 Nov 2026: KD 60, with near equivalents ending in 0 or 5 (mid-market rates of Nov 2026: 1 KWD ≈ US$3.22, €2.88, £2.41, ₹309).
+  OHBP: { USD: 195, byCurrency: { KWD: 60, GBP: 145, EUR: 175, AED: 710, SAR: 725, QAR: 700, BHD: 75, OMR: 75, INR: 18500 } },
 };
 
 /** Decimal places Razorpay expects for each currency (amounts are sent in the smallest unit). */
