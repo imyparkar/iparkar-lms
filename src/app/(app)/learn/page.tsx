@@ -9,6 +9,7 @@ import { studyBuyUrl } from "@/lib/study/buy";
 import type { StudyOffer } from "@/lib/study/types";
 import { guideForStudyCourse } from "@/lib/studyGuides";
 import type { ScormCourseSummary } from "@/lib/scorm/types";
+import { isLiveCourse, liveSlug } from "@/lib/live/types";
 
 export const metadata = { title: "My learning" };
 export const dynamic = "force-dynamic";
@@ -68,6 +69,24 @@ export default async function MyLearning({ searchParams }: { searchParams: Promi
       )}
 
       {courses.map((c) => {
+        if (isLiveCourse(c.code)) {
+          const buyLive = studyBuyUrl(c.code, user);
+          return (
+            <section key={c.code} aria-labelledby={`c-${c.code}`} className="on-dark max-w-[880px] rounded-card bg-midnight p-6 text-white sm:p-8">
+              <p className="text-caption text-marigold">iParkar Learning · Live instructor-led course{c.is_pilot ? " · Pilot (unpublished)" : ""}</p>
+              <h2 id={`c-${c.code}`} className="mt-2 text-[30px] font-semibold leading-tight tracking-[-0.6px]">{c.title}</h2>
+              <p className="mt-2 font-serif text-lead text-white">
+                {c.completed_at ? `Completed on ${fmtDate(c.completed_at)}.` : "Your live sessions, Teams links, practicals, independent study and final exam are all on the course page."}
+              </p>
+              <p className="mt-3 text-body-sm font-medium text-white">{accessLine(c.access)}</p>
+              <div className="mt-6 flex flex-wrap gap-2">
+                {c.access.has_access
+                  ? <Link href={`/live/${liveSlug(c.code)}`} className="btn-primary">Go to the course</Link>
+                  : buyLive ? <BuyButton access={c.access} buyHref={buyLive} /> : null}
+              </div>
+            </section>
+          );
+        }
         const slug = courseSlug(c.code);
         const p = c.progress;
         const buy = studyBuyUrl(c.code, user);
