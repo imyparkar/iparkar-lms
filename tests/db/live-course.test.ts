@@ -269,7 +269,7 @@ describe("live course OHBP", () => {
     expect((await start(uid)).error).toBe("no_attempts_left");
   });
 
-  it("issues a certificate only when purchase, activities and exam all hold — once, to the owner", async () => {
+  it("issues a certificate only when access, activities and exam all hold — once, to the owner", async () => {
     const { uid, enr } = await learner("winner");
     expect((await claim(uid)).error).toBe("course_incomplete");
     await completeActivities(uid, enr);
@@ -290,8 +290,17 @@ describe("live course OHBP", () => {
     expect((await file(admin, code)).ok).toBe(true);
   });
 
-  it("never issues on administrator/pilot access without a purchase, even after passing", async () => {
+  it("issues on administrator-granted access without a payment (access itself needs a purchase or an admin)", async () => {
     const { uid, enr } = await learner("nopay", false);
+    await completeActivities(uid, enr);
+    expect((await sit(uid, 24)).result.passed).toBe(true);
+    expect((await certStatus(uid)).eligible).toBe(true);
+    expect(await finalizeCertificate(uid)).toMatch(/^IPL-OHBP-/);
+  });
+
+  it("never issues on pilot access, even after passing", async () => {
+    const { uid, enr } = await learner("pilot1", false);
+    await db.query(`update study_enrollments set is_pilot = true where id = $1`, [enr]);
     await completeActivities(uid, enr);
     expect((await sit(uid, 40)).result.passed).toBe(true);
     expect((await claim(uid)).error).toBe("purchase_required");
