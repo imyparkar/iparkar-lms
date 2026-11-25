@@ -31,6 +31,8 @@ const ON_SALE: Record<string, readonly number[]> = {
   "CSP-SPS": [365],
   // PMP® Exam Prep Course (35-hour self-paced, certificate of course completion): own prices in COURSE_PRICES.
   "PMP-SPS": [365],
+  // Live online course "Basic Principles in Occupational Hygiene": add [365] here and a COURSE_PRICES entry once the
+  // owner sets the fee. Until then the course page offers "Request a place" (admin records the payment).
 };
 
 type Region = { currency: string; countries: string[]; exam: [number, number, number]; cit: [number, number, number]; sps: number };

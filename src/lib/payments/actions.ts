@@ -5,6 +5,7 @@ import { getSession } from "@/lib/auth/session";
 import { getServiceClient } from "@/lib/supabase/admin";
 import { formatMoney, periodLabel, priceFor } from "@/lib/payments/catalogue";
 import { createOrder, razorpayConfig } from "@/lib/payments/razorpay";
+import { isLiveCourse } from "@/lib/live/types";
 
 export type CheckoutOrder = {
   error?: string;
@@ -37,12 +38,13 @@ export async function startCheckout(code: string, days: number): Promise<Checkou
   if (!price) return { error: "That access period isn’t sold online. Email support@iparkar.com and we’ll help." };
 
   const db = getServiceClient();
-  const study = parsed.data.code.endsWith("-SPS");
+  const live = isLiveCourse(parsed.data.code);
+  const study = parsed.data.code.endsWith("-SPS") || live;
   const { data: course } = await db.from(study ? "study_courses" : "courses").select("id, code").eq("code", parsed.data.code).maybeSingle();
   if (!course) return { error: "That course wasn’t found." };
   const target = study ? { study_course_id: course.id } : { course_id: course.id };
 
-  const what = study ? `${course.code.replace("-SPS", "")} Self Paced Study Course` : `${course.code} practice exams`;
+  const what = live ? `${course.code} live online course` : study ? `${course.code.replace("-SPS", "")} Self Paced Study Course` : `${course.code} practice exams`;
   const description = `${what} · ${periodLabel(parsed.data.days)} · ${formatMoney(price)}`;
   const base = {
     keyId: cfg.keyId, amount: price.minor, currency: price.currency, description,

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- test fixtures read untyped JSON */
 import { beforeAll, describe, expect, it } from "vitest";
+import { existsSync, readFileSync } from "node:fs";
 import { DB, as, createDb, createUser, rpc } from "./harness";
 
 /**
@@ -359,5 +360,20 @@ describe("live course OHBP", () => {
 
   it("does not change the PMP certificate rule", async () => {
     expect((await one(`select completion_rule from study_certificate_programs where course_code = 'PMP-SPS'`)).completion_rule).toBe("chapters");
+  });
+});
+
+// Local check of the real (git-ignored) exam forms, when present: they must load and match the blueprint.
+const REAL = "imports/ohbp/ohbp-exam-forms.json";
+describe.skipIf(!existsSync(REAL))("real OHBP exam forms (local only)", () => {
+  it("import cleanly with 40 items each in the 2/6/8/8/8/8 split", async () => {
+    const fresh = await createDb();
+    await fresh.exec("set role service_role");
+    const r = (await fresh.query<any>(`select public.service_live_import_exam($1::jsonb) r`, [readFileSync(REAL, "utf8")])).rows[0].r;
+    await fresh.exec("reset role");
+    expect(r).toMatchObject({ ok: true, items: 80 });
+    const split = (await fresh.query<any>(`select f.code, string_agg(n::text, '/' order by section) s from (
+      select form_id, section, count(*) n from live_exam_items group by 1, 2) x join live_exam_forms f on f.id = x.form_id group by f.code order by f.code`)).rows;
+    expect(split).toEqual([{ code: "A", s: "2/6/8/8/8/8" }, { code: "B", s: "2/6/8/8/8/8" }]);
   });
 });

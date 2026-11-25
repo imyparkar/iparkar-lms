@@ -123,7 +123,7 @@ create table if not exists public.live_attendance (
 create table if not exists public.live_makeups (
   session_id        uuid not null references public.live_sessions (id) on delete cascade,
   enrollment_id     uuid not null references public.study_enrollments (id) on delete cascade,
-  status            text not null default 'submitted' check (status in ('submitted', 'approved', 'returned')),
+  status            text not null default 'submitted' check (status in ('open', 'submitted', 'approved', 'returned')),
   recording_watched boolean not null default false,
   response          text not null check (char_length(response) between 20 and 8000),
   submitted_at      timestamptz not null default now(),
@@ -1321,3 +1321,28 @@ values ('OHBP', true, 'course-a4-landscape-v1', 'Basic Principles in Occupationa
         'Evidence of completion of an independent course by iParkar Learning: live instructor-led sessions, practical assessments, independent study and an internal course examination. It is not a qualification awarded by a professional body.')
 on conflict (course_code) do update set template = excluded.template, certificate_title = excluded.certificate_title, short_title = excluded.short_title,
   hours = excluded.hours, completion_rule = excluded.completion_rule, statement = excluded.statement;
+
+-- Extend a learner's make-up deadline (e.g. illness). Creates the deadline override even before anything is submitted.
+create or replace function public.admin_live_extend_makeup(p_session uuid, p_enrollment uuid, p_days int, p_reason text) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare s live_sessions; st live_course_settings; v_until timestamptz;
+begin
+  if not public.is_admin() then return jsonb_build_object('ok', false, 'error', 'forbidden'); end if;
+  if p_days is null or p_days not between 1 and 30 or char_length(btrim(coalesce(p_reason, ''))) < 3 then
+    return jsonb_build_object('ok', false, 'error', 'invalid', 'message', 'Give 1–30 days and a reason.');
+  end if;
+  select * into s from live_sessions where id = p_session;
+  select c.* into st from live_course_settings c join live_cohorts co on co.course_id = c.course_id where co.id = s.cohort_id;
+  if s.id is null or not exists (select 1 from live_attendance a where a.session_id = s.id and a.enrollment_id = p_enrollment and a.status = 'absent') then
+    return jsonb_build_object('ok', false, 'error', 'not_missed');
+  end if;
+  v_until := greatest(now(), coalesce(s.ends_at, now()) + make_interval(days => st.makeup_days)) + make_interval(days => p_days);
+  insert into live_makeups (session_id, enrollment_id, status, response, deadline_override)
+  values (s.id, p_enrollment, 'open', '(no submission yet — deadline extended by the instructor)', v_until)
+  on conflict (session_id, enrollment_id) do update set deadline_override = v_until;
+  perform public.write_audit('live.makeup_extended', 'live_session', s.id::text,
+                             jsonb_build_object('enrollment', p_enrollment, 'until', v_until, 'reason', p_reason));
+  return jsonb_build_object('ok', true, 'until', v_until);
+end $$;
+revoke all on function public.admin_live_extend_makeup(uuid, uuid, int, text) from public, anon;
+grant execute on function public.admin_live_extend_makeup(uuid, uuid, int, text) to authenticated;

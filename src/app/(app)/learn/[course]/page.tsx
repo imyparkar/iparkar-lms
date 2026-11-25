@@ -1,6 +1,7 @@
 import { courseProfile, independenceStatement } from "@/lib/study/courseProfile";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { isLiveCourse } from "@/lib/live/types";
 import { requireUser } from "@/lib/auth/session";
 import { fmtDate } from "@/lib/format";
 import { courseCode, type StudyCourse } from "@/lib/study/types";
@@ -21,6 +22,7 @@ const PANELS = ["bg-marigold", "bg-sky-wash", "bg-coral", "bg-moss-green", "bg-s
 export default async function CourseOverview({ params }: { params: Promise<{ course: string }> }) {
   const { course } = await params;
   if (!/^[a-z]{2,8}(-[a-z]{2,8})?$/.test(course)) notFound();
+  if (isLiveCourse(course)) redirect(`/live/${course}`);
   const { supabase, user } = await requireUser();
   const { data } = await supabase.rpc("get_study_course", { p_course_code: courseCode(course) });
   if (!data?.ok) return <NotEnrolled offer={data?.offer} />;
