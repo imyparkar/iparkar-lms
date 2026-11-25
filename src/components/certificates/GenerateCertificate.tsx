@@ -9,7 +9,8 @@ type Issued = { certificate_code: string; name_on_certificate: string; issued_at
  * certificate. The button is disabled while a request is in flight (the server also de-duplicates concurrent
  * requests). Errors are announced and leave the form filled in so the learner can retry.
  */
-export function GenerateCertificate({ course, suggestedName, issued }: { course: string; suggestedName: string; issued: Issued | null }) {
+export function GenerateCertificate({ course, suggestedName, issued, hint = "for example as on your ID or your PMI application" }:
+  { course: string; suggestedName: string; issued: Issued | null; hint?: string }) {
   const id = useId();
   const [name, setName] = useState(suggestedName);
   const [confirm, setConfirm] = useState("");
@@ -70,7 +71,7 @@ export function GenerateCertificate({ course, suggestedName, issued }: { course:
   return (
     <form onSubmit={submit} className="space-y-4" noValidate aria-describedby={`${id}-help`}>
       <p id={`${id}-help`} className="text-body text-graphite">
-        Type your name exactly as it should appear, for example as on your ID or your PMI application. Accents, apostrophes and hyphens are fine. It can&apos;t be changed after the certificate is issued.
+        Type your name exactly as it should appear, {hint}. Accents, apostrophes and hyphens are fine. It can&apos;t be changed after the certificate is issued.
       </p>
       <div className="grid gap-4 sm:grid-cols-2">
         <div>

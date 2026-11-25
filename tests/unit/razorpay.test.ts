@@ -60,6 +60,22 @@ describe("price catalogue (mirrors iparkar.com)", () => {
     expect(formatMoney(pmp("IN")!)).toBe("₹25,000");
     expect(formatMoney(pmp("AE")!)).toBe("AED 1,150");
   });
+  it("charges the live course OHBP KD 60 or a rounded local equivalent", () => {
+    const o = (cc: string) => priceFor("OHBP", 365, cc);
+    expect(o("KW")).toEqual({ amount: 60, currency: "KWD", minor: 60000 });
+    expect(o("US")).toEqual({ amount: 195, currency: "USD", minor: 19500 });
+    expect(o("GB")).toEqual({ amount: 145, currency: "GBP", minor: 14500 });
+    expect(o("FR")).toEqual({ amount: 175, currency: "EUR", minor: 17500 });
+    expect(o("AE")).toEqual({ amount: 710, currency: "AED", minor: 71000 });
+    expect(o("SA")).toEqual({ amount: 725, currency: "SAR", minor: 72500 });
+    expect(o("QA")).toEqual({ amount: 700, currency: "QAR", minor: 70000 });
+    expect(o("BH")).toEqual({ amount: 75, currency: "BHD", minor: 75000 });
+    expect(o("OM")).toEqual({ amount: 75, currency: "OMR", minor: 75000 });
+    expect(o("IN")).toEqual({ amount: 18500, currency: "INR", minor: 1850000 });
+    for (const cc of ["US", "GB", "FR", "AE", "SA", "QA", "BH", "OM", "IN"]) expect(o(cc)!.amount % 5).toBe(0);
+    expect(priceFor("OHBP", 90, "KW")).toBeNull();
+    expect(formatMoney(o("KW")!)).toBe("KWD 60");
+  });
   it("formats like the website", () => {
     expect(formatMoney({ amount: 7999, currency: "INR" })).toBe("₹7,999");
     expect(formatMoney({ amount: 30, currency: "KWD" })).toBe("KWD 30");

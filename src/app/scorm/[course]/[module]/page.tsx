@@ -3,11 +3,12 @@ import { requireUser } from "@/lib/auth/session";
 import { IdleLogout } from "@/components/shell/IdleLogout";
 import { ScormPlayer } from "@/components/scorm/ScormPlayer";
 import { SLUG, type ScormCourse, type ScormLaunch } from "@/lib/scorm/types";
+import { isLiveCourse } from "@/lib/live/types";
 
 export const metadata = { title: "Course module" };
 export const dynamic = "force-dynamic";
 
-/** Full-viewport player for one SCORM module of a free course (signed-in learners). */
+/** Full-viewport player for one SCORM module of a free course, or of a paid live course's study modules (access checked in the database). */
 export default async function ScormModulePage({ params }: { params: Promise<{ course: string; module: string }> }) {
   const { course, module } = await params;
   if (!SLUG.test(course) || !SLUG.test(module)) notFound();
@@ -25,7 +26,7 @@ export default async function ScormModulePage({ params }: { params: Promise<{ co
       <IdleLogout />
       <ScormPlayer
         launch={launch as ScormLaunch}
-        courseHref={`/free/${course}`}
+        courseHref={isLiveCourse(course.split("-")[0]) ? `/live/${course.split("-")[0]}` : `/free/${course}`}
         position={i + 1}
         total={mods.length}
         nextHref={next ? `/scorm/${course}/${next.code}` : null}

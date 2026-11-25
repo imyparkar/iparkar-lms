@@ -77,6 +77,51 @@ if (process.env.MOCK_PMP_DIR) {
   console.log("PMP bank loaded");
 }
 
+// MOCK_LIVE=1 seeds the live course OHBP: learner@ has paid, is in a cohort with dates and Teams links, attended
+// sessions 1 and 3, missed session 2 (make-up due), and has P1 marked; exam forms come from imports/ohbp (or are synthetic).
+if (process.env.MOCK_LIVE === "1") {
+  const L = users["learner@example.test"];
+  const sc = (await db.query<any>(`select id from study_courses where code = 'OHBP'`)).rows[0].id;
+  await db.query(`insert into checkout_orders (provider_order_id, user_id, study_course_id, access_days, amount_minor, currency) values ('order_mock', $1, $2, 365, 99000, 'KWD')`, [L, sc]);
+  await db.query(`select public.service_fulfil_checkout_order('order_mock', 'pay_mock', 99000, 'KWD', 'order.paid', '{}'::jsonb)`);
+  await db.query(`update scorm_courses set status = 'published' where code in ('ohbp-study', 'ohbp-slides')`);
+  const co = await rpc(db, adminId, "admin_live_create_cohort", ["OHBP", "OHBP-2027-01", "January 2027 cohort", "Asia/Kuwait"], ["text", "text", "text", "text"]);
+  const ses = (await db.query<any>(`select s.id, p.session_no, p.minutes from live_sessions s join live_session_plan p on p.id = s.plan_id where s.cohort_id = $1 order by p.session_no`, [co.cohort_id])).rows;
+  for (const s of ses) {
+    const start = new Date(Date.now() + (s.session_no - 4) * 3 * 86400_000 + 3600_000);
+    await rpc(db, adminId, "admin_live_update_session", [s.id, start.toISOString(), new Date(start.getTime() + s.minutes * 60_000).toISOString(),
+      `https://teams.microsoft.com/l/meetup-join/mock-${s.session_no}`, `https://iparkar.sharepoint.com/recording/${s.session_no}`, "Imran Parkar"],
+      ["uuid", "timestamptz", "timestamptz", "text", "text", "text"]);
+  }
+  const enr = (await db.query<any>(`select id from study_enrollments where user_id = $1 and course_id = $2`, [L, sc])).rows[0].id;
+  await rpc(db, adminId, "admin_live_assign", [enr, co.cohort_id], ["uuid", "uuid"]);
+  for (const [i, st] of [[0, "present"], [1, "absent"], [2, "present"]] as const) {
+    await rpc(db, adminId, "admin_live_record_attendance", [ses[i].id, JSON.stringify([{ enrollment: enr, status: st, minutes: 120 }])], ["uuid", "jsonb"]);
+  }
+  const sub = await rpc(db, L, "live_submit_practical", ["OHBP", "P1", "Hazard review of the fictional solvent SDS: …", null, null, "session"], ["text", "text", "text", "text", "text", "text"]);
+  await rpc(db, adminId, "admin_live_mark_practical", [sub.id, 8, "Clear extraction of hazards; give the route of entry for the vapour too."], ["uuid", "int", "text"]);
+  const forms = existsSync(join(root, "imports/ohbp/ohbp-exam-forms.json")) ? readFileSync(join(root, "imports/ohbp/ohbp-exam-forms.json"), "utf8")
+    : JSON.stringify({ course: "OHBP", forms: ["A", "B"].map((code) => ({ code, items: [2, 6, 8, 8, 8, 8].flatMap((n, u) => Array.from({ length: n }, (_, k) => ({
+        ref: `${code}-U${u + 1}-${String(k + 1).padStart(2, "0")}`, section: u + 1, syllabus_ref: "x", competency: "x",
+        stem: `[MOCK] Form ${code}, unit ${u + 1}, question ${k + 1}?`, options: ["First", "Second", "Third", "Fourth"], answer: 1, rationale: "x", source: "x" }))) })) });
+  await db.query(`select public.service_live_import_exam($1::jsonb)`, [forms]);
+  await db.query(`update live_exam_forms set is_active = true, reviewed = true`);
+  // other@ has finished everything, so the examination can be tried.
+  const O = users["other@example.test"];
+  await db.query(`insert into checkout_orders (provider_order_id, user_id, study_course_id, access_days, amount_minor, currency) values ('order_mock2', $1, $2, 365, 99000, 'KWD')`, [O, sc]);
+  await db.query(`select public.service_fulfil_checkout_order('order_mock2', 'pay_mock2', 99000, 'KWD', 'order.paid', '{}'::jsonb)`);
+  const enr2 = (await db.query<any>(`select id from study_enrollments where user_id = $1 and course_id = $2`, [O, sc])).rows[0].id;
+  await rpc(db, adminId, "admin_live_assign", [enr2, co.cohort_id], ["uuid", "uuid"]);
+  for (const s of ses) await rpc(db, adminId, "admin_live_record_attendance", [s.id, JSON.stringify([{ enrollment: enr2, status: "present" }])], ["uuid", "jsonb"]);
+  for (const code of ["P1", "P2", "P3", "P4", "P5"]) {
+    const x = await rpc(db, O, "live_submit_practical", ["OHBP", code, "Mock answer", null, null, "session"], ["text", "text", "text", "text", "text", "text"]);
+    await rpc(db, adminId, "admin_live_mark_practical", [x.id, 7, "Mock feedback for preview."], ["uuid", "int", "text"]);
+  }
+  await db.query(`insert into scorm_attempts (user_id, module_id, lesson_status, completed_at)
+                  select $1, m.id, 'completed', now() from scorm_modules m join scorm_courses c on c.id = m.course_id where c.code = 'ohbp-study'`, [O]);
+  console.log("live course OHBP seeded for learner@ (in progress) and other@ (ready for the examination)");
+}
+
 const b64 = (o: unknown) => Buffer.from(JSON.stringify(o)).toString("base64url");
 const jwt = (sub: string) => `${b64({ alg: "HS256", typ: "JWT" })}.${b64({ sub, role: "authenticated", aud: "authenticated", exp: Math.floor(Date.now() / 1000) + 3600 * 24, iat: Math.floor(Date.now() / 1000) })}.mock`;
 const subOf = (token: string | undefined) => {

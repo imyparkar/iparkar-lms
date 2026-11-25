@@ -45,7 +45,7 @@ function devBucket(): CertificateBucket {
 type Claimed = {
   id: string; user_id: string; certificate_code: string; name_on_certificate: string; certificate_title: string; short_title: string;
   completed_at: string; hours: number; categories: { businessAcumen: number; waysOfWorking: number; powerSkills: number };
-  wording: "hours" | "pdu"; issuer: string; signatory_name: string; signatory_title: string;
+  wording: "hours" | "pdu"; issuer: string; signatory_name: string; signatory_title: string; template: string; statement: string | null;
 };
 export type IssueResult =
   | { ok: true; certificate_code: string; already: boolean }
@@ -56,7 +56,8 @@ const MESSAGES: Record<string, [number, string]> = {
   not_offered: [404, "This course doesn't offer a certificate."],
   not_enrolled: [403, "You're not enrolled in this course, so a certificate can't be generated."],
   purchase_required: [403, "Certificates are issued to learners who have bought the course. Buy the course to generate your certificate; your progress and completion are kept."],
-  course_incomplete: [403, "Finish every required chapter first. The certificate unlocks when the whole course is complete."],
+  course_incomplete: [403, "Finish every required part of the course first. The certificate unlocks when the whole course is complete."],
+  exam_not_passed: [403, "Pass the final course examination first. The certificate unlocks when you score the pass mark or more."],
   in_progress: [409, "Your certificate is already being generated. Wait a few seconds, then refresh this page."],
   invalid_name: [400, "Use letters, spaces, apostrophes, hyphens and full stops only."],
   signature_missing: [503, "Certificates can't be issued at the moment. Nothing was issued. Please try again later or contact support@iparkar.com."],
@@ -111,10 +112,13 @@ export async function issueCertificate(
   let pdf: Uint8Array;
   try {
     pdf = await renderCertificatePdf({
-      name: c.name_on_certificate, certificateNo: c.certificate_code, completionDateISO: c.completed_at,
+      // Course-template certificates print the date of issue; the PMP template prints the date of completion.
+      name: c.name_on_certificate, certificateNo: c.certificate_code,
+      completionDateISO: c.template === "course-a4-landscape-v1" ? new Date().toISOString() : c.completed_at,
       issuedAtISO: c.completed_at, courseTitle: c.certificate_title, courseShortTitle: c.short_title,
       totalHours: Number(c.hours), categories: c.categories, mode: c.wording, issuer: c.issuer,
       instructorName: c.signatory_name, instructorTitle: c.signatory_title, siteLabel: "iparkar.com", timeZone: "UTC",
+      template: c.template, statement: c.statement ?? undefined,
     }, { ...assets, images: { ...assets.images, signature } });
   } catch {
     await release();

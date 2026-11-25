@@ -159,7 +159,7 @@ describe("paid access", () => {
 describe("administration", () => {
   it("admin and pilot enrollments have no time limit; admins can set access by hand", async () => {
     const staff = await createUser(db, { username: "staff" });
-    const v = (await db.query<{ id: string }>(`select id from study_course_versions where version = '1.0.0'`)).rows[0].id;
+    const v = (await db.query<{ id: string }>(`select v.id from study_course_versions v join study_courses c on c.id = v.course_id where c.code = 'ASP-SPS' and v.version = '1.0.0'`)).rows[0].id;
     const r = await rpc(db, admin, "admin_study_enroll", [staff, v, false], ["uuid", "uuid", "boolean"]);
     expect(r.ok).toBe(true);
     const e = await enrollment(staff);

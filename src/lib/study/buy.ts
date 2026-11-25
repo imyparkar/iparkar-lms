@@ -1,6 +1,7 @@
 import { checkoutUrl } from "@/lib/env";
 import { courseSlug } from "@/lib/study/types";
 import { isOnSale } from "@/lib/payments/catalogue";
+import { isLiveCourse } from "@/lib/live/types";
 
 const SUPPORT = "support@iparkar.com";
 
@@ -22,11 +23,12 @@ export function studyBuyUrl(code: string, user: { id: string; email?: string | n
 }
 
 export function requestAccessUrl(code: string, user: { id: string; email?: string | null }): string {
-  const subject = `Request for Access: ${code} Self Paced Study Course`;
+  const what = isLiveCourse(code) ? "Basic Principles in Occupational Hygiene (live online course)" : `${code} Self Paced Study Course`;
+  const subject = isLiveCourse(code) ? `Request for a place: ${what}` : `Request for Access: ${what}`;
   const body = [
     "Hello iParkar Learning,",
     "",
-    `I would like 12 months of access to the ${code} Self Paced Study Course.`,
+    isLiveCourse(code) ? `I would like a place on the next cohort of ${what}. Please send me the dates, fee and how to pay.` : `I would like 12 months of access to the ${what}.`,
     "",
     `Account email: ${user.email ?? ""}`,
     `Account reference: ${user.id}`,

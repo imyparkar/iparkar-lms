@@ -1,10 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { verifyWebhookSignature } from "@/lib/payments/razorpay";
-import { applyCaptured, applyRefund } from "@/lib/payments/checkout";
+import { applyCaptured, applyDispute, applyRefund } from "@/lib/payments/checkout";
 
 /**
  * Razorpay → entitlements. Subscribe this URL to: order.paid, payment.captured,
- * refund.processed. Access is granted only for a captured payment matching an
+ * refund.processed, and the payment.dispute.* events (created, won, lost, closed, under_review,
+ * action_required). An open or lost dispute blocks live-course certificates; a lost one ends the access it bought. Access is granted only for a captured payment matching an
  * order we created (amount and currency checked in the database), once.
  * Any non-2xx response makes Razorpay retry, so failures return 500.
  */
@@ -14,6 +15,7 @@ type Evt = {
   payload: {
     payment?: Entity<{ id: string; order_id: string | null; amount: number; currency: string; status: string }>;
     refund?: Entity<{ id: string; payment_id: string; amount: number; currency: string; status: string }>;
+    dispute?: Entity<{ id: string; payment_id: string; amount: number; phase?: string; status?: string }>;
   };
 };
 
@@ -41,6 +43,12 @@ export async function POST(request: NextRequest) {
       const r = evt.payload.refund?.entity;
       if (!r) return NextResponse.json({ ok: true, ignored: "no refund" });
       const result = await applyRefund(r.payment_id, r.id, r.amount, evt);
+      return NextResponse.json({ ok: true, result });
+    }
+    if (evt.event.startsWith("payment.dispute.")) {
+      const d = evt.payload.dispute?.entity;
+      if (!d?.payment_id) return NextResponse.json({ ok: true, ignored: "no dispute" });
+      const result = await applyDispute(d.payment_id, d.id, evt.event.slice("payment.dispute.".length), d.amount);
       return NextResponse.json({ ok: true, result });
     }
     return NextResponse.json({ ok: true, ignored: evt.event });

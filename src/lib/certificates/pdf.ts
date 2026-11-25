@@ -13,6 +13,8 @@ export type CertificateData = {
   totalHours: number | string; categories: { businessAcumen: number; waysOfWorking: number; powerSkills: number };
   mode?: "hours" | "pdu"; timeZone?: string; issuer?: string; instructorName?: string; instructorTitle?: string; siteLabel?: string;
   trademarkLine?: string; _nameLayout?: { size: number; lines: number };
+  /** "pmp-a4-landscape-v1" (default) or "course-a4-landscape-v1": no Talent Triangle or PMI categories; the statement replaces them. */
+  template?: string; statement?: string;
 };
 type Bytes = Uint8Array | ArrayBuffer;
 export type CertificateAssets = {
@@ -125,7 +127,11 @@ export async function renderCertificatePdf(data: CertificateData, assets: Certif
     return lines;
   };
 
-  const labels = DEFAULT_LABELS[data.mode === "pdu" ? "pdu" : "hours"];
+  const general = data.template === "course-a4-landscape-v1";
+  const labels = general
+    ? { leftCaption: "Designed study hours",
+        bodyLine: (n: string) => `and completing ${n} hours of designed study: live instructor-led sessions, practical assessments, independent study and a final course examination.` }
+    : DEFAULT_LABELS[data.mode === "pdu" ? "pdu" : "hours"];
   const total = String(data.totalHours);
 
   // ---------- left panel (340 px, midnight) ----------
@@ -142,13 +148,13 @@ export async function renderCertificatePdf(data: CertificateData, assets: Certif
   text(data.issuer || "iParkar Learning", { x: 96, top: 72 - (18 * 1.2109) / 2, size: 18, font: F.sb, color: C.white, ls: -0.2 });
 
   // middle block — space-between positions computed from the template's flex column
-  const triH = 220 * (I.tri.height / I.tri.width);
+  const triH = general ? 0 : 220 * (I.tri.height / I.tri.width);
   const midH = triH + 28 + 96 + 6 + 16 * 1.2109;
   const botH = 18 + 4 + 18;
   const colTop = 52, colBottom = ART_H - 52;
   const gap = (colBottom - colTop - 40 - midH - botH) / 2;
   const midTop = colTop + 40 + gap;
-  page.drawImage(I.tri, { x: X(44), y: Y(midTop + triH), width: X(220), height: triH * S });
+  if (!general) page.drawImage(I.tri, { x: X(44), y: Y(midTop + triH), width: X(220), height: triH * S });
   const numTop = midTop + triH + 28;
   // The hours figure and its caption are centred on the Talent Triangle by their visible ink (glyph outlines,
   // letter-spacing included), not by advance widths, so they sit exactly under the triangle's apex.
@@ -185,7 +191,7 @@ export async function renderCertificatePdf(data: CertificateData, assets: Certif
   text("Certificate no. ", { x: RR - noW, top: rowTxtTop, size: 12, font: F.r, color: C.graphite, align: "right" });
   top += pillH + 30;
 
-  text("Certificate of course completion", { x: RX, top, size: 38, font: F.b, color: C.midnight, lh: 38 * 1.1, ls: -1.04 });
+  text(general ? "Certificate of completion" : "Certificate of course completion", { x: RX, top, size: 38, font: F.b, color: C.midnight, lh: 38 * 1.1, ls: -1.04 });
   top += 38 * 1.1 + 26;
   text("This certificate is presented to", { x: RX, top, size: 14.667, font: F.r, color: C.graphite });
   top += 14.667 * 1.2109 + 6;
@@ -233,7 +239,14 @@ export async function renderCertificatePdf(data: CertificateData, assets: Certif
   top += 26;
 
   // three category tiles
-  const tiles: [typeof I.ba, number, string][] = [
+  if (general) {
+    // Statement panel in place of the PMI category tiles.
+    const lines = wrap(data.statement || "Evidence of completion of an independent course by iParkar Learning.", F.r, 12.667, RW - 36);
+    const h = lines.length * 12.667 * 1.5 + 28;
+    rrect(RX + 0.5, top + 0.5, RW - 1, h - 1, 8, { borderColor: C.ink, borderOpacity: 0.2, borderWidth: 1 * S });
+    lines.forEach((l, k) => text(l, { x: RX + 18, top: top + 14 + k * 12.667 * 1.5, size: 12.667, font: F.r, color: C.graphite, lh: 12.667 * 1.5 }));
+  }
+  const tiles: [typeof I.ba, number, string][] = general ? [] : [
     [I.ba, data.categories.businessAcumen, "Business acumen"],
     [I.wow, data.categories.waysOfWorking, "Ways of working"],
     [I.ps, data.categories.powerSkills, "Power skills"],
@@ -252,7 +265,9 @@ export async function renderCertificatePdf(data: CertificateData, assets: Certif
   });
 
   // footer — fine print anchored to the bottom padding (40 px), signature row above it
-  const fine = data.trademarkLine || "PMI, PMP and the PMI Talent Triangle are registered marks of the Project Management Institute, Inc. Talent Triangle artwork shown per PMI branding guidelines.";
+  const fine = data.trademarkLine || (general
+    ? `Verify this certificate by quoting its number to iParkar Learning (support@iparkar.com).`
+    : "PMI, PMP and the PMI Talent Triangle are registered marks of the Project Management Institute, Inc. Talent Triangle artwork shown per PMI branding guidelines.");
   const fineLines = wrap(fine, F.r, 10.667, RW, 0.21);
   const fineTop = ART_H - 40 - fineLines.length * 10.667 * 1.4;
   fineLines.forEach((l, i) => text(l, { x: RX, top: fineTop + i * 10.667 * 1.4, size: 10.667, font: F.r, color: C.slate, lh: 10.667 * 1.4, ls: 0.21 }));
@@ -266,7 +281,7 @@ export async function renderCertificatePdf(data: CertificateData, assets: Certif
   const sx = RR - 260;
   text(formatCertificateDate(data.completionDateISO, data.timeZone), { x: RX, top: valTop, size: 16, font: F.sb, color: C.charcoal });
   page.drawRectangle({ x: X(RX), y: Y(ruleTop + 1), width: X(220), height: 1 * S, color: C.ink, opacity: 0.2 });
-  text("Date of completion", { x: RX, top: capTop, size: 12, font: F.r, color: C.graphite });
+  text(general ? "Date of issue" : "Date of completion", { x: RX, top: capTop, size: 12, font: F.r, color: C.graphite });
   if (I.sig) {
     // Handwritten signature (transparent PNG) above the signatory name, fitted inside 220 × 72 px.
     const maxW = 220, maxH = 72;

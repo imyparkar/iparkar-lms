@@ -40,3 +40,13 @@ export async function applyRefund(paymentId: string, refundId: string, amount: n
   if (result.ok) await sendInvoiceEmail(result.credit_note_id);
   return result;
 }
+
+/** Razorpay dispute (chargeback) event: phase is created, under_review, action_required, won, lost or closed. */
+export async function applyDispute(paymentId: string, disputeId: string, phase: string, amount: number | undefined) {
+  const db = getServiceClient();
+  const { data, error } = await db.rpc("service_record_payment_dispute", {
+    p_payment: paymentId, p_dispute: disputeId, p_phase: phase, p_amount: amount ?? null,
+  });
+  if (error) throw new Error(`dispute failed: ${error.message}`);
+  return data as { ok: boolean; status?: string; ignored?: string };
+}
