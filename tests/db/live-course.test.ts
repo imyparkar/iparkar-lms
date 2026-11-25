@@ -288,6 +288,12 @@ describe("live course OHBP", () => {
     const other = await createUser(db, { username: "nosy" });
     expect((await file(other, code)).ok).toBe(false);
     expect((await file(admin, code)).ok).toBe(true);
+    // public verification (no sign-in): only what is printed on the certificate
+    const v = await rpc(db, null, "study_verify_certificate", [code.toLowerCase()]);
+    expect(v).toMatchObject({ ok: true, found: true, valid: true, certificate_code: code, course_title: expect.any(String), issuer: "iParkar Learning" });
+    expect(Object.keys(v).sort()).toEqual(["certificate_code", "completed_on", "course_title", "found", "hours", "issued_on", "issuer", "name", "ok", "valid"]);
+    expect((await rpc(db, null, "study_verify_certificate", ["IPL-OHBP-0000-0000"])).found).toBe(false);
+    expect((await rpc(db, null, "study_verify_certificate", ["not a code"])).found).toBe(false);
   });
 
   it("issues on administrator-granted access without a payment (access itself needs a purchase or an admin)", async () => {
@@ -335,6 +341,7 @@ describe("live course OHBP", () => {
     expect((await file(uid, code)).ok).toBe(false);
     expect((await claim(uid)).error).toBe("purchase_required");
     expect((await certStatus(uid)).certificate).toBeNull();
+    expect((await rpc(db, null, "study_verify_certificate", [code])).valid).toBe(false);   // refunded: no longer valid
     expect((await file(admin, code)).ok).toBe(true);       // audit copy stays available to administrators
   });
 

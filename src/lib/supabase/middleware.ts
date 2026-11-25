@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from "@/lib/env";
 
-const PUBLIC_PATHS = ["/login", "/signup", "/reset-password", "/auth", "/api/webhooks", "/api/session", "/legal"];
+const PUBLIC_PATHS = ["/login", "/signup", "/reset-password", "/auth", "/api/webhooks", "/api/session", "/api/certificates/verify", "/legal"];
 
 /** Refreshes the session cookie and redirects anonymous users to /login. */
 export async function updateSession(request: NextRequest) {

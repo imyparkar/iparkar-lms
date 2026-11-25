@@ -7,6 +7,7 @@
  */
 import { PDFDocument, rgb, setCharacterSpacing, pushGraphicsState, popGraphicsState, type PDFFont, type PDFPage } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
+import { qrMatrix } from "./qr";
 
 export type CertificateData = {
   name: string; certificateNo: string; completionDateISO: string; issuedAtISO?: string; courseTitle: string; courseShortTitle?: string;
@@ -15,6 +16,8 @@ export type CertificateData = {
   trademarkLine?: string; _nameLayout?: { size: number; lines: number };
   /** "pmp-a4-landscape-v1" (default) or "course-a4-landscape-v1": no Talent Triangle or PMI categories; the statement replaces them. */
   template?: string; statement?: string;
+  /** Public verification link, printed as a QR code in the left panel. */
+  verifyUrl?: string;
 };
 type Bytes = Uint8Array | ArrayBuffer;
 export type CertificateAssets = {
@@ -150,7 +153,10 @@ export async function renderCertificatePdf(data: CertificateData, assets: Certif
   // middle block — space-between positions computed from the template's flex column
   const triH = general ? 0 : 220 * (I.tri.height / I.tri.width);
   const midH = triH + 28 + 96 + 6 + 16 * 1.2109;
-  const botH = 18 + 4 + 18;
+  // QR code block (tile + caption) sits above the course name at the bottom of the panel.
+  const QR_TILE = 108, QR_GAP = 8, QR_CAP = 11 * 1.2109, QR_AFTER = 22;
+  const qrH = data.verifyUrl ? QR_TILE + QR_GAP + QR_CAP + QR_AFTER : 0;
+  const botH = 18 + 4 + 18 + qrH;
   const colTop = 52, colBottom = ART_H - 52;
   const gap = (colBottom - colTop - 40 - midH - botH) / 2;
   const midTop = colTop + 40 + gap;
@@ -172,7 +178,23 @@ export async function renderCertificatePdf(data: CertificateData, assets: Certif
   };
   text(total, { x: inkLeft(assets.fonts.interBold, total, 96, -3.84), top: numTop, size: 96, font: F.b, color: C.white, lh: 96, ls: -3.84 });
   text(labels.leftCaption, { x: inkLeft(assets.fonts.interSemiBold, labels.leftCaption, 16, 0.24), top: numTop + 96 + 6, size: 16, font: F.sb, color: C.marigold, ls: 0.24 });
-  const botTop = colBottom - botH;
+  const botTop = colBottom - botH + qrH;
+  if (data.verifyUrl) {
+    const m = qrMatrix(data.verifyUrl);
+    const n = m.length, quiet = 4, cell = QR_TILE / (n + 2 * quiet);
+    const qTop = colBottom - botH;
+    rrect(44, qTop, QR_TILE, QR_TILE, 6, { color: C.white });
+    for (let r = 0; r < n; r++) {
+      for (let c = 0; c < n; c++) {
+        if (!m[r][c]) continue;
+        // merge horizontal runs into one rectangle so the PDF stays small and edges stay crisp
+        let run = 1; while (c + run < n && m[r][c + run]) run++;
+        page.drawRectangle({ x: X(44 + (quiet + c) * cell), y: Y(qTop + (quiet + r + 1) * cell), width: X(run * cell), height: cell * S, color: C.midnight });
+        c += run - 1;
+      }
+    }
+    text("Scan to verify", { x: 44, top: qTop + QR_TILE + QR_GAP, size: 11, font: F.sb, color: C.marigold, ls: 0.22 });
+  }
   text(data.courseShortTitle || "PMP® Exam Prep Course", { x: 44, top: botTop, size: 12, font: F.sb, color: C.white, lh: 18 });
   text(data.siteLabel || "iparkar.com", { x: 44, top: botTop + 22, size: 12, font: F.r, color: C.white, lh: 18, opacity: 0.78 });
 
@@ -266,7 +288,9 @@ export async function renderCertificatePdf(data: CertificateData, assets: Certif
 
   // footer — fine print anchored to the bottom padding (40 px), signature row above it
   const fine = data.trademarkLine || (general
-    ? `Verify this certificate by quoting its number to iParkar Learning (support@iparkar.com).`
+    ? (data.verifyUrl
+        ? `Scan the QR code or visit iparkar.com/verify and enter the certificate number to confirm this certificate.`
+        : `Verify this certificate by quoting its number to iParkar Learning (support@iparkar.com).`)
     : "PMI, PMP and the PMI Talent Triangle are registered marks of the Project Management Institute, Inc. Talent Triangle artwork shown per PMI branding guidelines.");
   const fineLines = wrap(fine, F.r, 10.667, RW, 0.21);
   const fineTop = ART_H - 40 - fineLines.length * 10.667 * 1.4;
