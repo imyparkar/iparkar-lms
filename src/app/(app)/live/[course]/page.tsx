@@ -146,6 +146,7 @@ export default async function LiveCoursePage({ params, searchParams }:
       <section aria-labelledby="prac" className="space-y-4">
         <h2 id="prac" className="text-heading-sm">Practical assignments</h2>
         <p className="text-body-sm text-graphite">Each practical is marked out of {c.practical_rules.max}; {c.practical_rules.pass} is a pass. You get written feedback within 7 days. If you don&apos;t pass, you can resubmit once within {c.practical_rules.resubmit_days} days, individually or in the make-up clinic. All practicals use fictional data — you never need to enter a hazardous area.</p>
+        <p className="text-body-sm text-graphite">Sampling and measuring equipment is shown in live demonstrations, where you direct the set-up and spot errors. The course builds your understanding of how the equipment is used; it does not certify hands-on competence, which needs supervised practical training.</p>
         <ul className="grid gap-3 md:grid-cols-2">
           {c.practicals.map((p) => {
             const last = p.submissions[p.submissions.length - 1];
@@ -217,7 +218,7 @@ export default async function LiveCoursePage({ params, searchParams }:
           <h2 id="cert" className="text-heading-sm">Certificate of completion</h2>
           <p className="text-body-sm text-charcoal">An iParkar Learning Certificate of Completion for {Number(c.course.designed_hours)} hours of designed study is issued when all three are true:</p>
           <ul className="space-y-2">
-            <Tick ok={c.certificate.conditions.purchase} label="Your course purchase is confirmed (not a free preview, a pending payment or a refunded purchase)" />
+            <Tick ok={c.certificate.conditions.purchase} label="You have full course access (not pilot access, and no refunded or disputed payment)" />
             <Tick ok={c.certificate.conditions.activities} label="Every live session (or approved make-up), practical and independent-study module is complete" />
             <Tick ok={c.certificate.conditions.exam} label={`You scored ${e.pass_mark}/${e.items} or more in the final course examination`} />
           </ul>
