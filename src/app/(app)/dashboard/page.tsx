@@ -8,6 +8,7 @@ import { CourseAnalyticsPanel } from "@/components/analytics/CourseAnalyticsPane
 import { ProgressMeter } from "@/components/study/Progress";
 import { accessLine } from "@/components/study/Access";
 import { courseSlug, type MyStudyCourse } from "@/lib/study/types";
+import { isLiveCourse, liveSlug } from "@/lib/live/types";
 
 const PRICING_URL = "https://iparkar.com/practice-exams/";
 
@@ -92,7 +93,8 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
           <div className="mt-4 grid gap-4 md:grid-cols-3">
             {study.map((c) => {
               const slug = courseSlug(c.code);
-              const resumeHref = c.resume ? `/study/${slug}/${c.resume.chapter}${c.resume.section ? `?s=${c.resume.section}` : ""}` : `/study/${slug}/1.1`;
+              const live = isLiveCourse(c.code);
+              const resumeHref = live ? `/live/${liveSlug(c.code)}` : c.resume ? `/study/${slug}/${c.resume.chapter}${c.resume.section ? `?s=${c.resume.section}` : ""}` : `/study/${slug}/1.1`;
               return (
                 <article key={c.code} className="rounded-card border border-hairline bg-white p-6">
                   <div className="flex items-start justify-between gap-3">
@@ -103,12 +105,14 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
                   </div>
                   <h3 className="mt-4 text-[18px] font-semibold leading-snug">{c.title}</h3>
                   <p className="mt-1 text-body-sm text-graphite">{accessLine(c.access)}</p>
-                  <div className="mt-4"><ProgressMeter size="sm" done={c.progress.completed_chapters} total={c.progress.required_chapters} label="Chapters completed" /></div>
+                  {live
+                    ? <p className="mt-4 text-body-sm text-graphite">Live instructor-led course: sessions, Teams links, practicals and the final exam are on the course page.</p>
+                    : <div className="mt-4"><ProgressMeter size="sm" done={c.progress.completed_chapters} total={c.progress.required_chapters} label="Chapters completed" /></div>}
                   <div className="mt-5 flex flex-wrap gap-2">
                     {c.access.has_access
-                      ? <Link href={resumeHref} className="btn-ghost">{c.resume ? "Continue learning" : "Start the course"}</Link>
+                      ? <Link href={resumeHref} className="btn-ghost">{live ? "Go to the course" : c.resume ? "Continue learning" : "Start the course"}</Link>
                       : <Link href="/learn" className="btn-outline">Renew access</Link>}
-                    <Link href={`/learn/${slug}`} className="btn-text">Course overview</Link>
+                    {!live && <Link href={`/learn/${slug}`} className="btn-text">Course overview</Link>}
                   </div>
                 </article>
               );
