@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { isLiveCourse, liveSlug } from "@/lib/live/types";
 import { requireUser } from "@/lib/auth/session";
 import { courseCode } from "@/lib/study/types";
 import type { StudyChapter, StudyCourse } from "@/lib/study/types";
@@ -20,6 +21,7 @@ export default async function ChapterPage({ params, searchParams }: {
 }) {
   const { course, chapter } = await params;
   const sp = await searchParams;
+  if (isLiveCourse(course)) redirect(`/live/${liveSlug(course)}`);
   if (!/^[a-z]{2,8}(-[a-z]{2,8})?$/.test(course) || !/^\d{1,2}\.\d{1,2}$/.test(chapter)) notFound();
   const { supabase, user } = await requireUser();
   const [{ data }, { data: courseData }] = await Promise.all([
