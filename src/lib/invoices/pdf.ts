@@ -8,7 +8,7 @@ export const SELLER = {
   name: "iParkar Learning",
   legalName: "Imran Iqbal Parkar",
   constitution: "Proprietor",
-  address: ["542, Furus, Near Falsonda Qabristan, Taluka Khed", "District Ratnagiri, Maharashtra 415709", "India"],
+  address: ["542, Furus, Falsonda, Taluka Khed", "District Ratnagiri, Maharashtra 415709", "India"],
   gstin: "27ATAPP7789A1ZF",
   state: "Maharashtra (27)",
   udyam: "UDYAM-MH-28-0101316",
