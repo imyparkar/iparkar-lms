@@ -89,7 +89,7 @@ export function RazorpayButton({ code, days, label, successHref, className = "bt
       currency: order.currency,
       name: "iParkar Learning",
       description: order.description,
-      image: "https://app.iparkar.com/apple-touch-icon.png",
+      image: "https://app.iparkar.com/brand/iparkar-mark-reversed-512.png",
       prefill: order.prefill,
       notes: { course: code, days: String(days) },
       theme: { color: "#02093a" },
