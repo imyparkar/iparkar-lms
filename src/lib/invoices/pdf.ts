@@ -148,7 +148,6 @@ export async function renderInvoicePdf(d: InvoiceDoc): Promise<Uint8Array> {
   text("iParkar", L + 56, H - 80, { font: f.b, size: 20, color: C.midnight });
   text("Learning", L + 56 + wm + 6, H - 80, { size: 20, color: C.graphite });
   const sellerLines = [
-    `${SELLER.legalName} (${SELLER.constitution}), trading as ${SELLER.name}`,
     SELLER.address[0], `${SELLER.address[1]}, ${SELLER.address[2]}`,
     ...(taxed ? [`GSTIN ${d.supplier_gstin ?? SELLER.gstin}  ·  State: ${SELLER.state}`] : []),
     `${SELLER.email}  ·  ${SELLER.web}`,
@@ -257,11 +256,11 @@ export async function renderInvoicePdf(d: InvoiceDoc): Promise<Uint8Array> {
   ];
   for (const n of notes) for (const ln of wrap(n, f.r, 8.5, R - L - 200)) { text(ln, L, y, { size: 8.5, color: C.graphite }); y -= 12; }
 
-  // Signatory block (bottom right)
-  const sy = 110;
-  text(`For ${SELLER.name}`, R, sy, { font: f.s, size: 9, align: "right" });
-  text(`${SELLER.legalName}, ${SELLER.constitution}`, R, sy - 30, { size: 9, align: "right" });
-  text("Authorised signatory", R, sy - 43, { size: 8, color: C.graphite, align: "right" });
+  // Electronic document statement (Rule 46 proviso: no signature needed on an electronic invoice).
+  const eDoc = isInv
+    ? (taxed ? "Electronic invoice issued under Rule 46 of the CGST Rules, 2017; signature not required." : "Electronic invoice; signature not required.")
+    : (taxed ? "Electronic credit note issued under Rule 53 of the CGST Rules, 2017." : "Electronic credit note.");
+  text(eDoc, L, 58, { font: f.s, size: 8.5, color: C.midnight });
 
   // Footer and Midnight base strip
   text("This is a computer-generated document.", L, 40, { size: 8, color: C.graphite });
