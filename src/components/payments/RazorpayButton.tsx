@@ -2,6 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { startCheckout } from "@/lib/payments/actions";
+import { GST_STATES, isGstState, isValidGstin, type BuyerTax } from "@/lib/payments/gst";
 import { Alert } from "@/components/ui/Alert";
 
 type RazorpaySuccess = { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string };
@@ -57,10 +58,24 @@ export function RazorpayButton({ code, days, label, successHref, className = "bt
     setBusy(false);
   }
 
+  // Indian buyers: state (place of supply) and an optional business GSTIN, remembered on this device.
+  const [askTax, setAskTax] = useState(false);
+  const [tax, setTax] = useState<BuyerTax>(() => {
+    try { return JSON.parse(localStorage.getItem("ipk-gst") ?? "{}") as BuyerTax; } catch { return {}; }
+  });
+  const [isBusiness, setIsBusiness] = useState(() => !!tax.gstin);
+  const taxError = !askTax ? null
+    : isBusiness ? (!tax.gstin ? "Enter your GSTIN." : !isValidGstin(tax.gstin) ? "That GSTIN doesn’t look right." : !tax.business?.trim() ? "Enter the business name registered with this GSTIN." : null)
+    : (!tax.state || !isGstState(tax.state) ? "Choose your state or union territory." : null);
+
   async function pay() {
+    if (askTax && taxError) { setStatus({ tone: "error", title: taxError }); return; }
     setBusy(true);
     setStatus(null);
-    const [order, loaded] = await Promise.all([startCheckout(code, days), loadScript()]);
+    const buyer: BuyerTax = isBusiness ? { gstin: tax.gstin?.trim().toUpperCase(), business: tax.business?.trim() } : { state: tax.state };
+    const [order, loaded] = await Promise.all([startCheckout(code, days, buyer), loadScript()]);
+    if (order.needTaxDetails) { setAskTax(true); setBusy(false); return; }
+    if (askTax) { try { localStorage.setItem("ipk-gst", JSON.stringify(isBusiness ? { gstin: buyer.gstin, business: buyer.business } : { state: buyer.state })); } catch { /* storage unavailable */ } }
     if (order.error || !order.orderId) { setStatus({ tone: "error", title: order.error ?? "Payment couldn’t start." }); setBusy(false); return; }
     if (!loaded || !window.Razorpay) {
       setStatus({ tone: "error", title: "The payment window couldn’t load.", body: "Check your connection or disable content blockers for this page, then try again." });
@@ -92,8 +107,43 @@ export function RazorpayButton({ code, days, label, successHref, className = "bt
 
   return (
     <div className="space-y-3">
+      {askTax && (
+        <fieldset className="max-w-md space-y-3 rounded-card border border-midnight/15 bg-white p-4 text-body-sm">
+          <legend className="px-1 font-semibold">GST details for your invoice</legend>
+          <p className="text-graphite">Prices include GST. Indian law requires your state on the tax invoice.</p>
+          {!isBusiness && (
+            <label className="block">
+              <span className="font-medium">State or union territory</span>
+              <select className="mt-1 w-full rounded-button border border-midnight/30 bg-white px-3 py-2" value={tax.state ?? ""}
+                      onChange={(e) => setTax({ ...tax, state: e.target.value })} required>
+                <option value="">Choose…</option>
+                {GST_STATES.map((st) => <option key={st.code} value={st.code}>{st.name}</option>)}
+              </select>
+            </label>
+          )}
+          <label className="flex items-start gap-2">
+            <input type="checkbox" className="mt-1" checked={isBusiness} onChange={(e) => setIsBusiness(e.target.checked)} />
+            <span>I’m buying for a GST-registered business (invoice with your GSTIN for input tax credit)</span>
+          </label>
+          {isBusiness && (
+            <>
+              <label className="block">
+                <span className="font-medium">GSTIN</span>
+                <input className="mt-1 w-full rounded-button border border-midnight/30 px-3 py-2 uppercase tracking-wide" maxLength={15}
+                       value={tax.gstin ?? ""} onChange={(e) => setTax({ ...tax, gstin: e.target.value.toUpperCase().replace(/[^0-9A-Z]/g, "") })}
+                       placeholder="27ABCDE1234F1Z5" autoComplete="off" />
+              </label>
+              <label className="block">
+                <span className="font-medium">Business name (as registered)</span>
+                <input className="mt-1 w-full rounded-button border border-midnight/30 px-3 py-2" maxLength={120}
+                       value={tax.business ?? ""} onChange={(e) => setTax({ ...tax, business: e.target.value })} autoComplete="organization" />
+              </label>
+            </>
+          )}
+        </fieldset>
+      )}
       <button type="button" onClick={pay} disabled={busy} className={`${className} disabled:opacity-60`} aria-busy={busy}>
-        {busy ? "Opening secure payment…" : label}
+        {busy ? "Opening secure payment…" : askTax ? `Continue · ${label}` : label}
       </button>
       {status && <Alert tone={status.tone} title={status.title}>{status.body}</Alert>}
     </div>

@@ -6,9 +6,12 @@ import { getServiceClient } from "@/lib/supabase/admin";
 import { formatMoney, periodLabel, priceFor } from "@/lib/payments/catalogue";
 import { createOrder, razorpayConfig } from "@/lib/payments/razorpay";
 import { isLiveCourse } from "@/lib/live/types";
+import { isGstState, isValidGstin, type BuyerTax } from "@/lib/payments/gst";
 
 export type CheckoutOrder = {
   error?: string;
+  /** Indian (INR) checkout: the buyer must choose their state (and may add a GSTIN) before paying. */
+  needTaxDetails?: boolean;
   keyId?: string;
   orderId?: string;
   amount?: number;
@@ -25,7 +28,7 @@ const schema = z.object({ code: z.string().regex(/^[A-Z]{2,6}(-SPS)?$/), days: z
  * The price comes from the server catalogue for the visitor's country
  * (Cloudflare's cf-ipcountry header), never from the browser.
  */
-export async function startCheckout(code: string, days: number): Promise<CheckoutOrder> {
+export async function startCheckout(code: string, days: number, buyer?: BuyerTax): Promise<CheckoutOrder> {
   const parsed = schema.safeParse({ code: String(code).toUpperCase(), days: Number(days) });
   if (!parsed.success) return { error: "That package isn’t available." };
   const session = await getSession();
@@ -36,6 +39,24 @@ export async function startCheckout(code: string, days: number): Promise<Checkou
   const country = ((await headers()).get("cf-ipcountry") ?? "").toUpperCase().replace(/[^A-Z]/g, "").slice(0, 2);
   const price = priceFor(parsed.data.code, parsed.data.days, country);
   if (!price) return { error: "That access period isn’t sold online. Email support@iparkar.com and we’ll help." };
+
+  // GST: Indian buyers record their state (place of supply); a business may add its GSTIN and name.
+  let tax: { buyer_state_code: string | null; buyer_gstin: string | null; buyer_business_name: string | null } =
+    { buyer_state_code: null, buyer_gstin: null, buyer_business_name: null };
+  if (price.currency === "INR") {
+    const gstin = (buyer?.gstin ?? "").trim().toUpperCase();
+    const business = (buyer?.business ?? "").trim().slice(0, 120);
+    const state = (buyer?.state ?? "").trim();
+    if (gstin) {
+      if (!isValidGstin(gstin)) return { error: "That GSTIN doesn’t look right. Check it, or leave it blank to buy as an individual." };
+      if (!business) return { error: "Enter the business name registered with this GSTIN." };
+      tax = { buyer_state_code: gstin.slice(0, 2), buyer_gstin: gstin, buyer_business_name: business };
+    } else if (isGstState(state)) {
+      tax = { buyer_state_code: state, buyer_gstin: null, buyer_business_name: null };
+    } else {
+      return { needTaxDetails: true };
+    }
+  }
 
   const db = getServiceClient();
   const live = isLiveCourse(parsed.data.code);
@@ -57,7 +78,11 @@ export async function startCheckout(code: string, days: number): Promise<Checkou
     .eq("user_id", session.user.id).eq(study ? "study_course_id" : "course_id", course.id).eq("access_days", parsed.data.days)
     .eq("amount_minor", price.minor).eq("currency", price.currency).eq("status", "created").gte("created_at", since)
     .order("created_at", { ascending: false }).limit(1).maybeSingle();
-  if (existing) return { ...base, orderId: existing.provider_order_id };
+  if (existing) {
+    // Buyer tax details can change until payment; keep the latest on the order.
+    await db.from("checkout_orders").update(tax).eq("provider_order_id", existing.provider_order_id).eq("status", "created");
+    return { ...base, orderId: existing.provider_order_id };
+  }
 
   try {
     const order = await createOrder(cfg, {
@@ -68,7 +93,7 @@ export async function startCheckout(code: string, days: number): Promise<Checkou
     });
     const { error } = await db.from("checkout_orders").insert({
       provider_order_id: order.id, user_id: session.user.id, ...target, access_days: parsed.data.days,
-      amount_minor: price.minor, currency: price.currency, country: country || null,
+      amount_minor: price.minor, currency: price.currency, country: country || null, ...tax,
     });
     if (error) throw new Error(error.message);
     return { ...base, orderId: order.id };
