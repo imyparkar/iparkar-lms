@@ -86,7 +86,15 @@ transaction (`invoices`, migration `20261120000100_invoices.sql`). Numbers run p
 `INV/2026-27/0001`, `CN/2026-27/0001`. The PDF (`src/lib/invoices/pdf.ts`, iParkar letterhead, seller details in
 `SELLER`) is emailed through **Cloudflare Email Service** (binding `EMAIL` in `wrangler.jsonc`, no API key) and listed
 under Account → Invoices (download via `/api/invoices/<id>`).
-iParkar Learning is not GST-registered, so no GST lines are printed; change `SELLER.taxNote` and the PDF if that changes.
+**GST** (registered 24 Nov 2026, GSTIN 27ATAPP7789A1ZF, Maharashtra 27; migration `20261126000100_gst.sql`):
+prices are GST-inclusive. Each invoice is issued as a **Tax invoice** with SAC 999293 at 18%, and a treatment fixed at issue:
+Indian buyer in Maharashtra → CGST 9% + SGST 9%; other state/UT → IGST 18%; buyer outside India → export of services,
+zero-rated: under LUT (no IGST, endorsement with LUT ARN) when `gst_config.lut_arn` is set and in date, otherwise on
+payment of IGST 18%. Indian (INR) checkouts ask for the state (place of supply, Rule 46 proviso) and optionally a GSTIN +
+business name (checksum-validated). Credit notes copy the treatment of their invoice. Settings live in `public.gst_config`
+(single row). **When the LUT is filed**, record it:
+`update gst_config set lut_arn = '<ARN>', lut_valid_from = '2026-04-01', lut_valid_to = '2027-03-31', updated_at = now();`
+(renew every financial year).
 
 Setup: the account must be on **Workers Paid** (sending to customers is not available on Workers Free), and
 iparkar.com must be onboarded under Compute → Email Service → Email Sending (adds MX/SPF/DKIM on `cf-bounce.iparkar.com`

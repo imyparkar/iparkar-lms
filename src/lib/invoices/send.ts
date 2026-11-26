@@ -1,9 +1,9 @@
 import "server-only";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getServiceClient } from "@/lib/supabase/admin";
-import { SELLER, docDate, docFileName, docTitle, money, renderInvoicePdf, type InvoiceDoc } from "@/lib/invoices/pdf";
+import { DOC_COLUMNS, SELLER, docDate, docFileName, docTitle, money, renderInvoicePdf, type InvoiceDoc } from "@/lib/invoices/pdf";
 
-const COLS = "id, kind, number, issued_at, buyer_name, buyer_email, buyer_country, description, currency, amount_minor, provider_payment_id, provider_refund_id, original_invoice_id, emailed_at";
+const COLS = `id, ${DOC_COLUMNS}, original_invoice_id, emailed_at`;
 
 type Row = InvoiceDoc & { id: string; original_invoice_id: string | null; emailed_at: string | null };
 
