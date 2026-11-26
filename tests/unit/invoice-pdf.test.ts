@@ -16,7 +16,7 @@ const samples: Record<string, InvoiceDoc> = {
   "export-igst-kuwait": { ...base, number: "INV/2026-27/0003", buyer_country: "KW", currency: "KWD", amount_minor: 45000, tax_regime: "export_igst",
     place_of_supply: "Outside India (KW)", buyer_state_code: null, taxable_minor: 38136, cgst_minor: 0, sgst_minor: 0, igst_minor: 6864 },
   "export-lut-usa": { ...base, number: "INV/2026-27/0004", buyer_country: "US", currency: "USD", amount_minor: 14900, tax_regime: "export_lut",
-    place_of_supply: "Outside India (US)", buyer_state_code: null, taxable_minor: 14900, cgst_minor: 0, sgst_minor: 0, igst_minor: 0, lut_arn: "AD2711260001234" },
+    place_of_supply: "Outside India (US)", buyer_state_code: null, taxable_minor: 14900, cgst_minor: 0, sgst_minor: 0, igst_minor: 0, lut_arn: "AD271126028060L" },
   "credit-note-maharashtra": { ...base, kind: "credit_note", number: "CN/2026-27/0001", description: "Refund: ASP practice exams – 180 days access",
     provider_refund_id: "rfnd_TEST9", original: { number: "INV/2026-27/0001", issued_at: "2026-11-26T08:00:00Z" } },
 };

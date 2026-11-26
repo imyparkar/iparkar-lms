@@ -25,8 +25,11 @@ create table if not exists public.gst_config (
   udyam           text,
   updated_at      timestamptz not null default now()
 );
-insert into public.gst_config (id, gstin, legal_name, trade_name, state_code, effective_from, sac, rate_bp, udyam)
-values (1, '27ATAPP7789A1ZF', 'Imran Iqbal Parkar', 'iParkar Learning', '27', date '2026-11-24', '999293', 1800, 'UDYAM-MH-28-0101316')
+insert into public.gst_config (id, gstin, legal_name, trade_name, state_code, effective_from, sac, rate_bp, udyam,
+                              lut_arn, lut_valid_from, lut_valid_to)
+values (1, '27ATAPP7789A1ZF', 'Imran Iqbal Parkar', 'iParkar Learning', '27', date '2026-11-24', '999293', 1800, 'UDYAM-MH-28-0101316',
+        -- LUT (GST RFD-11) filed 26 Nov 2026, ARN AD271126028060L, for FY 2026-27. Renew before 1 April each year.
+        'AD271126028060L', date '2026-11-26', date '2027-03-31')
 on conflict (id) do nothing;
 
 create table if not exists public.gst_states (

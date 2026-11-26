@@ -92,7 +92,7 @@ Indian buyer in Maharashtra → CGST 9% + SGST 9%; other state/UT → IGST 18%; 
 zero-rated: under LUT (no IGST, endorsement with LUT ARN) when `gst_config.lut_arn` is set and in date, otherwise on
 payment of IGST 18%. Indian (INR) checkouts ask for the state (place of supply, Rule 46 proviso) and optionally a GSTIN +
 business name (checksum-validated). Credit notes copy the treatment of their invoice. Settings live in `public.gst_config`
-(single row). **When the LUT is filed**, record it:
+(single row). LUT for FY 2026-27: ARN AD271126028060L, filed 26 Nov 2026, recorded until 31 Mar 2027. **Each new LUT** (renew before 1 April), record it:
 `update gst_config set lut_arn = '<ARN>', lut_valid_from = '2026-04-01', lut_valid_to = '2027-03-31', updated_at = now();`
 (renew every financial year).
 

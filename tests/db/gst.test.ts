@@ -47,6 +47,9 @@ describe("GST on invoices", () => {
   });
 
   it("treats foreign sales as exports: IGST without an LUT, zero-rated with one", async () => {
+    const cfg = (await db.query<any>(`select lut_arn, lut_valid_to from gst_config`)).rows[0];
+    expect(cfg.lut_arn).toBe("AD271126028060L");
+    await db.query(`update gst_config set lut_arn = null, lut_valid_from = null, lut_valid_to = null`);
     const a = await paid({ currency: "KWD", country: "KW", amount: 30000 });
     expect(a).toMatchObject({ tax_regime: "export_igst", place_of_supply: "Outside India (KW)", lut_arn: null });
     expect([num(a.taxable_minor), num(a.igst_minor)]).toEqual([25424, 4576]);
