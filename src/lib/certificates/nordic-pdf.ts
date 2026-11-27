@@ -20,7 +20,7 @@ export type NordicCertificateData = {
   bodyLine: string;
   /** Small line under the course title (e.g. the ADDIE phases). */
   subtitle?: string;
-  /** Optional hours breakdown printed in the side panel (e.g. the PMI Talent Triangle®). */
+  /** Optional hours breakdown printed on one line under the subtitle (e.g. the PMI Talent Triangle® hours). */
   breakdown?: { label: string; items: [string, number][] };
   /** Fine print at the foot of the main area (trademark notices). */
   footnote?: string;
@@ -106,27 +106,18 @@ export async function renderNordicCertificatePdf(d: NordicCertificateData, a: No
   text(issuer, { x: 15, mid: 43.7, size: 12, font: F.m, color: C.navy });
   text("Make learning a habit", { x: 15, mid: 49.5, size: 9, font: F.r, color: C.slate });
 
-  // Facts: label (8.5 pt) over value (12 pt); an optional breakdown block lists items at 10 pt.
-  type Row = { label: string; value?: string; items?: string[] };
-  const rows: Row[] = [
-    { label: "Format", value: "Self-paced online" },
-    { label: "Duration", value: `${fmtHours(d.totalHours)} contact hour${d.totalHours === 1 ? "" : "s"}` },
+  // Facts: label (8.5 pt) over value (12 pt).
+  const facts: [string, string][] = [
+    ["Format", "Self-paced online"],
+    ["Duration", `${fmtHours(d.totalHours)} contact hour${d.totalHours === 1 ? "" : "s"}`],
+    ["Continuing education", `${fmtHours(d.totalHours / 10)} CEU`],
+    ["Date of completion", formatCertificateDate(d.completionDateISO, d.timeZone ?? "UTC")],
   ];
-  if (d.breakdown && d.breakdown.items.length) {
-    rows.push({ label: d.breakdown.label, items: d.breakdown.items.map(([k, h]) => `${k} · ${fmtHours(h)} h`) });
-  }
-  rows.push({ label: "Continuing education", value: `${fmtHours(d.totalHours / 10)} CEU` });
-  rows.push({ label: "Date of completion", value: formatCertificateDate(d.completionDateISO, d.timeZone ?? "UTC") });
-  const step = d.breakdown ? 13 : 14.97;
-  const rowH = (r: Row) => (r.items ? 5.2 + (r.items.length - 1) * 4.4 : 5.55) + step - 5.55;
-  const total = rows.reduce((s, r) => s + rowH(r), 0) - (step - 5.55);
-  let top = d.breakdown ? Math.max(66, 105 - total / 2) : 79.9;
-  for (const r of rows) {
-    text(r.label, { x: 15, mid: top, size: 8.5, font: F.r, color: C.slate, ls: 0.17 });
-    if (r.items) r.items.forEach((it, i) => text(it, { x: 15, mid: top + 5.2 + i * 4.4, size: 10, font: F.r, color: C.navy }));
-    else text(r.value!, { x: 15, mid: top + 5.55, size: 12, font: F.r, color: C.navy });
-    top += rowH(r);
-  }
+  facts.forEach(([k, v], i) => {
+    const top = 79.9 + i * 14.97;
+    text(k, { x: 15, mid: top, size: 8.5, font: F.r, color: C.slate, ls: 0.17 });
+    text(v, { x: 15, mid: top + 5.55, size: 12, font: F.r, color: C.navy });
+  });
 
   // QR code (verification link) on a white tile, certificate number below.
   rect(15, 159.8, 28, 28, C.white);
@@ -179,6 +170,13 @@ export async function renderNordicCertificatePdf(d: NordicCertificateData, a: No
     let ss = 9;
     while (ss > 7.5 && tw(F.r, d.subtitle, ss, 0.18) > maxW) ss -= 0.25;
     text(d.subtitle, { x: L, mid: 125, size: ss, font: F.r, color: C.slate, ls: 0.18 });
+  }
+  // Optional hours breakdown on one line under the subtitle, e.g. "Business Acumen 8 h | Ways of Working 19 h | Power Skills 8 h".
+  if (d.breakdown && d.breakdown.items.length) {
+    const line = d.breakdown.items.map(([k, h]) => `${k} ${fmtHours(h)} h`).join("  |  ");
+    let bsz = 9.5;
+    while (bsz > 7.5 && tw(F.m, line, bsz) > maxW) bsz -= 0.25;
+    text(line, { x: L, mid: d.subtitle ? 131 : 125, size: bsz, font: F.m, color: C.navy });
   }
 
   // ---------- signatory block (centred on a 72 mm line) ----------
