@@ -4,6 +4,12 @@ import { requireUser } from "@/lib/auth/session";
 import { fmtDate } from "@/lib/format";
 import { ProgressMeter } from "@/components/study/Progress";
 import { SLUG, isDone, nextModule, statusLabel, type ScormCourse } from "@/lib/scorm/types";
+import { GenerateCertificate } from "@/components/certificates/GenerateCertificate";
+
+type CertStatus = {
+  ok: boolean; offered: boolean; course_code?: string; hours?: number; completed?: boolean; completed_at?: string | null;
+  suggested_name?: string; certificate?: { certificate_code: string; status: string; name_on_certificate: string; issued_at: string | null } | null;
+};
 
 export const metadata = { title: "Free course" };
 export const dynamic = "force-dynamic";
@@ -13,8 +19,13 @@ export default async function FreeCoursePage({ params }: { params: Promise<{ cou
   const { course } = await params;
   if (!SLUG.test(course)) notFound();
   const { supabase } = await requireUser();
-  const { data } = await supabase.rpc("scorm_get_course", { p_course: course });
+  const [{ data }, { data: certData }] = await Promise.all([
+    supabase.rpc("scorm_get_course", { p_course: course }),
+    supabase.rpc("scorm_certificate_status", { p_course: course }),
+  ]);
   if (!data) notFound();
+  const cert = (certData ?? null) as CertStatus | null;
+  const issued = cert?.certificate?.status === "issued" ? cert.certificate : null;
   const c = data as ScormCourse;
   const done = c.modules.filter((m) => isDone(m.status)).length;
   const started = c.modules.some((m) => m.status !== "not attempted");
@@ -81,8 +92,26 @@ export default async function FreeCoursePage({ params }: { params: Promise<{ cou
         </ol>
       </section>
 
+      {cert?.ok && cert.offered && (
+        <section aria-labelledby="cert-h" className="card">
+          <h2 id="cert-h" className="text-heading-sm">Certificate of completion</h2>
+          {cert.completed ? (
+            <div className="mt-3">
+              <GenerateCertificate course={cert.course_code ?? course.toUpperCase()} suggestedName={cert.suggested_name ?? ""}
+                                   issued={issued ? { certificate_code: issued.certificate_code, name_on_certificate: issued.name_on_certificate, issued_at: issued.issued_at } : null}
+                                   hint="for example as on your ID" />
+            </div>
+          ) : (
+            <p className="mt-2 text-body text-graphite">
+              Pass all {c.modules.length} modules, scoring 80% or more in each module&apos;s knowledge checks, to unlock your certificate:
+              {" "}{Number(cert.hours)} contact hours ({Number(cert.hours) / 10} CEU), self-paced online, with a QR code anyone can use to verify it. You&apos;ve passed {done} of {c.modules.length}.
+            </p>
+          )}
+        </section>
+      )}
+
       <p className="max-w-[720px] text-body-sm text-graphite">
-        This free course is general professional development. Completing it isn&apos;t a certification and doesn&apos;t count towards any BCSP credential.
+        This free course is general professional development. The certificate of completion is issued by iParkar Learning and its contact hours and CEU are provider-issued; it isn&apos;t a certification and doesn&apos;t count towards any BCSP credential.
       </p>
     </div>
   );

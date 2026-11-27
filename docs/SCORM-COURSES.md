@@ -55,3 +55,14 @@ Unzip each package to `imports/scorm/<course>/<module>/` (git-ignored), run the 
 - `vitest run`: all suites pass, including 11 new SCORM tests (catalogue, anonymous/suspended/draft refusal, launch ab-initio/resume, validation of status, score, lengths and timespan, pass recorded once, best score kept, status never regresses, per-learner privacy, no direct table access).
 - Browser (dev server + mock backend): anonymous `/free/sat` → sign-in → back to the course; files refused without a session (redirect) and for path traversal (404); `SAMEORIGIN` on package files, `DENY` elsewhere; start → partial → "In progress" → resume at the same page → finish → "Passed", best score, completed date, Next module button; My learning lists the free course; a second learner starts fresh.
 - Not verified yet: the production Supabase project and live R2 objects (owner steps above).
+
+## Certificates of completion (added 27 Nov 2026)
+
+SAT issues a certificate of completion: **2 contact hours, 0.2 CEU (provider-issued), self-paced online**, signed by Imran Parkar, Course director.
+
+- **Rule (database):** every module `passed` (the SAT packages report `passed` only at ≥ 80 % in the knowledge checks); `completed` counts only for modules without a mastery score. `scorm_course_completed_at`, `scorm_certificate_status`, `scorm_claim_certificate` in `supabase/migrations/20261127000100_scorm_certificates.sql`.
+- **Same pipeline as study courses:** rows in `study_certificates` (with `scorm_course_id`, no enrolment), issued by `/api/certificates/generate` (course `SAT`), stored privately in R2, downloaded from `/api/certificates/<code>`, listed under Certificates, verified at iparkar.com/verify. Verification reports SCORM certificates as valid once issued.
+- **Template:** `scorm-a4-landscape-v1`, `src/lib/certificates/scorm-pdf.ts` (owner-approved split-panel design, Fraunces Light + Inter, QR to the verify page, flowing contour lines top right). The signature is read from private R2 (`certificate-assets/signature.png`), as for PMP.
+- **Learner journey:** `/free/sat` shows a "Certificate of completion" card: locked with progress until all six modules are passed, then the name + confirm form and the download.
+- **Tests:** `tests/db/scorm-certificates.test.ts` (9).
+- **Go-live:** apply the migration, deploy the app. No site change is needed.

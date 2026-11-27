@@ -5,6 +5,7 @@ import { getServiceClient } from "@/lib/supabase/admin";
 import { certificateAssets } from "./assets";
 import { validateCertificateName } from "./name";
 import { renderCertificatePdf } from "./pdf";
+import { renderScormCertificatePdf } from "./scorm-pdf";
 import { verifyUrl } from "./qr";
 
 /** Private R2 object store: certificates live under certificates/<user id>/<certificate code>.pdf in the study-guides bucket. */
@@ -13,6 +14,8 @@ export type CertificateBucket = {
   put(key: string, value: Uint8Array, opts?: { httpMetadata?: { contentType?: string }; customMetadata?: Record<string, string>; sha256?: string }): Promise<unknown>;
 };
 export const CERT_PREFIX = "certificates/";
+/** Programme codes whose certificates are earned in a free SCORM course (study_certificate_programs.completion_rule = 'scorm'). */
+export const SCORM_CERTIFICATE_COURSES = new Set(["SAT"]);
 /**
  * The instructor's handwritten signature (transparent PNG), kept in the private bucket rather than in this public
  * repository. Upload it once: `wrangler r2 object put iparkar-study-guides/certificate-assets/signature.png --file signature.png --remote`.
@@ -102,7 +105,9 @@ export async function issueCertificate(
   }
   if (!signature && process.env.NODE_ENV === "production") return fail("signature_missing");
 
-  const { data: claim, error } = await supabase.rpc("study_claim_certificate", { p_course_code: courseCode, p_name: check.value });
+  // Free SCORM courses (e.g. SAT) are claimed against SCORM module results; study courses against their enrolment.
+  const claimRpc = SCORM_CERTIFICATE_COURSES.has(courseCode.toUpperCase()) ? "scorm_claim_certificate" : "study_claim_certificate";
+  const { data: claim, error } = await supabase.rpc(claimRpc, { p_course_code: courseCode, p_name: check.value });
   if (error || !claim) return fail("save_failed");
   if (!claim.ok) return fail(claim.error);
   if (claim.state === "issued") return { ok: true, certificate_code: claim.certificate.certificate_code, already: true };
@@ -112,7 +117,12 @@ export async function issueCertificate(
   const release = () => service.rpc("service_release_study_certificate_claim", { p_certificate: c.id, p_claim_token: claim.claim_token });
   let pdf: Uint8Array;
   try {
-    pdf = await renderCertificatePdf({
+    pdf = c.template === "scorm-a4-landscape-v1" ? await renderScormCertificatePdf({
+      name: c.name_on_certificate, certificateNo: c.certificate_code, completionDateISO: c.completed_at, issuedAtISO: new Date().toISOString(),
+      courseTitle: c.certificate_title, totalHours: Number(c.hours), issuer: c.issuer, signatoryName: c.signatory_name,
+      signatoryTitle: c.signatory_title, verifyUrl: verifyUrl(c.certificate_code), timeZone: "UTC",
+    }, { fonts: { interRegular: assets.fonts.interRegular as Uint8Array, interMedium: assets.fonts.interMedium as Uint8Array,
+                  serifLight: assets.fonts.frauncesLight }, signature }) : await renderCertificatePdf({
       // Course-template certificates print the date of issue; the PMP template prints the date of completion.
       name: c.name_on_certificate, certificateNo: c.certificate_code,
       completionDateISO: c.template === "course-a4-landscape-v1" ? new Date().toISOString() : c.completed_at,
