@@ -1,24 +1,33 @@
 /**
- * iParkar Learning certificate of completion for free self-paced SCORM courses (first: SAT).
- * Template id "scorm-a4-landscape-v1": single-page A4 landscape PDF (297 × 210 mm), owner-approved design
- * of 27 Nov 2026 ("Option B · Split panel"): pale side panel with the iP mark, course facts and the
- * verification QR code; white main area with the learner's name, the course, the signatory block and
- * flowing contour lines in the top-right corner. Coordinates are in millimetres from the top-left corner.
+ * iParkar Learning certificate of completion, template id "nordic-a4-landscape-v1" (owner-approved design of
+ * 27 Nov 2026, "Option B · Split panel"). Used by the free SCORM courses (SAT) and the self-paced study courses
+ * (PMP-SPS, ASP-SPS, CSP-SPS). Single-page A4 landscape PDF (297 × 210 mm): pale side panel with the iP mark,
+ * course facts and the verification QR code; white main area with the learner's name, the course, the signatory
+ * block and flowing contour lines in the top-right corner. Coordinates are in millimetres from the top-left corner.
  */
 import { PDFDocument, rgb, setCharacterSpacing, pushGraphicsState, popGraphicsState, type PDFFont, type PDFPage } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
 import { qrMatrix } from "./qr";
 import { formatCertificateDate } from "./pdf";
 
-export type ScormCertificateData = {
+export const NORDIC_TEMPLATE = "nordic-a4-landscape-v1";
+
+export type NordicCertificateData = {
   name: string; certificateNo: string; completionDateISO: string; issuedAtISO?: string; courseTitle: string;
-  /** Contact hours; CEU is printed as hours ÷ 10 (provider-issued, see docs/SCORM-COURSES.md). */
+  /** Contact hours; CEU is printed as hours ÷ 10 (provider-issued). */
   totalHours: number; issuer?: string; signatoryName: string; signatoryTitle: string; verifyUrl: string;
-  /** Small line under the course title, e.g. the ADDIE phases. */
-  subtitle?: string; timeZone?: string;
+  /** Line between the name and the course title. */
+  bodyLine: string;
+  /** Small line under the course title (e.g. the ADDIE phases). */
+  subtitle?: string;
+  /** Optional hours breakdown printed in the side panel (e.g. the PMI Talent Triangle®). */
+  breakdown?: { label: string; items: [string, number][] };
+  /** Fine print at the foot of the main area (trademark notices). */
+  footnote?: string;
+  timeZone?: string;
 };
 type Bytes = Uint8Array | ArrayBuffer;
-export type ScormCertificateAssets = {
+export type NordicCertificateAssets = {
   fonts: { interRegular: Bytes; interMedium: Bytes; serifLight: Bytes };
   signature?: Bytes | null;
 };
@@ -30,11 +39,10 @@ const C = {
   navy: hex("#02093a"), marigold: hex("#ffb110"), rose: hex("#d4537e"), white: hex("#ffffff"),
   panel: hex("#f3f4f9"), slate: hex("#6b7194"), body: hex("#3b4166"), rule: hex("#c9cde3"), sigRule: hex("#b8bdd8"), wave: hex("#c9cde3"),
 };
-const SUBTITLES: Record<string, string> = {
-  "Systematic Approach to Training (SAT)": "Analysis · Design · Development · Implementation · Evaluation",
-};
 
-export async function renderScormCertificatePdf(d: ScormCertificateData, a: ScormCertificateAssets): Promise<Uint8Array> {
+export const fmtHours = (n: number) => { const r = Math.round(n * 100) / 100; return String(r); };
+
+export async function renderNordicCertificatePdf(d: NordicCertificateData, a: NordicCertificateAssets): Promise<Uint8Array> {
   const issuer = d.issuer || "iParkar Learning";
   const doc = await PDFDocument.create();
   doc.registerFontkit(fontkit);
@@ -59,7 +67,7 @@ export async function renderScormCertificatePdf(d: ScormCertificateData, a: Scor
   const X = (mm: number) => mm * PT;
   const Y = (mm: number) => H - mm * PT;
   const tw = (font: PDFFont, s: string, size: number, ls = 0) => font.widthOfTextAtSize(s, size) + ls * Math.max(0, [...s].length - 1);
-  /** Draw text whose visual middle (x-height/cap mix) sits at `mid` mm from the top. Size in pt, letter-spacing in pt. */
+  /** Draw text whose visual middle sits at `mid` mm from the top. Size in pt, letter-spacing in pt. */
   const text = (s: string, o: { x: number; mid: number; size: number; font: PDFFont; color: ReturnType<typeof rgb>; ls?: number; align?: "left" | "center" | "right" }) => {
     const ls = o.ls ?? 0;
     const w = tw(o.font, s, o.size, ls);
@@ -72,6 +80,15 @@ export async function renderScormCertificatePdf(d: ScormCertificateData, a: Scor
   };
   const rect = (x: number, top: number, w: number, h: number, color: ReturnType<typeof rgb>) =>
     page.drawRectangle({ x: X(x), y: Y(top + h), width: X(w), height: h * PT, color });
+  const wrap = (s: string, font: PDFFont, size: number, maxPt: number) => {
+    const out: string[] = []; let cur = "";
+    for (const w of s.split(" ")) {
+      const t = cur ? `${cur} ${w}` : w;
+      if (!cur || tw(font, t, size) <= maxPt) cur = t; else { out.push(cur); cur = w; }
+    }
+    if (cur) out.push(cur);
+    return out;
+  };
 
   // ---------- side panel ----------
   rect(0, 0, 92, 210, C.panel);
@@ -89,17 +106,27 @@ export async function renderScormCertificatePdf(d: ScormCertificateData, a: Scor
   text(issuer, { x: 15, mid: 43.7, size: 12, font: F.m, color: C.navy });
   text("Make learning a habit", { x: 15, mid: 49.5, size: 9, font: F.r, color: C.slate });
 
-  const facts: [string, string][] = [
-    ["Format", "Self-paced online"],
-    ["Duration", `${fmtNum(d.totalHours)} contact hour${d.totalHours === 1 ? "" : "s"}`],
-    ["Continuing education", `${fmtNum(d.totalHours / 10)} CEU`],
-    ["Date of completion", formatCertificateDate(d.completionDateISO, d.timeZone ?? "UTC")],
+  // Facts: label (8.5 pt) over value (12 pt); an optional breakdown block lists items at 10 pt.
+  type Row = { label: string; value?: string; items?: string[] };
+  const rows: Row[] = [
+    { label: "Format", value: "Self-paced online" },
+    { label: "Duration", value: `${fmtHours(d.totalHours)} contact hour${d.totalHours === 1 ? "" : "s"}` },
   ];
-  facts.forEach(([k, v], i) => {
-    const top = 79.9 + i * 14.97;
-    text(k, { x: 15, mid: top, size: 8.5, font: F.r, color: C.slate, ls: 0.17 });
-    text(v, { x: 15, mid: top + 5.55, size: 12, font: F.r, color: C.navy });
-  });
+  if (d.breakdown && d.breakdown.items.length) {
+    rows.push({ label: d.breakdown.label, items: d.breakdown.items.map(([k, h]) => `${k} · ${fmtHours(h)} h`) });
+  }
+  rows.push({ label: "Continuing education", value: `${fmtHours(d.totalHours / 10)} CEU` });
+  rows.push({ label: "Date of completion", value: formatCertificateDate(d.completionDateISO, d.timeZone ?? "UTC") });
+  const step = d.breakdown ? 13 : 14.97;
+  const rowH = (r: Row) => (r.items ? 5.2 + (r.items.length - 1) * 4.4 : 5.55) + step - 5.55;
+  const total = rows.reduce((s, r) => s + rowH(r), 0) - (step - 5.55);
+  let top = d.breakdown ? Math.max(66, 105 - total / 2) : 79.9;
+  for (const r of rows) {
+    text(r.label, { x: 15, mid: top, size: 8.5, font: F.r, color: C.slate, ls: 0.17 });
+    if (r.items) r.items.forEach((it, i) => text(it, { x: 15, mid: top + 5.2 + i * 4.4, size: 10, font: F.r, color: C.navy }));
+    else text(r.value!, { x: 15, mid: top + 5.55, size: 12, font: F.r, color: C.navy });
+    top += rowH(r);
+  }
 
   // QR code (verification link) on a white tile, certificate number below.
   rect(15, 159.8, 28, 28, C.white);
@@ -142,12 +169,17 @@ export async function renderScormCertificatePdf(d: ScormCertificateData, a: Scor
     text(best[1], { x: L, mid: 82 + gap / 2, size: ns, font: F.serif, color: C.navy });
   }
   page.drawLine({ start: { x: X(L), y: Y(94.2) }, end: { x: X(R), y: Y(94.2) }, thickness: 0.3 * PT, color: C.rule });
-  text("has completed all modules and knowledge checks of the self-paced online course", { x: L, mid: 104.4, size: 11, font: F.r, color: C.body });
+  let bs = 11;
+  while (bs > 9 && tw(F.r, d.bodyLine, bs) > maxW) bs -= 0.5;
+  text(d.bodyLine, { x: L, mid: 104.4, size: bs, font: F.r, color: C.body });
   let cs = 22;
   while (cs > 15 && tw(F.serif, d.courseTitle, cs) > maxW) cs -= 1;
   text(d.courseTitle, { x: L, mid: 115.4, size: cs, font: F.serif, color: C.navy });
-  const sub = d.subtitle ?? SUBTITLES[d.courseTitle];
-  if (sub) text(sub, { x: L, mid: 125, size: 9, font: F.r, color: C.slate, ls: 0.18 });
+  if (d.subtitle) {
+    let ss = 9;
+    while (ss > 7.5 && tw(F.r, d.subtitle, ss, 0.18) > maxW) ss -= 0.25;
+    text(d.subtitle, { x: L, mid: 125, size: ss, font: F.r, color: C.slate, ls: 0.18 });
+  }
 
   // ---------- signatory block (centred on a 72 mm line) ----------
   const sx = L, sw = 72, cx = sx + sw / 2;
@@ -162,10 +194,11 @@ export async function renderScormCertificatePdf(d: ScormCertificateData, a: Scor
   text("Scan the QR code or verify at", { x: R, mid: 185.8, size: 9, font: F.r, color: C.slate, align: "right" });
   text("iparkar.com/verify", { x: R, mid: 191, size: 10, font: F.m, color: C.navy, align: "right" });
 
-  return doc.save({ useObjectStreams: true });
-}
+  // ---------- fine print ----------
+  if (d.footnote) {
+    const lines = wrap(d.footnote, F.r, 6.5, maxW);
+    lines.forEach((l, i) => text(l, { x: L, mid: 201 + i * 2.9 - (lines.length - 1) * 2.9, size: 6.5, font: F.r, color: C.slate }));
+  }
 
-function fmtNum(n: number) {
-  const r = Math.round(n * 100) / 100;
-  return Number.isInteger(r) ? String(r) : String(r);
+  return doc.save({ useObjectStreams: true });
 }

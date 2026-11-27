@@ -5,7 +5,8 @@ import { getServiceClient } from "@/lib/supabase/admin";
 import { certificateAssets } from "./assets";
 import { validateCertificateName } from "./name";
 import { renderCertificatePdf } from "./pdf";
-import { renderScormCertificatePdf } from "./scorm-pdf";
+import { NORDIC_TEMPLATE, renderNordicCertificatePdf } from "./nordic-pdf";
+import { breakdown, courseText } from "./courseText";
 import { verifyUrl } from "./qr";
 
 /** Private R2 object store: certificates live under certificates/<user id>/<certificate code>.pdf in the study-guides bucket. */
@@ -47,7 +48,7 @@ function devBucket(): CertificateBucket {
 }
 
 type Claimed = {
-  id: string; user_id: string; certificate_code: string; name_on_certificate: string; certificate_title: string; short_title: string;
+  id: string; course_code?: string; user_id: string; certificate_code: string; name_on_certificate: string; certificate_title: string; short_title: string;
   completed_at: string; hours: number; categories: { businessAcumen: number; waysOfWorking: number; powerSkills: number };
   wording: "hours" | "pdu"; issuer: string; signatory_name: string; signatory_title: string; template: string; statement: string | null;
 };
@@ -117,10 +118,14 @@ export async function issueCertificate(
   const release = () => service.rpc("service_release_study_certificate_claim", { p_certificate: c.id, p_claim_token: claim.claim_token });
   let pdf: Uint8Array;
   try {
-    pdf = c.template === "scorm-a4-landscape-v1" ? await renderScormCertificatePdf({
+    const code = (c.course_code ?? courseCode).toUpperCase();
+    const t = courseText(code);
+    pdf = c.template === NORDIC_TEMPLATE ? await renderNordicCertificatePdf({
       name: c.name_on_certificate, certificateNo: c.certificate_code, completionDateISO: c.completed_at, issuedAtISO: new Date().toISOString(),
       courseTitle: c.certificate_title, totalHours: Number(c.hours), issuer: c.issuer, signatoryName: c.signatory_name,
       signatoryTitle: c.signatory_title, verifyUrl: verifyUrl(c.certificate_code), timeZone: "UTC",
+      bodyLine: t.bodyLine, subtitle: t.subtitle, footnote: t.footnote,
+      breakdown: breakdown(code, c.categories as unknown as Record<string, number>),
     }, { fonts: { interRegular: assets.fonts.interRegular as Uint8Array, interMedium: assets.fonts.interMedium as Uint8Array,
                   serifLight: assets.fonts.frauncesLight }, signature }) : await renderCertificatePdf({
       // Course-template certificates print the date of issue; the PMP template prints the date of completion.

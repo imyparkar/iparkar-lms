@@ -63,6 +63,8 @@ Then, on `/admin/study`, review it with a pilot enrollment, publish it and make 
 
 **Signature row:** the completion date and the signatory name share one line, the two rules sit at the same height, and "Date of completion" lines up with "Course instructor, iParkar Learning". The handwritten signature sits above the name. The iP monogram is drawn from `public/brand/iparkar-mark-reversed.svg`.
 
+**27 Nov 2026:** PMP-SPS now uses the `nordic-a4-landscape-v1` design (see docs/SCORM-COURSES.md); `pmp-a4-landscape-v1` remains in `pdf.ts` for reference and for any certificate re-render.
+
 **Turning certificates on for another course:** insert a row into `study_certificate_programs` (hours, categories, title, signatory) and set `certificate: true` in `courseProfile.ts`. The template is currently the PMP design.
 
 | Piece | Where |

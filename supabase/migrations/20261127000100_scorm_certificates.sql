@@ -11,6 +11,10 @@
 --   knowledge checks), or 'passed'/'completed' when it has none. Learners never write scorm_attempts.
 -- * Issuance reuses the two-step claim / finalize of study certificates: scorm_claim_certificate
 --   (learner session) then service_finalize_study_certificate (service role) once the PDF is stored.
+-- * The owner-approved "nordic" design (template nordic-a4-landscape-v1) is also used by the self-paced
+--   study courses from now on: PMP-SPS switches to it (35 contact hours with the Talent Triangle split), and
+--   ASP-SPS (63 h) and CSP-SPS (50 h) start offering certificates (purchase still required, as for PMP).
+--   CEU = hours ÷ 10, provider-issued. Certificates already issued keep their stored PDF.
 -- * Additive and re-runnable. Existing certificates are untouched.
 -- =====================================================================
 
@@ -36,12 +40,28 @@ alter table public.study_certificate_programs add column if not exists scorm_cou
 
 insert into public.study_certificate_programs (course_code, template, certificate_title, short_title, hours, categories, wording,
                                                signatory_name, signatory_title, completion_rule, scorm_course_code)
-values ('SAT', 'scorm-a4-landscape-v1', 'Systematic Approach to Training (SAT)', 'Systematic Approach to Training', 2,
+values ('SAT', 'nordic-a4-landscape-v1', 'Systematic Approach to Training (SAT)', 'Systematic Approach to Training', 2,
         '{}'::jsonb, 'hours', 'Imran Parkar', 'Course director, iParkar Learning', 'scorm', 'sat')
 on conflict (course_code) do update set template = excluded.template, certificate_title = excluded.certificate_title,
   short_title = excluded.short_title, hours = excluded.hours, signatory_name = excluded.signatory_name,
   signatory_title = excluded.signatory_title, completion_rule = excluded.completion_rule, scorm_course_code = excluded.scorm_course_code,
   updated_at = now();
+
+-- ---------- self-paced study courses: the same design (owner, 27 Nov 2026) ----------
+update public.study_certificate_programs
+   set template = 'nordic-a4-landscape-v1', signatory_name = 'Imran Parkar, PMP, CIT',
+       signatory_title = 'Course director, iParkar Learning', updated_at = now()
+ where course_code = 'PMP-SPS';
+
+insert into public.study_certificate_programs (course_code, template, certificate_title, short_title, hours, categories, wording,
+                                               signatory_name, signatory_title, completion_rule)
+values ('ASP-SPS', 'nordic-a4-landscape-v1', 'ASP® Exam Prep Course', 'ASP® Exam Prep Course', 63, '{}'::jsonb, 'hours',
+        'Imran Parkar, CSP, CIT', 'Course director, iParkar Learning', 'chapters'),
+       ('CSP-SPS', 'nordic-a4-landscape-v1', 'CSP® Exam Prep Course', 'CSP® Exam Prep Course', 50, '{}'::jsonb, 'hours',
+        'Imran Parkar, CSP, CIT', 'Course director, iParkar Learning', 'chapters')
+on conflict (course_code) do update set template = excluded.template, certificate_title = excluded.certificate_title,
+  short_title = excluded.short_title, hours = excluded.hours, signatory_name = excluded.signatory_name,
+  signatory_title = excluded.signatory_title, updated_at = now();
 
 -- ---------- helpers ----------
 -- Has this learner passed every module of the SCORM course? Returns the completion time (latest module) or null.

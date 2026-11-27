@@ -64,7 +64,7 @@ describe("issue, download and verify", () => {
     expect(await claim(ana, "Ana 123")).toMatchObject({ ok: false, error: "invalid_name" });
     const c = await claim(ana, "Ana María Ortiz");
     expect(c).toMatchObject({ ok: true, state: "claimed" });
-    expect(c.certificate).toMatchObject({ template: "scorm-a4-landscape-v1", signatory_name: "Imran Parkar",
+    expect(c.certificate).toMatchObject({ template: "nordic-a4-landscape-v1", signatory_name: "Imran Parkar",
       signatory_title: "Course director, iParkar Learning", certificate_title: "Systematic Approach to Training (SAT)" });
     expect(c.certificate.certificate_code).toMatch(/^IPL-SAT-[0-9A-Z]{4}-[0-9A-Z]{4}$/);
     id = c.certificate.id; code = c.certificate.certificate_code;
@@ -91,5 +91,18 @@ describe("issue, download and verify", () => {
   it("keeps issued certificates immutable and learners off the tables", async () => {
     await expect(db.query(`update study_certificates set name_on_certificate = 'X Y' where id = $1`, [id])).rejects.toThrow(/immutable/);
     await expect(rpc(db, cat, "scorm_course_completed_at", [cat, id], ["uuid", "uuid"])).rejects.toThrow(/permission denied/);
+  });
+});
+
+describe("study courses use the same design", () => {
+  it("switches PMP and turns on ASP and CSP with the owner's hours and signatories", async () => {
+    const r = await db.query(`select course_code, template, hours::float8 h, signatory_name, signatory_title, completion_rule, categories
+                                from study_certificate_programs where course_code in ('PMP-SPS','ASP-SPS','CSP-SPS','SAT') order by 1`);
+    const by = Object.fromEntries((r.rows as { course_code: string }[]).map((x) => [x.course_code, x]));
+    expect(by["PMP-SPS"]).toMatchObject({ template: "nordic-a4-landscape-v1", h: 35, signatory_name: "Imran Parkar, PMP, CIT", signatory_title: "Course director, iParkar Learning", completion_rule: "chapters" });
+    expect((by["PMP-SPS"] as unknown as { categories: object }).categories).toEqual({ businessAcumen: 8, waysOfWorking: 19, powerSkills: 8 });
+    expect(by["ASP-SPS"]).toMatchObject({ template: "nordic-a4-landscape-v1", h: 63, signatory_name: "Imran Parkar, CSP, CIT", completion_rule: "chapters" });
+    expect(by["CSP-SPS"]).toMatchObject({ template: "nordic-a4-landscape-v1", h: 50, signatory_name: "Imran Parkar, CSP, CIT", completion_rule: "chapters" });
+    expect(by.SAT).toMatchObject({ template: "nordic-a4-landscape-v1", h: 2, signatory_name: "Imran Parkar", completion_rule: "scorm" });
   });
 });
