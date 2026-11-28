@@ -62,8 +62,8 @@ export default async function CompletionPage({ params }: { params: Promise<{ cou
       <article className="mx-auto max-w-[900px] overflow-hidden rounded-card border border-hairline bg-white print:border-0" aria-label="Course completion record">
         <div className="on-dark flex items-center gap-3 bg-midnight px-8 py-6 text-white">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/iparkar-mark-reversed.svg" width={40} height={40} alt="" />
-          <span className="text-[18px] font-semibold">iParkar Learning</span>
+          <img src="/brand/iparkar-mark-reversed-tm.svg" width={51} height={40} alt="" />
+          <span className="text-[18px] font-semibold">iParkar Learning<sup className="ml-px align-super text-[10px] font-normal leading-none">™</sup></span>
         </div>
         <div className="space-y-6 px-8 py-10 sm:px-12">
           <p className="text-subheading text-graphite">Course completion record</p>

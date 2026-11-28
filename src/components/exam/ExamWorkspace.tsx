@@ -279,7 +279,7 @@ export function ExamWorkspace({ data }: { data: AttemptPayload }) {
       <header className="sticky top-0 z-30 border-b border-hairline bg-white">
         <div className="flex h-16 items-center gap-3 px-3 sm:px-6">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/iparkar-mark-primary.svg" alt="iParkar" width={30} height={30} />
+          <img src="/brand/iparkar-mark-primary-tm.svg" alt="iParkar™" width={38} height={30} />
           <div className="min-w-0 flex-1">
             <p className="truncate text-body-sm font-semibold">{attempt.course.code} · {attempt.course.name}</p>
             <p className="truncate text-caption text-slate">

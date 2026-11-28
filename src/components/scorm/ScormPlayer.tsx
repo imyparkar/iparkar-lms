@@ -178,7 +178,7 @@ export function ScormPlayer({ launch, courseHref, position, total, nextHref }:
       <header className="z-10 flex h-nav shrink-0 items-center gap-3 bg-white px-4 shadow-nav sm:px-6">
         <Link href={courseHref} className="inline-flex items-center gap-2.5 rounded-button" aria-label={`Back to ${launch.course.title}`}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/iparkar-mark-primary.svg" width={32} height={32} alt="" />
+          <img src="/brand/iparkar-mark-primary-tm.svg" width={41} height={32} alt="" />
         </Link>
         <div className="min-w-0 flex-1">
           <p className="truncate text-caption text-graphite">{launch.course.title} · Module {position} of {total}</p>

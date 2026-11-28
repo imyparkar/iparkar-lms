@@ -539,9 +539,9 @@ export function Player({ userId, courseSlug, courseTitle, data, outline, startSe
         <button type="button" className="icon-btn" onClick={toggleIndex} aria-label="Show or hide the course index" aria-expanded={showIndex} aria-controls="study-index">{Icon.menu}</button>
         <Link href={`/learn/${courseSlug}`} className="flex min-w-0 items-center gap-2.5 rounded-button" aria-label={`${courseTitle}: course overview`}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/iparkar-mark-primary.svg" width={32} height={32} alt="" className="shrink-0" />
+          <img src="/brand/iparkar-mark-primary-tm.svg" width={41} height={32} alt="" className="shrink-0" />
           <span className="flex min-w-0 flex-col">
-            <small className="hidden text-caption text-graphite sm:block">iParkar Learning · {courseTitle}</small>
+            <small className="hidden text-caption text-graphite sm:block">iParkar Learning™ · {courseTitle}</small>
             <strong className="truncate text-body-sm font-semibold">Chapter {chapter.code} · {chapter.title}</strong>
           </span>
         </Link>

@@ -1,7 +1,8 @@
 import "server-only";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getServiceClient } from "@/lib/supabase/admin";
-import { DOC_COLUMNS, SELLER, docDate, docFileName, docTitle, money, renderInvoicePdf, type InvoiceDoc } from "@/lib/invoices/pdf";
+import { DOC_COLUMNS, SELLER, docFileName, renderInvoicePdf, type InvoiceDoc } from "@/lib/invoices/pdf";
+import { renderInvoiceEmail } from "@/lib/invoices/email";
 
 const COLS = `id, ${DOC_COLUMNS}, original_invoice_id, emailed_at`;
 
@@ -15,8 +16,6 @@ export async function loadInvoiceDoc(row: Row, db = getServiceClient()): Promise
   }
   return { ...row, original };
 }
-
-const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
 
 type EmailAddress = { email: string; name: string };
 type SendEmail = {
@@ -38,7 +37,7 @@ async function emailBinding(): Promise<SendEmail | null> {
 }
 
 /**
- * Emails an invoice or credit note (PDF attached) through Cloudflare Email Service.
+ * Emails an invoice or credit note (PDF attached) through Cloudflare Email Service, in the branded layout from email.ts.
  * Sends at most once: a claim on the row stops the browser callback and the webhook
  * from both sending. Never throws — failures are stored in email_error and logged.
  */
@@ -56,21 +55,7 @@ export async function sendInvoiceEmail(invoiceId: string | null | undefined): Pr
     if (!row.buyer_email) throw new Error("no buyer email");
     const doc = await loadInvoiceDoc(row, db);
     const pdf = await renderInvoicePdf(doc);
-    const title = docTitle(doc);
-    const amount = money(doc.amount_minor, doc.currency);
-    const hello = doc.buyer_name ? `Hello ${doc.buyer_name},` : "Hello,";
-    const body = doc.kind === "invoice"
-      ? [`Thank you for your purchase from iParkar Learning.`, `Your invoice ${doc.number} for ${amount} (${doc.description}) is attached.`,
-         `Your access is open now at https://app.iparkar.com/dashboard. You can download your invoices any time from Account in the app.`]
-      : [`We have processed your refund of ${amount} for ${doc.description.replace(/^Refund: /, "")}.`,
-         `Credit note ${doc.number}${doc.original ? ` (against invoice ${doc.original.number})` : ""} is attached.`,
-         `The money goes back to your original payment method; depending on your bank this usually takes 5–10 business days.`];
-    const text = [hello, "", ...body, "", "If you have any questions, reply to this email or write to support@iparkar.com.", "", "iParkar Learning", "https://iparkar.com"].join("\n");
-    const html = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#10122a">`
-      + `<p>${esc(hello)}</p>${body.map((p) => `<p>${esc(p)}</p>`).join("")}`
-      + `<p>If you have any questions, reply to this email or write to <a href="mailto:support@iparkar.com">support@iparkar.com</a>.</p>`
-      + `<p>iParkar Learning<br><a href="https://iparkar.com">iparkar.com</a></p>`
-      + `<p style="font-size:12px;color:#606573">${esc(title)} ${esc(doc.number)} · ${esc(docDate(doc.issued_at))}</p></div>`;
+    const { subject, text, html } = renderInvoiceEmail(doc);
 
     const from = process.env.INVOICE_FROM_EMAIL || SELLER.email;
     const bcc = process.env.INVOICE_BCC_EMAIL || "";
@@ -79,7 +64,7 @@ export async function sendInvoiceEmail(invoiceId: string | null | undefined): Pr
       to: doc.buyer_name ? { email: doc.buyer_email!, name: doc.buyer_name } : doc.buyer_email!,
       ...(bcc ? { bcc } : {}),
       replyTo: { email: SELLER.email, name: SELLER.name },
-      subject: doc.kind === "invoice" ? `Your iParkar Learning invoice ${doc.number}` : `Your iParkar Learning refund – credit note ${doc.number}`,
+      subject,
       text,
       html,
       attachments: [{ content: Buffer.from(pdf).toString("base64"), filename: docFileName(doc), type: "application/pdf", disposition: "attachment" }],

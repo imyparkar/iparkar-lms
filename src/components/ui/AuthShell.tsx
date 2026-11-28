@@ -33,7 +33,7 @@ export function AuthShell({ title, lead, children, footer }: { title: string; le
             <li>Domain analytics that show where to study next</li>
           </ul>
         </div>
-        <p className="text-caption text-white/70">© {new Date().getFullYear()} iParkar Learning</p>
+        <p className="text-caption text-white/70">© {new Date().getFullYear()} iParkar Learning™</p>
       </aside>
     </main>
   );
